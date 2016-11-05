@@ -21,7 +21,7 @@
 * Features:
 * 1. Very simple user interface to Arduino DUE DAC and ADC
 * 2. PCM/WAV Audio/Analog Data playback using Arduino Due DAC
-* 3. PCM/WAV Audio/Analog Data recording using Arduino Due DAC
+* 3. PCM/WAV Audio/Analog Data recording using Arduino Due ADC
 * 4. Onboard timers drive the DAC & ADC automatically
 * 5. Automatic sample rate/timer adjustment based on rate of user-driven data requests/input
 * 6. Uses DMA (Direct Memory Access) to buffer DAC & ADC data
@@ -35,7 +35,7 @@
 * the AAAudio library and nrf24l01+ radio modules on Arduino Due.
 * 
 * 1. This example uses the onboard DAC to play the incoming audio data via DAC0
-* 2. The ADC is used to sample the DAC0 pin, and the data is made available
+* 2. The ADC is used to sample the DAC (connected to pin A0) and the data is made available
 * 3. The data is re-broadcast over the radios
 * 4. Incoming radio data can be directly re-broadcast, but this example is a test of all peripherals
 * 
