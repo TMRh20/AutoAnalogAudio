@@ -47,7 +47,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   if(enADC){
     adcSetup();
   }
-  if(enADC){
+  if(enDAC){
     dacSetup();
   }  
   tc2Setup(DEFAULT_FREQUENCY);
@@ -118,7 +118,6 @@ void AutoAnalog::getADC(){
       adcBuffer[i] = adcDma[!whichDma][i]>>2;
     }
   }
-
 
 }
 
@@ -226,8 +225,8 @@ void AutoAnalog::dacHandler(void){
         realBuf[i] = dacBuffer[i] << 4;
       }
       if ((DACC->DACC_TCR == 0) && (DACC->DACC_TNCR == 0)) {
-        DACC->DACC_TNPR = (uint32_t) realBuf;
-        DACC->DACC_TNCR = MAX_BUFFER_SIZE;
+        DACC->DACC_TPR = (uint32_t) realBuf;
+        DACC->DACC_TCR = MAX_BUFFER_SIZE;
       }else{
         DACC->DACC_TNPR = (uint32_t) realBuf;
         DACC->DACC_TNCR = MAX_BUFFER_SIZE;
