@@ -33,9 +33,9 @@ AutoAnalog::AutoAnalog(){
   dataReady = 0;  
   dataTimer = 0;
   sampleCount = 0;
-  tcTicks  =    0;
-  tcTicks2  =    0;
-  adjustDivider = 5;
+  tcTicks  =    2625;
+  tcTicks2  =    2625;
+  adjustDivider = 2;
   adjustCtr = 0;
   whichDma = 0;  
   aCtr = 0;
@@ -52,7 +52,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   }  
   tc2Setup(DEFAULT_FREQUENCY);
   tcSetup(DEFAULT_FREQUENCY);
-  
+  tcSetup();
 }
 
 /****************************************************************************/
@@ -81,32 +81,21 @@ void AutoAnalog::getADC(){
   if(sampleCount < 100){ ++sampleCount; }
     if(sampleCount >= 100 ){
       
-      /*if( (dataTimer*2 > 1200 && dataTimer*2 < 6000 && ADC->ADC_RNCR > 1) ){
-        //Good spot to print overflow debugging Serial.println("x1");
-        sampleCount = 0;
-        if( (tcTicks > dataTimer*2 + 700 || tcTicks < dataTimer*2 - 500) ){
-          tcTicks = tcTicks2 = dataTimer*1.7;
-          tcSetup();
-          tc2Setup();
-        }
-      }*/
-
       TcChannel * t = &TC0->TC_CHANNEL[0];
       TcChannel * tt = &TC0->TC_CHANNEL[1];
       
       ++adjustCtr2;
       if(adjustCtr2 > 1){ adjustCtr2 = 0;}
-        //Serial.println(ADC->ADC_RNCR);
         if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1 ) && adjustCtr2 == 0){
           if(tt->TC_RC > t->TC_RC + 100 ){
             tcTicks2 = tcTicks;
             tc2Setup();
           }else
-          if(tt->TC_RC > t->TC_RC ){
-            tcTicks2-= 10; //was 5
+          if(tt->TC_RC > t->TC_RC - 50 ){
+            tcTicks2-= 50;
             tc2Setup();
           }else
-          if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1) && tt->TC_RC < t->TC_RC - 50){
+          if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1) && tt->TC_RC < t->TC_RC - 150){
             tcTicks2++;
             tc2Setup();
           }
@@ -125,21 +114,27 @@ void AutoAnalog::feedDAC(){
     
     // Adjusts the timer by comparing the rate of incoming data
     // of data vs rate of the DACC   
-    ++adjustCtr;
-    if(adjustCtr > 256){ adjustCtr = 0;}
-
+  if(sampleCount < 100){ ++sampleCount; }
+  if(sampleCount >= 100 ){
+      
     TcChannel * t = &TC0->TC_CHANNEL[0];
     int tcr = DACC->DACC_TCR;
-    int tncr = DACC->DACC_TNCR;    
-    
-    if(tcTicks > t->TC_RA){
-    if(adjustCtr == 0 || tcr > adjustDivider  ){
-      tcTicks = tcr > 0 ? tcTicks - 30 : ++tcTicks;
-      tcSetup();
+    int tncr = DACC->DACC_TNCR;
+
+    ++adjustCtr;
+    if(adjustCtr > 2){ adjustCtr = 0;}
+
+    if(DACC->DACC_TCR > 5 && adjustCtr == 0){
+        tcTicks-=5;
+        tcSetup();
+    }else
+    if(dataReady && adjustCtr == 0){
+       tcTicks+=1;
+       tcSetup();
     }
-    }
-    dataReady = 0;
-    dacc_enable_interrupt(DACC, DACC_IER_ENDTX);
+  }
+  dataReady = 0;
+  dacc_enable_interrupt(DACC, DACC_IER_ENDTX);
     
 }
 
@@ -222,15 +217,10 @@ void AutoAnalog::dacHandler(void){
       for(int i=0; i<32; i++){
         realBuf[i] = dacBuffer[i] << 4;
       }
-      if ((DACC->DACC_TCR == 0) && (DACC->DACC_TNCR == 0)) {
-        DACC->DACC_TPR = (uint32_t) realBuf;
-        DACC->DACC_TCR = MAX_BUFFER_SIZE;
-      }else{
-        DACC->DACC_TNPR = (uint32_t) realBuf;
-        DACC->DACC_TNCR = MAX_BUFFER_SIZE;
-      }
-      DACC->DACC_PTCR = DACC_PTCR_TXTEN; 
 
+      DACC->DACC_TPR = (uint32_t) realBuf;
+      DACC->DACC_TCR = MAX_BUFFER_SIZE;
+      DACC->DACC_PTCR = DACC_PTCR_TXTEN;
       dataReady = 1;
 
     }else{
