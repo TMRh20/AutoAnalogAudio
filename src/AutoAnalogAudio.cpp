@@ -71,7 +71,6 @@ void AutoAnalog::triggerADC(){
   whichDma = !whichDma;
   ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];  // "receive next pointer" register set to global_ADCounts_Array 
   ADC->ADC_RNCR=MAX_BUFFER_SIZE;  // "receive next" counter set to 4
-  dataTimer = micros() - dataTimer;
   
 }
 
@@ -79,7 +78,7 @@ void AutoAnalog::triggerADC(){
 
 void AutoAnalog::getADC(){
 
-  if(sampleCount < 100){ ++sampleCount; }{
+  if(sampleCount < 100){ ++sampleCount; }
     if(sampleCount >= 100 ){
       
       /*if( (dataTimer*2 > 1200 && dataTimer*2 < 6000 && ADC->ADC_RNCR > 1) ){
@@ -91,15 +90,14 @@ void AutoAnalog::getADC(){
           tc2Setup();
         }
       }*/
-      dataTimer = micros();
 
       TcChannel * t = &TC0->TC_CHANNEL[0];
       TcChannel * tt = &TC0->TC_CHANNEL[1];
       
-      ++adjustCtr;
-      if(adjustCtr > 1){ adjustCtr = 0;}
+      ++adjustCtr2;
+      if(adjustCtr2 > 1){ adjustCtr2 = 0;}
         //Serial.println(ADC->ADC_RNCR);
-        if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1 ) && adjustCtr == 0){
+        if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1 ) && adjustCtr2 == 0){
           if(tt->TC_RC > t->TC_RC + 100 ){
             tcTicks2 = tcTicks;
             tc2Setup();
@@ -113,11 +111,11 @@ void AutoAnalog::getADC(){
             tc2Setup();
           }
         }
-    }      
+      }  
     for(int i=0; i<32; i++){
       adcBuffer[i] = adcDma[!whichDma][i]>>2;
     }
-  }
+  
 
 }
 
@@ -128,7 +126,7 @@ void AutoAnalog::feedDAC(){
     // Adjusts the timer by comparing the rate of incoming data
     // of data vs rate of the DACC   
     ++adjustCtr;
-    if(adjustCtr > 1024){ adjustCtr = 0;}
+    if(adjustCtr > 256){ adjustCtr = 0;}
 
     TcChannel * t = &TC0->TC_CHANNEL[0];
     int tcr = DACC->DACC_TCR;
@@ -136,7 +134,7 @@ void AutoAnalog::feedDAC(){
     
     if(tcTicks > t->TC_RA){
     if(adjustCtr == 0 || tcr > adjustDivider  ){
-      tcTicks = tcr > 0 ? tcTicks - 10 : ++tcTicks;
+      tcTicks = tcr > 0 ? tcTicks - 30 : ++tcTicks;
       tcSetup();
     }
     }
@@ -243,17 +241,6 @@ void AutoAnalog::dacHandler(void){
 
 /****************************************************************************/
 
-void AutoAnalog::pioSetup(void){
-    
-  // setup TIOA0  
-  PIOB->PIO_PDR = PIO_PB25B_TIOA0;  
-  PIOB->PIO_IDR = PIO_PB25B_TIOA0;  
-  PIOB->PIO_ABSR |= PIO_PB25B_TIOA0;
-
-  }
-
-/****************************************************************************/
-
 void AutoAnalog::tcSetup (uint32_t sampRate){
   
   if(sampRate > 0){
@@ -281,8 +268,6 @@ void AutoAnalog::tcSetup (uint32_t sampRate){
   //NVIC_EnableIRQ(TC0_IRQn); // enable TC0 interrupts  
 
   
-  
-  pioSetup();  
 }
 
 /****************************************************************************/
@@ -303,7 +288,7 @@ void AutoAnalog::tc2Setup (uint32_t sampRate)
   tt->TC_IDR = 0xFFFFFFFF;
   tt->TC_SR;  
   tt->TC_RC = tcTicks2;
-  tt->TC_RA = tt->TC_RC / 2;
+  tt->TC_RA = tcTicks2 / 2;
   tt->TC_CMR = TC_CMR_TCCLKS_TIMER_CLOCK1 | TC_CMR_WAVE | TC_CMR_WAVSEL_UP_RC;    
   tt->TC_CMR = (tt->TC_CMR & 0xFFF0FFFF) | TC_CMR_ACPA_CLEAR | TC_CMR_ACPC_SET; 
   tt->TC_CCR = TC_CCR_CLKEN | TC_CCR_SWTRG; 

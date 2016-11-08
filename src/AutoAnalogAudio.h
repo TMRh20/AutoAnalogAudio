@@ -92,12 +92,11 @@ private:
   uint32_t tcTicks2  =    0;           /* Stores the current TC0 Ch1 counter value */
   uint32_t adjustDivider = 5;          /* Internal variables for adjusting timers on-the-fly */
   uint16_t adjustCtr = 0;              /* Internal variables for adjusting timers on-the-fly */
+  uint16_t adjustCtr2 = 0;              /* Internal variables for adjusting timers on-the-fly */
 
   void adcSetup(void);                 /* Enable the ADC */
   void dacSetup(void);                 /* Enable the DAC */
   
-  void pioSetup(void);                 /* Enable the TIOA timer output for DAC and ADC */
-
   void tcSetup(uint32_t sampRate = 0);      /* Sets up Timer TC0 Channel 0 */  
   void tc2Setup(uint32_t sampRate = 0);     /* Sets up Timer TC0 Channel 1 */
 
