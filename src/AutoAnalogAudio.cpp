@@ -39,6 +39,7 @@ AutoAnalog::AutoAnalog(){
   adjustCtr = 0;
   whichDma = 0;  
   aCtr = 0;
+  autoAdjust = true;
   
 }
 
@@ -52,7 +53,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   }  
   tc2Setup(DEFAULT_FREQUENCY);
   tcSetup(DEFAULT_FREQUENCY);
-  tcSetup();
+  
 }
 
 /****************************************************************************/
@@ -61,16 +62,18 @@ void AutoAnalog::setSampleRate(uint32_t sampRate){
     
    tc2Setup(sampRate);
    tcSetup(sampRate);
-   
 }
 
 /****************************************************************************/
 
 void AutoAnalog::triggerADC(){
     
+  if(!autoAdjust){
+    while(ADC->ADC_RNCR > 0 && ADC->ADC_RCR > 0 ){;}
+  }  
   whichDma = !whichDma;
-  ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];  // "receive next pointer" register set to global_ADCounts_Array 
-  ADC->ADC_RNCR=MAX_BUFFER_SIZE;  // "receive next" counter set to 4
+  ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];
+  ADC->ADC_RNCR=MAX_BUFFER_SIZE;
   
 }
 
@@ -79,33 +82,31 @@ void AutoAnalog::triggerADC(){
 void AutoAnalog::getADC(){
 
   if(sampleCount < 100){ ++sampleCount; }
-    if(sampleCount >= 100 ){
+    if(sampleCount >= 100 && autoAdjust){
       
       TcChannel * t = &TC0->TC_CHANNEL[0];
       TcChannel * tt = &TC0->TC_CHANNEL[1];
       
       ++adjustCtr2;
       if(adjustCtr2 > 1){ adjustCtr2 = 0;}
-        if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1 ) && adjustCtr2 == 0){
-          if(tt->TC_RC > t->TC_RC + 100 ){
-            tcTicks2 = tcTicks;
-            tc2Setup();
-          }else
-          if(tt->TC_RC > t->TC_RC - 50 ){
-            tcTicks2-= 50;
-            tc2Setup();
-          }else
-          if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1) && tt->TC_RC < t->TC_RC - 150){
-            tcTicks2++;
-            tc2Setup();
-          }
+      if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1 ) && adjustCtr2 == 0){
+        if(tt->TC_RC > t->TC_RC + 100 ){
+          tcTicks2 = tcTicks;
+          tc2Setup();
+        }else
+        if(tt->TC_RC > t->TC_RC - 50 ){
+          tcTicks2-= 50;
+          tc2Setup();
+        }else
+        if( (ADC->ADC_RNCR > 1 && ADC->ADC_RCR > 1) && tt->TC_RC < t->TC_RC - 150){
+          tcTicks2++;
+          tc2Setup();
         }
-      }  
+      }
+    }    
     for(int i=0; i<32; i++){
       adcBuffer[i] = adcDma[!whichDma][i]>>2;
     }
-  
-
 }
 
 /****************************************************************************/
@@ -115,7 +116,7 @@ void AutoAnalog::feedDAC(){
     // Adjusts the timer by comparing the rate of incoming data
     // of data vs rate of the DACC   
   if(sampleCount < 100){ ++sampleCount; }
-  if(sampleCount >= 100 ){
+  if(sampleCount >= 100 && autoAdjust){
       
     TcChannel * t = &TC0->TC_CHANNEL[0];
     int tcr = DACC->DACC_TCR;
@@ -132,10 +133,13 @@ void AutoAnalog::feedDAC(){
        tcTicks+=1;
        tcSetup();
     }
+  }  
+  
+  if(!autoAdjust){
+    while((dacc_get_interrupt_status(DACC) & DACC_ISR_ENDTX) != DACC_ISR_ENDTX ){;} 
   }
   dataReady = 0;
   dacc_enable_interrupt(DACC, DACC_IER_ENDTX);
-    
 }
 
 /****************************************************************************/
@@ -270,7 +274,7 @@ void AutoAnalog::tc2Setup (uint32_t sampRate)
     sampleCount = 0;
   }
 
-  pmc_enable_periph_clk((uint32_t)TC1_IRQn);
+  pmc_enable_periph_clk(TC_INTERFACE_ID+1);
   
   Tc * tc = TC0;
   TcChannel * tt = &tc->TC_CHANNEL[1];

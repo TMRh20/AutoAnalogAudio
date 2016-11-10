@@ -63,8 +63,12 @@ public:
   
   /** Function called by DAC IRQ */ 
   void dacHandler(void);                                  
+   
+  /** Auto & Manual sample rates. En/Disables automatic adjustment of timers
+   *  Default: true
+   **/
+  bool autoAdjust;
   
-
   /**@}*/
   
 private:
