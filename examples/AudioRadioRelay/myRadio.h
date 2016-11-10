@@ -16,10 +16,10 @@ void setupRadio(){
   radio.begin();
   radio.setChannel(1);
   radio.setPALevel(RF24_PA_MAX);
-  radio.setDataRate(RF24_2MBPS);
+  radio.setDataRate(RF24_1MBPS);
   radio.setAutoAck(0);
   radio.setCRCLength(RF24_CRC_8);
-  radio.setAddressWidth(3);
+  radio.setAddressWidth(5);
   radio.openReadingPipe(1,pipes[1]);
   radio.openReadingPipe(2,pipes[2]);
   radio.setAutoAck(2,1);

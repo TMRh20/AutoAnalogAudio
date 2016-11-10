@@ -43,20 +43,54 @@ public:
   /** Setup the timers */ 
   void begin(bool enADC, bool enDAC);          
   
-  /** Start the ADC running */
+  /**
+   * @note This function is no longer required and does nothing
+   */
   void triggerADC();                           
   
-  /** Load the current ADC data into the ADC Data Buffer */
-  void getADC();                               
+  /** Load the current ADC data into the ADC Data Buffer
+    *
+    * @param samples The number of samples to retrieve from the ADC
+    *
+    * @note Changes to the number of samples will not take place until one
+    * buffer has been returned with the previous number of samples
+    *
+    */
+  void getADC(uint32_t samples = MAX_BUFFER_SIZE);                               
   
-  /** Feed the current PCM/WAV data into the DAC for playback */
-  void feedDAC();                              
+  /** Feed the current PCM/WAV data into the DAC for playback 
+   * 
+   * @param samples The number of samples to send to the DAC
+   */
+  void feedDAC(uint32_t samples = MAX_BUFFER_SIZE);                              
 
-  /** DAC data buffer */
+  /** DAC data buffer for 8-bit samples 
+   *
+   *  8-bit user samples are loaded directly into this buffer before calling feedDAC() <br>
+   *  @see dacBitsPerSample
+   */
   uint8_t dacBuffer[MAX_BUFFER_SIZE];          
    
-  /** ADC Data buffer */
+  /** ADC Data buffer for 8-bit samples 
+   *
+   *  8-bit samples are read directly from this buffer after calling getADC() <br>
+   * @see adcBitsPerSample
+   */
   uint8_t adcBuffer[MAX_BUFFER_SIZE];          
+
+  /** DAC data buffer for 10 or 12-bit samples 
+   *
+   *  10 or 12-bit user samples are loaded directly into this buffer before calling feedDAC() <br>
+   * @see dacBitsPerSample
+   */
+  uint16_t dacBuffer16[MAX_BUFFER_SIZE];          
+   
+  /** ADC Data buffer for 10 or 12-bit samples 
+   *
+   *  10 or 12-bit samples are read directly from this buffer after calling getADC() <br>
+   * @see adcBitsPerSample
+   */
+  uint16_t adcBuffer16[MAX_BUFFER_SIZE];    
 
   /** Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h */
   void setSampleRate(uint32_t sampRate = 0);   
@@ -65,9 +99,32 @@ public:
   void dacHandler(void);                                  
    
   /** Auto & Manual sample rates. En/Disables automatic adjustment of timers
+   *
    *  Default: true
    **/
   bool autoAdjust;
+  
+  
+  /** ADC (Analog to Digital Converter) <br>
+   * Select the bits-per-sample for incoming data <br>
+   * Default: 8:8-bit, 10:10-bit, 12:12-bit <br>
+   * <br>
+   * There are two separate data buffers for the ADC,selected by setting this variable. <br>
+   * adcBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br>
+   * adcBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br>
+   **/
+  uint8_t adcBitsPerSample;
+  
+  /** DAC (Digital to Analog Converter) <br>
+   * Select the bits-per-sample for incoming data <br>
+   * Default: 8:8-bit, 10:10-bit, 12:12-bit <br>
+   * <br>
+   * There are two separate data buffers for the DAC, selected by setting this variable. <br>
+   * dacBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br>
+   * dacBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br>
+   *
+   **/
+  uint8_t dacBitsPerSample;
   
   /**@}*/
   
@@ -88,15 +145,17 @@ private:
   
   uint16_t realBuf[MAX_BUFFER_SIZE];   /* Internal DAC buffer */
   uint16_t adcDma[2][MAX_BUFFER_SIZE]; /* Buffers for ADC DMA transfers */  
-  uint16_t dataReady = 0;              /* Internal indicator for DAC data */ 
+  uint16_t dataReady;                  /* Internal indicator for DAC data */ 
   
-  uint32_t dataTimer = 0;              /* Internal timer tracks timing of incoming data */
-  uint32_t sampleCount = 0;            /* Internal counter for delaying analysis of timing */
-  uint32_t tcTicks  =    0;            /* Stores the current TC0 Ch0 counter value */
-  uint32_t tcTicks2  =    0;           /* Stores the current TC0 Ch1 counter value */
-  uint32_t adjustDivider = 5;          /* Internal variables for adjusting timers on-the-fly */
-  uint16_t adjustCtr = 0;              /* Internal variables for adjusting timers on-the-fly */
-  uint16_t adjustCtr2 = 0;              /* Internal variables for adjusting timers on-the-fly */
+  uint32_t dataTimer;                  /* Internal timer tracks timing of incoming data */
+  uint32_t sampleCount;                /* Internal counter for delaying analysis of timing */
+  uint32_t tcTicks;                    /* Stores the current TC0 Ch0 counter value */
+  uint32_t tcTicks2;                   /* Stores the current TC0 Ch1 counter value */
+  uint32_t adjustDivider;              /* Internal variables for adjusting timers on-the-fly */
+  uint32_t dacNumSamples;              /* Internal variable for number of samples sent to the DAC */
+  uint32_t adcNumSamples;
+  uint16_t adjustCtr;                  /* Internal variables for adjusting timers on-the-fly */
+  uint16_t adjustCtr2;                 /* Internal variables for adjusting timers on-the-fly */
 
   void adcSetup(void);                 /* Enable the ADC */
   void dacSetup(void);                 /* Enable the DAC */
@@ -133,14 +192,29 @@ private:
  *
  * @section LibInfo Auto Analog Audio (Automatic DAC, ADC & Timer) library
  * 
+ * **Goals:**
+ *
+ * **Extremely low-latency digital audio recording, playback, communication and relaying at high speeds**
+ *
+ *
  * **Features:**
+ * - Designed with low-latency radio/wireless communication in mind
  * - Very simple user interface to Arduino DUE DAC and ADC
  * - PCM/WAV Audio/Analog Data playback using Arduino Due DAC
  * - PCM/WAV Audio/Analog Data recording using Arduino Due DAC
  * - Onboard timers drive the DAC & ADC automatically
  * - Automatic sample rate/timer adjustment based on rate of user-driven data requests/input
  * - Uses DMA (Direct Memory Access) to buffer DAC & ADC data
+ * - ADC & DAC: 8, 10 or 12-bit sampling
  * 
+
+ *
+ * The library internally configures timing based on user driven data requests or delivery, making data available or processing 
+ * it at the appropriate speed without delays or while() loops.
+ *
+ * The library can also be configured to operate at a set sample rate, with the getADC() and feedDAC() functions blocking until data
+ * is available or ready to be processed.
+ *
  * **Library Source Code & Information:**<br>
  * http://github.com/TMRh20 <br>
  * http://tmrh20.blogspot.com <br>

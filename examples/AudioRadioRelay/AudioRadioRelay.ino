@@ -100,8 +100,6 @@ void RX(){
       aaAudio.setSampleRate(dynSampleRate); // Pipe 2 is being used for command data, pipe 1 & others for audio data    
     }else{
       
-      aaAudio.triggerADC();                 // Re-trigger the ADC with the next DMA buffer
-
       radio.stopListening();                // Prepare to send data out via radio
       radio.read(&aaAudio.dacBuffer,32);    // Read the available radio data   
       

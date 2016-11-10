@@ -37,8 +37,11 @@ AutoAnalog::AutoAnalog(){
   tcTicks2  =    2625;
   adjustDivider = 2;
   adjustCtr = 0;
+  adjustCtr2 = 0;
   whichDma = 0;  
   aCtr = 0;
+  adcBitsPerSample = 8;
+  dacBitsPerSample = 8;
   autoAdjust = true;
   
 }
@@ -68,19 +71,22 @@ void AutoAnalog::setSampleRate(uint32_t sampRate){
 
 void AutoAnalog::triggerADC(){
     
-  if(!autoAdjust){
-    while(ADC->ADC_RNCR > 0 && ADC->ADC_RCR > 0 ){;}
-  }  
-  whichDma = !whichDma;
-  ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];
-  ADC->ADC_RNCR=MAX_BUFFER_SIZE;
+
   
 }
 
 /****************************************************************************/
 
-void AutoAnalog::getADC(){
-
+void AutoAnalog::getADC(uint32_t samples){
+  
+  if(!autoAdjust){
+    while(ADC->ADC_RNCR > 0 && ADC->ADC_RCR > 0 ){;}
+  }  
+  whichDma = !whichDma;
+  ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];
+  ADC->ADC_RNCR=samples;
+  
+  
   if(sampleCount < 100){ ++sampleCount; }
     if(sampleCount >= 100 && autoAdjust){
       
@@ -103,15 +109,25 @@ void AutoAnalog::getADC(){
           tc2Setup();
         }
       }
-    }    
-    for(int i=0; i<32; i++){
-      adcBuffer[i] = adcDma[!whichDma][i]>>2;
     }
+    
+    
+    for(int i=0; i<adcNumSamples; i++){
+      if(adcBitsPerSample == 8){
+        adcBuffer[i] = adcDma[!whichDma][i]>>4;
+      }else
+      if(adcBitsPerSample == 10){
+        adcBuffer16[i] = adcDma[!whichDma][i]>>2;  
+      }else{
+        adcBuffer16[i] = adcDma[!whichDma][i];    
+      }
+    }
+    adcNumSamples = samples;
 }
 
 /****************************************************************************/
 
-void AutoAnalog::feedDAC(){
+void AutoAnalog::feedDAC(uint32_t samples){
     
     // Adjusts the timer by comparing the rate of incoming data
     // of data vs rate of the DACC   
@@ -138,6 +154,7 @@ void AutoAnalog::feedDAC(){
   if(!autoAdjust){
     while((dacc_get_interrupt_status(DACC) & DACC_ISR_ENDTX) != DACC_ISR_ENDTX ){;} 
   }
+  dacNumSamples = samples;
   dataReady = 0;
   dacc_enable_interrupt(DACC, DACC_IER_ENDTX);
 }
@@ -165,7 +182,7 @@ void AutoAnalog::adcSetup(void){
       
     ADC->ADC_MR = (ADC->ADC_MR & 0xFF00FF00) | 1 << 2 | ADC_MR_TRGEN;//& ~ADC_MR_SLEEP & ~ADC_MR_FWUP // 1 = trig source TIO from TC0
     //ADC->ADC_MR = (ADC->ADC_MR & 0xFF00FF00);
-    ADC->ADC_MR |= ADC_MR_LOWRES;
+    //ADC->ADC_MR |= ADC_MR_LOWRES;
     //MR Prescalar = 255     ADCClock == 84mhz / ( (256) * 2) == ?? MIN is 1Mhz
     //ADC->ADC_MR |= 5 << 8; //Prescalar ? sets ADC Clock to 1,615,384.6 hz, 5 is 7mhz
     //ADC->ADC_MR |= 3 << 20; //Settling time, full is 17ADC Clocks, 411,764.7hz, 9 is 179487.2, 5
@@ -216,14 +233,20 @@ void AutoAnalog::dacHandler(void){
 
     if(dataReady < 1){
       
-      int ctr = 32;
-      bool zero = 0;
-      for(int i=0; i<32; i++){
-        realBuf[i] = dacBuffer[i] << 4;
+      
+      for(int i=0; i<dacNumSamples; i++){
+        if(dacBitsPerSample == 12){
+          realBuf[i] = dacBuffer16[i];  
+        }else
+        if(dacBitsPerSample == 10){
+          realBuf[i] = dacBuffer16[i] << 2;   
+        }else{
+          realBuf[i] = dacBuffer[i] << 4;  
+        }          
       }
 
       DACC->DACC_TPR = (uint32_t) realBuf;
-      DACC->DACC_TCR = MAX_BUFFER_SIZE;
+      DACC->DACC_TCR = dacNumSamples;
       DACC->DACC_PTCR = DACC_PTCR_TXTEN;
       dataReady = 1;
 
