@@ -26,6 +26,11 @@
 
 #include "AutoAnalog_config.h"
 
+
+#define AAA_CHANNEL0 0
+#define AAA_CHANNEL1 1
+#define AAA_MODE_STEREO 2
+
 class AutoAnalog
 {
     
@@ -60,9 +65,10 @@ public:
   
   /** Feed the current PCM/WAV data into the DAC for playback 
    * 
+   * @param dacChannel 0 for DAC0, 1 for DAC1, 2 for alternating DAC0/DAC1
    * @param samples The number of samples to send to the DAC
    */
-  void feedDAC(uint32_t samples = MAX_BUFFER_SIZE);                              
+  void feedDAC(uint8_t dacChannel = 0, uint32_t samples = MAX_BUFFER_SIZE);                              
 
   /** DAC data buffer for 8-bit samples 
    *
@@ -139,11 +145,13 @@ private:
    */
   /**@{*/
   
-  bool whichDma = 0;  
+  bool whichDma = 0;
+  bool whichDac;
+  bool dacChan;
   
   uint8_t aCtr = 0;                    /* Internal counter for ADC data */
-  
-  uint16_t realBuf[MAX_BUFFER_SIZE];   /* Internal DAC buffer */
+  uint16_t realBuf[2][MAX_BUFFER_SIZE];   /* Internal DAC buffer */
+  uint32_t realBuf2[2][MAX_BUFFER_SIZE];  /* Internal DAC buffer */
   uint16_t adcDma[2][MAX_BUFFER_SIZE]; /* Buffers for ADC DMA transfers */  
   uint16_t dataReady;                  /* Internal indicator for DAC data */ 
   
@@ -156,9 +164,12 @@ private:
   uint32_t adcNumSamples;
   uint16_t adjustCtr;                  /* Internal variables for adjusting timers on-the-fly */
   uint16_t adjustCtr2;                 /* Internal variables for adjusting timers on-the-fly */
+  uint32_t adcLastAdjust;
 
   void adcSetup(void);                 /* Enable the ADC */
   void dacSetup(void);                 /* Enable the DAC */
+  
+  void dacBufferStereo(uint8_t dacChannel);
   
   void tcSetup(uint32_t sampRate = 0);      /* Sets up Timer TC0 Channel 0 */  
   void tc2Setup(uint32_t sampRate = 0);     /* Sets up Timer TC0 Channel 1 */
@@ -185,7 +196,50 @@ private:
 * 4. Incoming radio data can be directly re-broadcast, but this example is a test of all peripherals
 *
 */
+
+/**
+ * @example myRadio.h
+ * <b>For Arduino Due</b><br>
+ *
+ * * Include file for nrf24l01+ radios:
+ * 
+ * Contains the settings and config used for the radio examples
+ */
+
+/**
+ * @example SimpleSine.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Simple Sine Wave Generation Example:
+ *
+ *  This example demonstrates simple generation of a sine wave & optionally broadcasting
+ *  the audio via radio
+ *
+ *  Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
+ */
+
+/**
+ * @example SimpleSine12Bit.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Simple Sine Wave Generation Example:
+ *
+ *  This example demonstrates simple generation of a 12-bit sine wave
+ *
+ *  Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
+ */ 
  
+ /**
+ * @example WirelessSpeaker.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Simple Wireless Speaker:
+ *
+ *  Demonstration of a single wireless speaker/wireless audio
+ *
+ *  The incoming audio format is 16bit mono <br>
+ *  NRF24L01+ radios can support around 16-44khz sample rate w/16-bit samples, 88khz+ with 8-bit samples
+ */ 
  
  /**
  * @mainpage Automatic Analog Audio Library for Arduino Due (ARM SAM3X)
@@ -201,11 +255,12 @@ private:
  * - Designed with low-latency radio/wireless communication in mind
  * - Very simple user interface to Arduino DUE DAC and ADC
  * - PCM/WAV Audio/Analog Data playback using Arduino Due DAC
- * - PCM/WAV Audio/Analog Data recording using Arduino Due DAC
+ * - PCM/WAV Audio/Analog Data recording using Arduino Due ADC
  * - Onboard timers drive the DAC & ADC automatically
  * - Automatic sample rate/timer adjustment based on rate of user-driven data requests/input
  * - Uses DMA (Direct Memory Access) to buffer DAC & ADC data
  * - ADC & DAC: 8, 10 or 12-bit sampling
+ * - Single channel or stereo output
  * 
 
  *

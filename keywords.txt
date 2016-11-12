@@ -3,8 +3,6 @@ AutoAnalog	KEYWORD1
 
 begin	KEYWORD2
 
-triggerADC	KEYWORD2
-
 getADC	KEYWORD2
 
 feedDAC	KEYWORD2
@@ -16,5 +14,9 @@ adcBuffer	KEYWORD2
 setSampleRate	KEYWORD2
 
 dacHandler	KEYWORD2
-  
-  
+
+dacBuffer16	KEYWORD2
+adcBuffer16	KEYWORD2
+autoAdjust	KEYWORD2
+dacBitsPerSample	KEYWORD2
+adcBitsPerSample	KEYWORD2
