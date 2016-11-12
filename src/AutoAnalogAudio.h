@@ -241,6 +241,29 @@ private:
  *  NRF24L01+ radios can support around 16-44khz sample rate w/16-bit samples, 88khz+ with 8-bit samples
  */ 
  
+  /**
+ * @example WirelessMicrophone.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Simple Wireless Microphone:
+ *
+ *  Demonstration of a single wireless microphone/recording via ADC
+ *
+ *  The outgoing audio format is 8bit, mono, 16khz <br>
+ *  NRF24L01+ radios can support around 16-44khz sample rate w/12-bit samples, 88khz+ with 8-bit samples
+ */ 
+ 
+ /**
+ * @example SimpleAdcStream.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Simple ADC capturing Example:
+ *
+ *  This example demonstrates how to capture a steady stream of ADC data
+ *
+ *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks
+ */ 
+ 
  /**
  * @mainpage Automatic Analog Audio Library for Arduino Due (ARM SAM3X)
  *

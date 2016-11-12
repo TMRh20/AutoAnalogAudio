@@ -93,22 +93,18 @@ void AutoAnalog::getADC(uint32_t samples){
       ++adjustCtr2;
       if(adjustCtr2 > 2){ adjustCtr2 = 0;}
 
-      if( tt->TC_RC >= t->TC_RC - 25 ){
+      if( tt->TC_RC >= t->TC_RC - 25 && adjustCtr2 == 0){
          tcTicks2--;
-         tt->TC_RA = tcTicks2/2;
-         tt->TC_RC = tcTicks2;
-      }
+         tc2Setup();
+      }else
       if( (ADC->ADC_RNCR > 0 || ADC->ADC_RCR > 0 ) ){
         tcTicks2-=10;
-        tt->TC_RA = tcTicks2/2;
-        tt->TC_RC = tcTicks2;
-        //tc2Setup();
+        tc2Setup();
       }else
       if( (ADC->ADC_RNCR == 0 && ADC->ADC_RCR == 0 ) && millis() - adcLastAdjust > 500 && tt->TC_RC < t->TC_RC - 35){
         adcLastAdjust = millis();
         tcTicks2++;
-        tt->TC_RA = tcTicks2/2;
-        tt->TC_RC = tcTicks2;
+        tc2Setup();
       }
     }
         
@@ -150,12 +146,9 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples){
     ++adjustCtr;
     if(adjustCtr > 200){ adjustCtr = 0;}
 
-    if( (DACC->DACC_TCR > 5 || DACC->DACC_TNCR > 5) && adjustCtr == 0){
-        if(t->TC_CV < t->TC_RA){
+    if( (DACC->DACC_TCR > 0 || DACC->DACC_TNCR > 0) && adjustCtr < 25){
           tcTicks-=5;
-          t->TC_RA = tcTicks/2;
-          t->TC_RC = tcTicks;
-        }
+          tcSetup();
     }
   }
   
@@ -292,8 +285,7 @@ void AutoAnalog::dacHandler(void){
       if(autoAdjust && adjustCtr == 0){
         TcChannel * t = &TC0->TC_CHANNEL[0];
         tcTicks+=1;
-        t->TC_RC = tcTicks;
-        t->TC_RA = tcTicks/2; 
+        tcSetup();
       }        
     }
    }
