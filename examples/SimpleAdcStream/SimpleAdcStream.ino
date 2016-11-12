@@ -30,21 +30,14 @@
   http://github.com/TMRh20
   http://tmrh20.blogspot.com
 
-  Audio Relay & Peripheral Test Example:
-  This example demonstrates how to manage incoming and outgoing audio streams using
-  the AAAudio library and nrf24l01+ radio modules on Arduino Due.
+  Simple ADC Sampling
 
-  1. This example uses the onboard ADC to sample audio/analog data via pin A0
-  2. The data is then sent via radio to another device
-  3. Audio is captured in 8-bit,mono,16khz. 
-  
-  Library supports 8,10,12-bit sampling at various sample rates.
-
+  Sample the ADC in chunks of 32-bytes at a defined sample rate
+  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks
 */
 
 
 #include <AutoAnalogAudio.h>
-#include "myRadio.h"
 
 AutoAnalog aaAudio;
 
@@ -52,39 +45,44 @@ AutoAnalog aaAudio;
 
 void setup() {
 
+  pinMode(A3,OUTPUT);
+  digitalWrite(A3,HIGH);
+
   Serial.begin(115200);
   Serial.println("Analog Audio Begin");
 
-  aaAudio.begin(1,0);  //Setup aaAudio using ADC only
-  aaAudio.autoAdjust = 0;
-  aaAudio.adcBitsPerSample = 8;
-  aaAudio.setSampleRate(16050);
-  setupRadio();
+  aaAudio.begin(1,0);               //Setup aaAudio using ADC only
+  aaAudio.autoAdjust = 0;           //Disable auto adjust of timers
+  aaAudio.adcBitsPerSample = 12;    //Sample at 12-bits
+  aaAudio.setSampleRate(32);        //Get 32 samples every second
+
+  //Start loading ADC buffers
+  aaAudio.getADC();  
 }
 
 /*********************************************************/
 
-uint32_t dispTimer = 0;
-uint8_t channelSelection = 0;
-
 void loop() {
 
-  //Display the timer period variable for each channel every 3 seconds
-  if (millis() - dispTimer > 3000) {
-    dispTimer = millis();
+  // Get 32 samples from the ADC at the sample rate defined above
+  // Note: This function only blocks if the ADC is currently sampling and autoAdjust is set to 0
+  // As long as any additional code completes before the ADC is finished sampling, a continuous stream of ADC data
+  // at the defined sample rate will be available 
+  aaAudio.getADC();
 
-    TcChannel * t = &(TC0->TC_CHANNEL)[0];
-    TcChannel * tt = &(TC0->TC_CHANNEL)[1];
-
-    Serial.print("Ch0:");
-    Serial.println(t->TC_RC);
-    Serial.print("Ch1:");
-    Serial.println(tt->TC_RC);
+  // Sum all the samples into a float
+  float allSamples = 0.0;
+  for(int i=0; i<32; i++){
+    allSamples += aaAudio.adcBuffer16[i];    
   }
 
-  // With autoAdjust disabled, getADC() will block until the ADC data is ready
-  aaAudio.getADC();
-  radio.writeFast(&aaAudio.adcBuffer,32);
+  // Divide the total by the number of samples
+  allSamples /= 32.0;  
+
+  // This will print every second at a sample rate of 32 samples/second
+  Serial.print("Samples Total Value / Number of Samples == ");
+  Serial.println(allSamples);  
+
 }
 
 /*********************************************************/

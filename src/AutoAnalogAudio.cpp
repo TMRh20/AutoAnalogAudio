@@ -113,7 +113,7 @@ void AutoAnalog::getADC(uint32_t samples){
     }
         
     if(!autoAdjust){
-      while(ADC->ADC_RNCR > 0 && ADC->ADC_RCR > 0 ){;}
+      while(ADC->ADC_RNCR > 0 || ADC->ADC_RCR > 0 ){;}
     }  
     whichDma = !whichDma;
     ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];
