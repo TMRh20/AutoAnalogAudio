@@ -132,6 +132,21 @@ public:
    **/
   uint8_t dacBitsPerSample;
   
+  /**
+   * Enable reads from the specified channel (pins A0-A6)
+   *
+   * Active ADC Channels will be read in numeric order, high to low
+   *
+   * @note Specify pins numerically: 0=A0, 1=A1, etc...
+   */
+  void enableAdcChannel(uint8_t pinAx);
+
+  /**
+   * Disable reads from the specified channel (pins A0-A6)
+   * @note Specify pins numerically: 0=A0, 1=A1, etc...
+   */
+  void disableAdcChannel(uint8_t pinAx);
+  
   /**@}*/
   
 private:
@@ -264,6 +279,18 @@ private:
  *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks
  */ 
  
+  /**
+ * @example MultiChannelAdcStream.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Multi Channel ADC Sampling Example:
+ *
+ *  This example demonstrates how to capture a steady stream of ADC data on
+ *  multiple channels. Currently pins A0-A6 are supported.
+ *
+ *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks of data
+ */ 
+ 
  /**
  * @mainpage Automatic Analog Audio Library for Arduino Due (ARM SAM3X)
  *
@@ -284,6 +311,7 @@ private:
  * - Uses DMA (Direct Memory Access) to buffer DAC & ADC data
  * - ADC & DAC: 8, 10 or 12-bit sampling
  * - Single channel or stereo output
+ * - Multi-channel ADC sampling
  * 
 
  *

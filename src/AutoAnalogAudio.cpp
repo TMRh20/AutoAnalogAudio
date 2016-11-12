@@ -81,6 +81,26 @@ void AutoAnalog::triggerADC(){
 
 /****************************************************************************/
 
+void AutoAnalog::enableAdcChannel(uint8_t pinAx){
+    
+    if(pinAx > 6){ return; }
+    pinAx = 7 - pinAx;    
+    ADC->ADC_CHER |= 1<< pinAx;
+
+}
+
+/****************************************************************************/
+
+void AutoAnalog::disableAdcChannel(uint8_t pinAx){
+    
+    if(pinAx > 6){ return; }
+    pinAx = 7 - pinAx;    
+    ADC->ADC_CHDR |= 1<< pinAx;
+
+}
+
+/****************************************************************************/
+
 void AutoAnalog::getADC(uint32_t samples){
   
   
@@ -208,7 +228,7 @@ void AutoAnalog::adcSetup(void){
     ADC->ADC_CGR = 0x15555555 ;   // All gains set to x1
     ADC->ADC_COR = 0x00000000 ;   // All offsets off
       
-    ADC->ADC_MR = (ADC->ADC_MR & 0xFF00FF00) | 1 << 2 | ADC_MR_TRGEN;//& ~ADC_MR_SLEEP & ~ADC_MR_FWUP // 1 = trig source TIO from TC0
+    ADC->ADC_MR = (ADC->ADC_MR & 0x0F00FF00) | 1 << 2 | ADC_MR_TRGEN;//& ~ADC_MR_SLEEP & ~ADC_MR_FWUP // 1 = trig source TIO from TC0
     //ADC->ADC_MR = (ADC->ADC_MR & 0xFF00FF00);
     //ADC->ADC_MR |= ADC_MR_LOWRES;
     //MR Prescalar = 255     ADCClock == 84mhz / ( (256) * 2) == ?? MIN is 1Mhz
@@ -216,7 +236,7 @@ void AutoAnalog::adcSetup(void){
     //ADC->ADC_MR |= 3 << 20; //Settling time, full is 17ADC Clocks, 411,764.7hz, 9 is 179487.2, 5
     //ADC->ADC_MR |= 1; //51470.6hz
     
-    ADC->ADC_PTCR=1;    
+    ADC->ADC_PTCR=ADC_PTCR_RXTEN;    
 }
   
 /****************************************************************************/
