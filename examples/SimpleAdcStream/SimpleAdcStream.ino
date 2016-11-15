@@ -57,7 +57,7 @@ void setup() {
   aaAudio.setSampleRate(32);        //Get 32 samples every second
 
   //Start loading ADC buffers
-  aaAudio.getADC();  
+  aaAudio.getADC(32);  
 }
 
 /*********************************************************/
@@ -68,7 +68,7 @@ void loop() {
   // Note: This function only blocks if the ADC is currently sampling and autoAdjust is set to 0
   // As long as any additional code completes before the ADC is finished sampling, a continuous stream of ADC data
   // at the defined sample rate will be available 
-  aaAudio.getADC();
+  aaAudio.getADC(32);
 
   // Sum all the samples into a float
   float allSamples = 0.0;

@@ -20,3 +20,6 @@ adcBuffer16	KEYWORD2
 autoAdjust	KEYWORD2
 dacBitsPerSample	KEYWORD2
 adcBitsPerSample	KEYWORD2
+enableAdcChannel	KEYWORD2
+disableAdcChanel	KEYWORD2
+disableDAC	KEYWORD2

@@ -147,6 +147,11 @@ public:
    */
   void disableAdcChannel(uint8_t pinAx);
   
+  /**
+   * Disable the DAC
+   */
+  void disableDAC(){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);}  
+  
   /**@}*/
   
 private:
@@ -165,9 +170,8 @@ private:
   bool dacChan;
   
   uint8_t aCtr = 0;                    /* Internal counter for ADC data */
-  uint16_t realBuf[2][MAX_BUFFER_SIZE];   /* Internal DAC buffer */
-  uint32_t realBuf2[2][MAX_BUFFER_SIZE];  /* Internal DAC buffer */
-  uint16_t adcDma[2][MAX_BUFFER_SIZE]; /* Buffers for ADC DMA transfers */  
+  uint16_t realBuf[MAX_BUFFER_SIZE];   /* Internal DAC buffer */
+  uint16_t adcDma[MAX_BUFFER_SIZE]; /* Buffers for ADC DMA transfers */  
   uint16_t dataReady;                  /* Internal indicator for DAC data */ 
   
   uint32_t dataTimer;                  /* Internal timer tracks timing of incoming data */

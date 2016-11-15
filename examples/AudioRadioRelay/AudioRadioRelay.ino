@@ -103,8 +103,8 @@ void RX(){
       radio.stopListening();                // Prepare to send data out via radio
       radio.read(&aaAudio.dacBuffer,32);    // Read the available radio data   
       
-      aaAudio.feedDAC();                    // Feed the DAC with the received data      
-      aaAudio.getADC();                     // Grab the available data from the ADC
+      aaAudio.feedDAC(0,32);                    // Feed the DAC with the received data      
+      aaAudio.getADC(32);                     // Grab the available data from the ADC
 
       //Send the received ADC data via radio      
       radio.startFastWrite(&aaAudio.adcBuffer,32,1);

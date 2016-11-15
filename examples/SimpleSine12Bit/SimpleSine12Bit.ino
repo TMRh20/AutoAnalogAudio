@@ -55,7 +55,7 @@ void loop() {
   //AutoAdjust is disabled above, so this function will block until the DAC is ready for more data
   //All other processing needs to be completed before the DAC is out of data
   //In this example, the DAC is being fed data in chunks of 32 bytes or 32 8-bit samples
-  aaAudio.feedDAC();
+  aaAudio.feedDAC(0,32);
 
   //Choose between two different frequencies via Serial command
   //Adjust the volume by sending a '+' or '-' over Serial

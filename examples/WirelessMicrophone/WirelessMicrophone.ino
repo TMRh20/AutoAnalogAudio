@@ -83,7 +83,7 @@ void loop() {
   }
 
   // With autoAdjust disabled, getADC() will block until the ADC data is ready
-  aaAudio.getADC();
+  aaAudio.getADC(32);
   radio.writeFast(&aaAudio.adcBuffer,32);
 }
 

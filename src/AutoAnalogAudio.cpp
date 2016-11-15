@@ -46,7 +46,10 @@ AutoAnalog::AutoAnalog(){
   dacBitsPerSample = 8;
   autoAdjust = true;
   adcLastAdjust = 0;
-  
+  for(int i=0; i<MAX_BUFFER_SIZE; i++){
+      dacBuffer[i] = 0;
+  }
+  adcNumSamples = 0;
 }
 
 void AutoAnalog::begin(bool enADC, bool enDAC){
@@ -131,22 +134,22 @@ void AutoAnalog::getADC(uint32_t samples){
     if(!autoAdjust){
       while(ADC->ADC_RNCR > 0 || ADC->ADC_RCR > 0 ){;}
     }  
-    whichDma = !whichDma;
-    ADC->ADC_RNPR=(uint32_t) adcDma[whichDma];
-    ADC->ADC_RNCR=samples;    
-    
-    
     
     for(int i=0; i<adcNumSamples; i++){
       if(adcBitsPerSample == 8){
-        adcBuffer[i] = adcDma[!whichDma][i]>>4;
+        adcBuffer[i] = adcDma[i]>>4;
       }else
       if(adcBitsPerSample == 10){
-        adcBuffer16[i] = adcDma[!whichDma][i]>>2;  
+        adcBuffer16[i] = adcDma[i]>>2;  
       }else{
-        adcBuffer16[i] = adcDma[!whichDma][i];    
+        adcBuffer16[i] = adcDma[i];    
       }
-    }
+    }    
+
+    whichDma = !whichDma;
+    ADC->ADC_RNPR=(uint32_t) adcDma;
+    ADC->ADC_RNCR=samples;   
+    
     adcNumSamples = samples;
 }
 
@@ -173,25 +176,25 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples){
   }
   
   if(!autoAdjust){
-    while((dacc_get_interrupt_status(DACC) & DACC_ISR_ENDTX) != DACC_ISR_ENDTX ){;} 
+    while((dacc_get_interrupt_status(DACC) & DACC_ISR_ENDTX) != DACC_ISR_ENDTX ){;}
   }
   
-    //dacc_set_transfer_mode(DACC, 0); //Half word mode
   for(int i=0; i<samples; i++){
     if(dacBitsPerSample == 12){
-      realBuf[whichDac][i] = dacBuffer16[i];  
+      realBuf[i] = dacBuffer16[i];  
     }else
     if(dacBitsPerSample == 10){
-      realBuf[whichDac][i] = dacBuffer16[i] << 2;   
+      realBuf[i] = dacBuffer16[i] << 2;   
     }else{
-      realBuf[whichDac][i] = dacBuffer[i] << 4;  
+      realBuf[i] = dacBuffer[i] << 4;  
     }
     if(dacChannel == 2){
       dacChan = !dacChan;      
     }else{
       dacChan = dacChannel;
     }
-    realBuf[whichDac][i] |= dacChan << 12;
+
+    realBuf[i] = (realBuf[i]& ~0x3000) | dacChan << 12;
   }
   
   dacNumSamples = samples;
@@ -288,11 +291,11 @@ void AutoAnalog::dacHandler(void){
     if(dataReady < 1){
     
       if(whichDac){
-       DACC->DACC_TPR = (uint32_t)realBuf[whichDac];      
+       DACC->DACC_TPR = (uint32_t)realBuf;      
        DACC->DACC_TCR = dacNumSamples;
        DACC->DACC_PTCR = DACC_PTCR_TXTEN;
       }else{
-       DACC->DACC_TNPR = (uint32_t)realBuf[whichDac];      
+       DACC->DACC_TNPR = (uint32_t)realBuf;      
        DACC->DACC_TNCR = dacNumSamples;
        DACC->DACC_PTCR = DACC_PTCR_TXTEN; 
       }
@@ -335,11 +338,6 @@ void AutoAnalog::tcSetup (uint32_t sampRate){
   t->TC_CMR = (t->TC_CMR & 0xFFF0FFFF) | TC_CMR_ACPA_CLEAR | TC_CMR_ACPC_SET;
   t->TC_CCR = TC_CCR_CLKEN | TC_CCR_SWTRG;
   
- // TC0->IER0=0b00010000; // enable interrupt on counter=rc
- // TC0->IDR0=0b11101111
-  //NVIC_EnableIRQ(TC0_IRQn); // enable TC0 interrupts  
-
-  
 }
 
 /****************************************************************************/
@@ -365,10 +363,6 @@ void AutoAnalog::tc2Setup (uint32_t sampRate)
   tt->TC_CMR = (tt->TC_CMR & 0xFFF0FFFF) | TC_CMR_ACPA_CLEAR | TC_CMR_ACPC_SET; 
   tt->TC_CCR = TC_CCR_CLKEN | TC_CCR_SWTRG; 
   
-  //tt->TC_IER=TC_IER_CPCS;
-  //tt->TC_IDR=~TC_IER_CPCS;
-  //NVIC_EnableIRQ(TC1_IRQn);
-
 }
 
 /****************************************************************************/

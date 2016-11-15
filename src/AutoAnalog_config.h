@@ -18,7 +18,7 @@
     
     #include <Arduino.h>
     
-    #define MAX_BUFFER_SIZE 32
+    #define MAX_BUFFER_SIZE 256
     
     #define DEFAULT_FREQUENCY 16000
     
