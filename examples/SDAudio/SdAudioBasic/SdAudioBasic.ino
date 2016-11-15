@@ -87,7 +87,7 @@ void playAudio(char *audioFile){
   
   //Skip past the WAV header
   myFile.seek(44);
-  pplay();
+  loadBuffer();
   
 }
 
