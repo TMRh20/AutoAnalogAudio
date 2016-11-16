@@ -241,6 +241,17 @@ void AutoAnalog::adcSetup(void){
     
     ADC->ADC_PTCR=ADC_PTCR_RXTEN;    
 }
+
+/****************************************************************************/
+
+void AutoAnalog::adcInterupts(bool enabled){
+  NVIC_DisableIRQ(ADC_IRQn);
+  if(enabled){    
+    NVIC_ClearPendingIRQ(ADC_IRQn);
+    NVIC_EnableIRQ(ADC_IRQn);
+    adc_enable_interrupt(ADC,ADC_IER_ENDRX);
+  }
+}
   
 /****************************************************************************/
   

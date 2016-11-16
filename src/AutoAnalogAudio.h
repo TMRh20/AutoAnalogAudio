@@ -152,6 +152,18 @@ public:
    */
   void disableDAC(){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);}  
   
+  /**
+   * En/Disable the interrupt for the ADC
+   * 
+   * If enabled, the following function needs to be added:
+   * @code
+   * void ADC_Handler(void){
+   *  -code here-    
+   * }
+   * @endcode
+   */
+  void adcInterupts(bool enabled = true);
+  
   /**@}*/
   
 private:
@@ -283,7 +295,7 @@ private:
  *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks
  */ 
  
-  /**
+/**
  * @example MultiChannelAdcStream.ino
  * <b>For Arduino Due</b><br>
  *
@@ -293,7 +305,47 @@ private:
  *  multiple channels. Currently pins A0-A6 are supported.
  *
  *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks of data
- */ 
+ */
+ 
+/**
+ * @example SDAudioBasic.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Basic SDAudio Example:
+ *
+ *  This example demonstrates how to play *.wav files from SD Card.
+ *
+ */
+ 
+/**
+ * @example SDAudioAuto.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Auto SDAudio Example:
+ *
+ *  This example demonstrates how to play *.wav files from SD Card using interrupts.
+ *
+ */
+
+/**
+ * @example SDAudioWavPlayer.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Wav Player SDAudio Example:
+ *
+ *  This example demonstrates a simple *.wav player with a few features
+ *
+ */
+ 
+/**
+ * @example SDAudioRecording.ino
+ * <b>For Arduino Due</b><br>
+ *
+ * * Wav Recording SDAudio Example:
+ *
+ *  This example demonstrates recording standard format *.wav files
+ *  for playback on any PC or audio device.
+ */
  
  /**
  * @mainpage Automatic Analog Audio Library for Arduino Due (ARM SAM3X)
