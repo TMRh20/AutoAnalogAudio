@@ -162,7 +162,7 @@ public:
    * }
    * @endcode
    */
-  void adcInterupts(bool enabled = true);
+  void adcInterrupts(bool enabled = true);
   
   /**@}*/
   

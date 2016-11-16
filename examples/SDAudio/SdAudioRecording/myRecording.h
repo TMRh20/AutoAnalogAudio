@@ -42,7 +42,7 @@ void startRecording(const char *fileName, uint32_t sampleRate){
   #endif
 
   if(recFile){
-    aaAudio.adcInterupts(false);
+    aaAudio.adcInterrupts(false);
     recFile.close();
   }
   if (myFile) {                                   //Close any open playback files & disable the DAC
@@ -68,7 +68,7 @@ void startRecording(const char *fileName, uint32_t sampleRate){
 
   aaAudio.getADC();
   aaAudio.getADC();
-  aaAudio.adcInterupts(true);
+  aaAudio.adcInterrupts(true);
   
   
 }
@@ -122,7 +122,7 @@ void createWavHeader(const char *fileName, uint32_t sampleRate ){
 
 void stopRecording(const char *fileName, uint32_t sampleRate){
 
-  aaAudio.adcInterupts(false);                        //Disable the ADC interrupt
+  aaAudio.adcInterrupts(false);                        //Disable the ADC interrupt
   recFile.close();                                         //Close the file
   createWavHeader(fileName,sampleRate);                    //Add appropriate header info, to make it a valid *.wav file
   #if defined (RECORD_DEBUG)

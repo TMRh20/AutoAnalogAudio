@@ -244,7 +244,7 @@ void AutoAnalog::adcSetup(void){
 
 /****************************************************************************/
 
-void AutoAnalog::adcInterupts(bool enabled){
+void AutoAnalog::adcInterrupts(bool enabled){
   NVIC_DisableIRQ(ADC_IRQn);
   if(enabled){    
     NVIC_ClearPendingIRQ(ADC_IRQn);
