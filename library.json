@@ -16,5 +16,9 @@
   },
   "version": "1.2",
   "frameworks": "arduino",
-  "platforms": "atmelsam"
+  "platforms": 
+  [
+    "atmelavr",
+    "atmelsam"
+  ]
 }

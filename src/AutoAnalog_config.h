@@ -17,8 +17,18 @@
     */
     
     #include <Arduino.h>
-    
+
+  #if defined  (ARDUINO_ARCH_SAM)
+  
     #define MAX_BUFFER_SIZE 256
-    
+  
+  #else    
+  
+    #define MAX_BUFFER_SIZE 32
+    #define DAC0_PIN 9
+    #define DAC1_PIN 10
+  
+  #endif
+  
     #define DEFAULT_FREQUENCY 16000
     

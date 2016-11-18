@@ -23,3 +23,4 @@ adcBitsPerSample	KEYWORD2
 enableAdcChannel	KEYWORD2
 disableAdcChanel	KEYWORD2
 disableDAC	KEYWORD2
+adcInterrupts	KEYWORD2

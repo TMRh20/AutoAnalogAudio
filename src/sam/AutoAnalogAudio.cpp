@@ -18,7 +18,9 @@
     
 /****************************************************************************/
 
-#include "AutoAnalogAudio.h"
+#if defined (ARDUINO_ARCH_SAM)
+
+#include "../AutoAnalogAudio.h"
 
 //#include "AutoDAC.h"
 //#include "AudoADC.h"
@@ -214,7 +216,7 @@ void AutoAnalog::dacBufferStereo(uint8_t dacChannel){
 
 /****************************************************************************/
 
-int AutoAnalog::frequencyToTimerCount(int frequency){
+uint32_t AutoAnalog::frequencyToTimerCount(uint32_t frequency){
   return VARIANT_MCK / 2UL / frequency;
 }
 
@@ -377,3 +379,7 @@ void AutoAnalog::tc2Setup (uint32_t sampRate)
 }
 
 /****************************************************************************/
+
+
+
+#endif //#if defined (ARDUINO_ARCH_SAM)

@@ -26,7 +26,6 @@
 
 #include "AutoAnalog_config.h"
 
-
 #define AAA_CHANNEL0 0
 #define AAA_CHANNEL1 1
 #define AAA_MODE_STEREO 2
@@ -45,7 +44,7 @@ public:
 
   AutoAnalog();
 
-  /** Setup the timers */ 
+  /** Setup the timer(s) */ 
   void begin(bool enADC, bool enDAC);          
   
   /**
@@ -150,8 +149,11 @@ public:
   /**
    * Disable the DAC
    */
+  #if defined (ARDUINO_ARCH_SAM) 
   void disableDAC(){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);}  
-  
+  #else
+  void disableDAC(){}    
+  #endif
   /**
    * En/Disable the interrupt for the ADC
    * 
@@ -176,7 +178,7 @@ private:
    *  may want to extend this class.
    */
   /**@{*/
-  
+#if defined (ARDUINO_ARCH_SAM)  
   bool whichDma = 0;
   bool whichDac;
   bool dacChan;
@@ -191,12 +193,13 @@ private:
   uint32_t tcTicks;                    /* Stores the current TC0 Ch0 counter value */
   uint32_t tcTicks2;                   /* Stores the current TC0 Ch1 counter value */
   uint32_t adjustDivider;              /* Internal variables for adjusting timers on-the-fly */
+
   uint32_t dacNumSamples;              /* Internal variable for number of samples sent to the DAC */
   uint32_t adcNumSamples;
   uint16_t adjustCtr;                  /* Internal variables for adjusting timers on-the-fly */
   uint16_t adjustCtr2;                 /* Internal variables for adjusting timers on-the-fly */
   uint32_t adcLastAdjust;
-
+#endif
   void adcSetup(void);                 /* Enable the ADC */
   void dacSetup(void);                 /* Enable the DAC */
   
@@ -205,7 +208,7 @@ private:
   void tcSetup(uint32_t sampRate = 0);      /* Sets up Timer TC0 Channel 0 */  
   void tc2Setup(uint32_t sampRate = 0);     /* Sets up Timer TC0 Channel 1 */
 
-  int frequencyToTimerCount(int Frequency); /* Function to calculate timer counters */
+  uint32_t frequencyToTimerCount(uint32_t Frequency); /* Function to calculate timer counters */
 
   /**@}*/
 };
@@ -348,7 +351,7 @@ private:
  */
  
  /**
- * @mainpage Automatic Analog Audio Library for Arduino Due (ARM SAM3X)
+ * @mainpage Automatic Analog Audio Library for Arduino
  *
  * @section LibInfo Auto Analog Audio (Automatic DAC, ADC & Timer) library
  * 
@@ -358,6 +361,7 @@ private:
  *
  *
  * **Features:**
+ * - Now supports AVR devices (Arduino Uno,Nano,Mega,etc)
  * - Designed with low-latency radio/wireless communication in mind
  * - Very simple user interface to Arduino DUE DAC and ADC
  * - PCM/WAV Audio/Analog Data playback using Arduino Due DAC
@@ -369,7 +373,7 @@ private:
  * - Single channel or stereo output
  * - Multi-channel ADC sampling
  * 
-
+ *
  *
  * The library internally configures timing based on user driven data requests or delivery, making data available or processing 
  * it at the appropriate speed without delays or while() loops.
