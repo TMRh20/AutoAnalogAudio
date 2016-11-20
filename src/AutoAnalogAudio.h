@@ -149,11 +149,8 @@ public:
   /**
    * Disable the DAC
    */
-  #if defined (ARDUINO_ARCH_SAM) 
-  void disableDAC(){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);}  
-  #else
-  void disableDAC(){}    
-  #endif
+  void disableDAC();
+  
   /**
    * En/Disable the interrupt for the ADC
    * 

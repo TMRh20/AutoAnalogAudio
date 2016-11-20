@@ -40,6 +40,8 @@
   uint16_t sampleCount = 0;                /* Internal counter for delaying analysis of timing */
   uint16_t tcTicks = 1000;                    /* Stores the current TC0 Ch0 counter value */
   uint16_t tcTicks2;                   /* Stores the current TC0 Ch1 counter value */  
+  bool dacChan = 0;
+  uint8_t defaultShift = 0;
 #endif //ARDUINO_ARCH_SAM
 
 /****************************************************************************/
@@ -48,6 +50,9 @@
 
 AutoAnalog::AutoAnalog(){
     
+  for(int i=0; i<MAX_BUFFER_SIZE; i++){
+    realBuf[i] = 0;
+  }
   adcBitsPerSample = 8;
   dacBitsPerSample = 8;
   autoAdjust = true;
@@ -77,18 +82,27 @@ void AutoAnalog::setSampleRate(uint32_t sampRate){
     ICR1 = tcTicks;
     OCR1A = tcTicks/2;
     OCR1B = tcTicks/2;
+    
+    //Based on the frequency chosen, figure out how many bits of precision are being used for the timer PWM
+    //Allows to shift 8-bit samples when the timer is running at >=10-bit pwm
+    uint16_t ticks = tcTicks;
+    uint8_t ctr = 0;
+    
+    while(ticks){
+        ticks >>= 1;
+        ctr++;
+    }
+    if(ticks >= 10){
+      defaultShift = ticks - 10;
+    }else{
+      defaultShift = 0;
+    }
   }
   
 }
 
 /****************************************************************************/
-
-void AutoAnalog::triggerADC(){
-    
-
-  
-}
-
+void AutoAnalog::triggerADC(){}
 /****************************************************************************/
 
 void AutoAnalog::enableAdcChannel(uint8_t pinAx){
@@ -133,13 +147,16 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples){
     
     if(dacBitsPerSample == 8){    
       for(uint16_t i=0; i<samples; i++){
-        realBuf[i] = dacBuffer[i]; 
+        realBuf[i] = dacBuffer[i] << (defaultShift+2); 
       }    
-    }else{    
-      memcpy(&realBuf,&dacBuffer16,samples);  
+    }else{
+      for(uint16_t i=0; i<samples; i++){
+        realBuf[i] = dacBuffer16[i] << defaultShift; 
+      } 
     }
     
     noInterrupts();
+    dacChan = dacChannel;
     dacSampleCounter = 0;
     dacNumSamples = samples;
     interrupts();
@@ -149,14 +166,6 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples){
 
 /****************************************************************************/
 /* Private Functions */
-/****************************************************************************/
-
-void AutoAnalog::dacBufferStereo(uint8_t dacChannel){
-
-
-
-}
-
 /****************************************************************************/
 
 uint32_t AutoAnalog::frequencyToTimerCount(uint32_t frequency){
@@ -191,16 +200,32 @@ ISR(ADC_vect){
     if(adcSampleCounter < adcNumSamples){
         adcDma[adcSampleCounter] = ADCH;
         ++adcSampleCounter;
+    }    
+}
+
+/****************************************************************************/
+extern void DACC_Handler();
+/****************************************************************************/
+
+ISR(TIMER1_OVF_vect){
+    
+    DACC_Handler();
+    
+    if(dacSampleCounter < dacNumSamples){
+        if(dacChan == 2){
+            OCR1A = OCR1B = realBuf[dacSampleCounter];
+        }else
+        if(dacChan){
+            OCR1B = realBuf[dacSampleCounter];
+        }else{
+            OCR1A = realBuf[dacSampleCounter];
+        }        
+        ++dacSampleCounter;
     }
     
 }
 
-ISR(TIMER1_OVF_vect){
-    if(dacSampleCounter < dacNumSamples){
-        OCR1A = OCR1B = realBuf[dacSampleCounter];
-        ++dacSampleCounter;
-    }
-}
+/****************************************************************************/
 
 void AutoAnalog::adcSetup(void){
     
@@ -209,11 +234,7 @@ void AutoAnalog::adcSetup(void){
     ADMUX |= _BV(ADLAR);                           //Left adjust result for 8-bit
     
     TIMSK1 |= _BV(TOIE1);
-    ADCSRA |= _BV(ADIE);
-
-    Serial.println(ADCSRA,BIN);
-    Serial.println(ADCSRB,BIN);
-    Serial.println(ADMUX,BIN);    
+    ADCSRA |= _BV(ADIE);  
 }
 
 /****************************************************************************/
@@ -238,6 +259,10 @@ void AutoAnalog::dacSetup(void){
 
 /****************************************************************************/
 
+void AutoAnalog::disableDAC(){ TIMSK1 |= _BV(TOIE1); } 
+
+/****************************************************************************/
+
 void AutoAnalog::dacHandler(void){}
 
 /****************************************************************************/
@@ -245,10 +270,10 @@ void AutoAnalog::dacHandler(void){}
 void AutoAnalog::tcSetup (uint32_t sampRate){
   
   TCCR1A = _BV(WGM11) | _BV(COM1A1) | _BV(COM1B0) | _BV(COM1B1); // Set WGM mode, opposite action for output mode
-  TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS11); // Set WGM mode & no prescaling
+  TCCR1B = _BV(WGM13) | _BV(WGM12) | _BV(CS10); // Set WGM mode & no prescaling
           
-  ICR1 = 30000;//F_CPU / UL;     // Default 16Khz with 16Mhz CPU
-  OCR1A = 15000;
+  ICR1 = 1000;    // Default 16Khz with 16Mhz CPU
+  OCR1A = 250;    // Default 25%/75% duty cycle
   
 }
 
@@ -257,5 +282,7 @@ void AutoAnalog::tcSetup (uint32_t sampRate){
 void AutoAnalog::tc2Setup (uint32_t sampRate){}
 
 /****************************************************************************/
+
+
 
 #endif //#if !defined (ARDUINO_ARCH_SAM)

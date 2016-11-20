@@ -294,6 +294,10 @@ void AutoAnalog::dacSetup(void){
 
 /****************************************************************************/
 
+void AutoAnalog::disableDAC(){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);} 
+
+/****************************************************************************/
+
 void AutoAnalog::dacHandler(void){
 
 

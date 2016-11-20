@@ -2,7 +2,7 @@
 
 #include <RF24.h>
 
-RF24 radio(46,52);
+RF24 radio(radioCEPin,radioCSPin);
 
 const uint64_t pipes[14] = { 0xABCDABCD71LL, 0x544d52687CLL, 0x544d526832LL };
 
@@ -31,10 +31,9 @@ void setupRadio(){
 
   radio.startListening();
 
-  attachInterrupt(digitalPinToInterrupt(4),RX,FALLING);
+  attachInterrupt(digitalPinToInterrupt(radioInterruptPin),RX,FALLING);
   
 }
-
 
 
 

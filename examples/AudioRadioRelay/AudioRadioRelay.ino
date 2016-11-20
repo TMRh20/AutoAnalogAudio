@@ -41,6 +41,11 @@
 * 
 */
 
+/************************USER CONFIG**********************/
+#define radioCEPin 7
+#define radioCSPin 8
+#define radioInterruptPin 2
+/*********************************************************/
 
 #include <RF24.h>
 #include <AutoAnalogAudio.h>
@@ -62,6 +67,9 @@ void setup() {
   Serial.println("Analog Audio Begin");
 
   aaAudio.begin(1,1);   //Setup aaAudio using both DAC and ADC
+  #if defined (ARDUINO_AVR)
+    aaAudio.autoAdjust = 0;
+  #endif
   setupRadio();  
 }
 
@@ -75,14 +83,19 @@ void loop() {
   //Display the timer period variable for each channel every 3 seconds
   if(millis() - dispTimer > 3000){
     dispTimer = millis();
-
-    TcChannel * t = &(TC0->TC_CHANNEL)[0];
-    TcChannel * tt= &(TC0->TC_CHANNEL)[1];
     
-    Serial.print("Ch0:"); 
-    Serial.println(t->TC_RC);      
-    Serial.print("Ch1:"); 
-    Serial.println(tt->TC_RC);
+    #if !defined (ARDUINO_ARCH_AVR)
+      TcChannel * t = &(TC0->TC_CHANNEL)[0];
+      TcChannel * tt= &(TC0->TC_CHANNEL)[1];
+    
+      Serial.print("Ch0:"); 
+      Serial.println(t->TC_RC);      
+      Serial.print("Ch1:"); 
+      Serial.println(tt->TC_RC);
+    #else
+      Serial.print("Ch0/1:");
+      Serial.println(ICR1);
+    #endif
   }
 }
 
@@ -99,15 +112,20 @@ void RX(){
       radio.read(&dynSampleRate,4);         // Receive commands using pipe #2
       aaAudio.setSampleRate(dynSampleRate); // Pipe 2 is being used for command data, pipe 1 & others for audio data    
     }else{
+
+      #if !defined (ARDUINO_ARCH_AVR)         //AVR (Uno, Nano can't handle extra processing)
+        radio.stopListening();                // Prepare to send data out via radio
+      #endif  
+      radio.read(&aaAudio.dacBuffer,32);      // Read the available radio data   
       
-      radio.stopListening();                // Prepare to send data out via radio
-      radio.read(&aaAudio.dacBuffer,32);    // Read the available radio data   
-      
-      aaAudio.feedDAC(0,32);                    // Feed the DAC with the received data      
+      aaAudio.feedDAC(0,32);                  // Feed the DAC with the received data      
+
+      #if !defined (ARDUINO_ARCH_AVR)
       aaAudio.getADC(32);                     // Grab the available data from the ADC
 
       //Send the received ADC data via radio      
       radio.startFastWrite(&aaAudio.adcBuffer,32,1);
+      #endif
 
     /*Note: The data initially recieved can directly be sent via radio, but
                this example is a test of all library peripherals               */
