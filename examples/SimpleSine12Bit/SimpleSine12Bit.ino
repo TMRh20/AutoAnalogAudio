@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 * 
-* SineWave12Bit Example:
+* SineWave12Bit Example (Requires Arduino Due or better):
 * Simple generation of a 12-bit sine wave
 * Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
 * 

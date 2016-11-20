@@ -21,7 +21,7 @@
   http://github.com/TMRh20
   http://tmrh20.blogspot.com
 
-  SDAudioWavRecorder Example:
+  SDAudioWavRecorder Example: (Higher quality recording requires Arduino Due or better)
   This example demonstrates a simple method to record WAV format files that will play back on any PC or audio device
   The default format is 8-bit, 11khz, Mono and can be adjusted as desired
   

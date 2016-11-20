@@ -31,7 +31,7 @@
   http://tmrh20.blogspot.com
 
 **************************************************************************
-  Dual Pin ADC Sampling
+  Dual Pin ADC Sampling (Requires Arduino Due or better)
 
   Sample the ADC in chunks of 32-bytes at a defined sample rate
   The first sample will be from pin A1, second from A0, 3rd from A1, etc...
