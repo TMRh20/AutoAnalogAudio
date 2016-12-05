@@ -20,5 +20,8 @@
   [
     "atmelavr",
     "atmelsam"
-  ]
+  ],
+  "export": {
+    "exclude": "examples/*/*.wav"
+  }
 }
