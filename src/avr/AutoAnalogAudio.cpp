@@ -92,8 +92,8 @@ void AutoAnalog::setSampleRate(uint32_t sampRate){
         ticks >>= 1;
         ctr++;
     }
-    if(ticks >= 10){
-      defaultShift = ticks - 10;
+    if(ctr >= 10){
+      defaultShift = ctr - 10;
     }else{
       defaultShift = 0;
     }
