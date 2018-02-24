@@ -85,7 +85,7 @@ void arraysetup(void){
   aaAudio.dacBuffer16[5]=0xEA7 >> shiftVal; 
   aaAudio.dacBuffer16[6]=0xF64 >> shiftVal; 
   aaAudio.dacBuffer16[7]=0xFD9 >> shiftVal; 
-  aaAudio.dacBuffer16[8]=0x1000 >> shiftVal; 
+  aaAudio.dacBuffer16[8]=0xFFF >> shiftVal; 
   aaAudio.dacBuffer16[9]=0xFD9 >> shiftVal; 
   aaAudio.dacBuffer16[10]=0xF64 >> shiftVal; 
   aaAudio.dacBuffer16[11]=0xEA7 >> shiftVal; 
@@ -119,7 +119,7 @@ void arraysetup2(void){
   aaAudio.dacBuffer16[1]=0xB10 >> shiftVal; 
   aaAudio.dacBuffer16[2]=0xDA8 >> shiftVal; 
   aaAudio.dacBuffer16[3]=0xF64 >> shiftVal; 
-  aaAudio.dacBuffer16[4]=0x1000 >> shiftVal; 
+  aaAudio.dacBuffer16[4]=0xFFF >> shiftVal; 
   aaAudio.dacBuffer16[5]=0xF64 >> shiftVal; 
   aaAudio.dacBuffer16[6]=0xDA8 >> shiftVal; 
   aaAudio.dacBuffer16[7]=0xB10 >> shiftVal; 
