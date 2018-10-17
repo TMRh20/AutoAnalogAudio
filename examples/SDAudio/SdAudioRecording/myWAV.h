@@ -23,7 +23,7 @@ void playAudio(const char *audioFile) {
   uint32_t startPosition = 44;
 
   if (recFile) {
-    aaAudio.adcInterupts(false);
+    aaAudio.adcInterrupts(false);
     recFile.close();
   }
   
