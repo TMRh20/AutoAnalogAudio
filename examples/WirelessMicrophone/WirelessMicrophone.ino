@@ -50,6 +50,12 @@ AutoAnalog aaAudio;
 
 /*********************************************************/
 
+void DACC_Handler(void) {
+  aaAudio.dacHandler();   //Link the DAC ISR/IRQ library. Called by the MCU when DAC is ready for data
+}
+
+/*********************************************************/
+
 void setup() {
 
   Serial.begin(115200);
