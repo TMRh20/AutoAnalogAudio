@@ -1,6 +1,6 @@
     /*
     AutoAnalogAudio streaming via DAC & ADC by TMRh20
-    Copyright (C) 2016  TMRh20 - tmrh20@gmail.com, github.com/TMRh20
+    Copyright (C) 2016-2020  TMRh20 - tmrh20@gmail.com, github.com/TMRh20
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,6 +25,9 @@
 #define __AUTO_ANALOG_H__
 
 #include "AutoAnalog_config.h"
+#if defined (ESP32)
+  #include "driver/i2s.h"
+#endif
 
 #define AAA_CHANNEL0 0
 #define AAA_CHANNEL1 1
@@ -66,15 +69,16 @@ public:
    * 
    * @param dacChannel 0 for DAC0, 1 for DAC1, 2 for alternating DAC0/DAC1
    * @param samples The number of samples to send to the DAC
+   * @param startInterrupts Only used for the ESP32, this will enable an RTOS task to handle DAC
    */
-  void feedDAC(uint8_t dacChannel = 0, uint32_t samples = MAX_BUFFER_SIZE);                              
+  void feedDAC(uint8_t dacChannel = 0, uint32_t samples = MAX_BUFFER_SIZE, bool startInterrupts = false);                              
 
   /** DAC data buffer for 8-bit samples 
    *
    *  8-bit user samples are loaded directly into this buffer before calling feedDAC() <br>
    *  @see dacBitsPerSample
    */
-  uint8_t dacBuffer[MAX_BUFFER_SIZE];          
+  uint8_t dacBuffer[MAX_BUFFER_SIZE];        
    
   /** ADC Data buffer for 8-bit samples 
    *
@@ -97,8 +101,11 @@ public:
    */
   uint16_t adcBuffer16[MAX_BUFFER_SIZE];    
 
-  /** Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h */
-  void setSampleRate(uint32_t sampRate = 0);   
+  /** Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h
+   * @param sampRate This sets the defined sample rate ie: 32000 is 32Khz
+   * @param stereo Only used for the ESP32, this sets stereo or mono output and affects the sample rate
+  */
+  void setSampleRate(uint32_t sampRate = 0, bool stereo = true);   
   
   /** Function called by DAC IRQ */ 
   void dacHandler(void);                                  
@@ -148,8 +155,9 @@ public:
   
   /**
    * Disable the DAC
+   * @param withinTask Only used for ESP32, set to true if calling from within a task itself, see included example
    */
-  void disableDAC();
+  void disableDAC(bool withinTask = false);
   
   /**
    * En/Disable the interrupt for the ADC
@@ -162,6 +170,17 @@ public:
    * @endcode
    */
   void adcInterrupts(bool enabled = true);
+  
+  void dacInterrupts(bool enabled = true, bool withinTask = false);
+  
+  #if defined ESP32
+    /** Rampout and RampIn functions ramp the signal in/out to minimize 'pop' sound made when en/disabling the DAC
+	 * @param sample For ESP32 only, provide the first or last sample to ramp the signal in/out
+	*/
+    void rampOut(uint8_t sample);
+    void rampIn(uint8_t sample);
+    TaskHandle_t dacTaskHandle;
+  #endif 
   
   /**@}*/
   
@@ -207,8 +226,31 @@ private:
 
   uint32_t frequencyToTimerCount(uint32_t Frequency); /* Function to calculate timer counters */
 
+#if defined ESP32
+
+  uint32_t sampleRate;
+  i2s_config_t i2s_cfg;
+  
+  bool i2sStopped;
+  
+  
+  bool taskCreated;
+
+  bool dacEnabled;
+  uint8_t lastDacSample;
+  i2s_event_t myI2SQueue[5];
+  //void dacTask(void *args);
+  
+  bool adcTaskCreated;
+  bool adcDisabled;
+  
+  #define DELAY_250MS (250 / portTICK_PERIOD_MS)
+
+#endif
   /**@}*/
 };
+
+
 
 #endif
 

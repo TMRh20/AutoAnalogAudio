@@ -22,6 +22,10 @@
   
     #define MAX_BUFFER_SIZE 256
   
+  #elif defined ESP32
+      
+    #define MAX_BUFFER_SIZE 512
+
   #else    
   
     #define MAX_BUFFER_SIZE 32
