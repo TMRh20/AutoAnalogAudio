@@ -19,7 +19,8 @@
   "platforms": 
   [
     "atmelavr",
-    "atmelsam"
+    "atmelsam",
+    "espressifesp32"
   ],
   "export": {
     "exclude": "examples/*/*.wav"
