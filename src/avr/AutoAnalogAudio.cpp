@@ -17,7 +17,7 @@
     */
     
 /****************************************************************************/
-#if !defined (ARDUINO_ARCH_SAM)
+#if defined (ARDUINO_ARCH_AVR)
 
 #include "../AutoAnalogAudio.h"
 
@@ -73,7 +73,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
 /****************************************************************************/
 
-void AutoAnalog::setSampleRate(uint32_t sampRate){
+void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo = true){
     
 
   if(sampRate > 0){
@@ -141,7 +141,7 @@ void AutoAnalog::getADC(uint32_t samples){
 
 /****************************************************************************/
 
-void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples){
+void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
     
     while(dacSampleCounter < dacNumSamples && !autoAdjust){}
     
@@ -259,7 +259,7 @@ void AutoAnalog::dacSetup(void){
 
 /****************************************************************************/
 
-void AutoAnalog::disableDAC(){ TIMSK1 |= _BV(TOIE1); } 
+void AutoAnalog::disableDAC(bool withinTask){ TIMSK1 |= _BV(TOIE1); } 
 
 /****************************************************************************/
 

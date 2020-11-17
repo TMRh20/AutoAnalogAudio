@@ -69,7 +69,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
 /****************************************************************************/
 
-void AutoAnalog::setSampleRate(uint32_t sampRate){
+void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
    tc2Setup(sampRate);
    tcSetup(sampRate);
@@ -157,7 +157,7 @@ void AutoAnalog::getADC(uint32_t samples){
 
 /****************************************************************************/
 
-void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples){
+void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
     
     // Adjusts the timer by comparing the rate of incoming data
     // of data vs rate of the DACC   
@@ -294,7 +294,7 @@ void AutoAnalog::dacSetup(void){
 
 /****************************************************************************/
 
-void AutoAnalog::disableDAC(){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);} 
+void AutoAnalog::disableDAC(bool withinTask){dacc_disable_interrupt(DACC, DACC_IER_ENDTX);} 
 
 /****************************************************************************/
 
