@@ -56,6 +56,7 @@ AutoAnalog::AutoAnalog(){
 
   sampleRate = 0;
   lastDacSample = 0;
+  adcChannel = (adc1_channel_t)0;
   
   for(int i=0; i<MAX_BUFFER_SIZE; i++){
       dacBuffer[i] = 0;
@@ -135,8 +136,8 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
    
 
    if(enADC){
-     i2s_set_adc_mode(ADC_UNIT_1, ADC1_CHANNEL_4); //pin 32
-     adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_11);
+     i2s_set_adc_mode(ADC_UNIT_1, adcChannel); //pin 32
+     adc1_config_channel_atten(adcChannel, ADC_ATTEN_DB_11);
      i2s_adc_enable(I2S_NUM_0);
    }
    if(enDAC){
@@ -268,9 +269,7 @@ void AutoAnalog::triggerADC(){
 
 void AutoAnalog::enableAdcChannel(uint8_t pinAx){
     
-    /*if(pinAx > 6){ return; }
-    pinAx = 7 - pinAx;    
-    ADC->ADC_CHER |= 1<< pinAx;*/
+    adcChannel = (adc1_channel_t)pinAx;
 
 }
 
@@ -295,7 +294,7 @@ void AutoAnalog::getADC(uint32_t samples){
   }
   while(adcSamples > 0){ delayMicroseconds(100); };
   //Serial.println("Get ADC");
-  uint16_t offset = (int)ADC1_CHANNEL_4 * 0x1000 + 0xFFF; // 4high bits == channel. Data is inverted.
+  uint16_t offset = (int)adcChannel * 0x1000 + 0xFFF; // 4high bits == channel. Data is inverted.
   for(uint32_t i=0; i<samples;i++){
     tmpADCBuffer16[i] = offset - tmpADCBuffer16[i];
     adcBuffer16[i] = tmpADCBuffer16[i];
