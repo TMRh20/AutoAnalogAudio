@@ -123,7 +123,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
     .mode = (i2s_mode_t)myMode,
     .sample_rate =  16000,              // The format of the signal using ADC_BUILT_IN
     .bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT, // is fixed at 12bit, stereo, MSB
-    .channel_format = I2S_CHANNEL_FMT_ONLY_RIGHT,
+    .channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
     .communication_format = I2S_COMM_FORMAT_I2S_LSB,
     .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
     .dma_buf_count = 2,
@@ -200,19 +200,16 @@ void AutoAnalog::rampIn(uint8_t sample){
     tmpBuf[i] = i;
     counter++;
   }
-  //Serial.println();
+
   size_t bytesWritten = 0;
   size_t bytesWritten2 = 0;
-  //Serial.println("en");
-  //i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
-  //dacEnabled = true;
-  //i2s_zero_dma_buffer(I2S_NUM_0);
-
-  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE - counter,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);  
+  
+  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
+  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
+  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);    
+  
+  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE-counter,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS); 
   i2s_write_expand(I2S_NUM_0,&tmpBuf[0],counter,8,16,&bytesWritten2, 500 / portTICK_PERIOD_MS);
-  memset(zeroBuff,tmpBuf[counter-1],MAX_BUFFER_SIZE);
-  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
-  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
 }
 
 /****************************************************************************/
@@ -232,6 +229,7 @@ void AutoAnalog::rampOut(uint8_t sample){
   
   i2s_write_expand(I2S_NUM_0,&tmpBuf[0],counter,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
   i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE-counter,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
+  i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
   i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
   i2s_write_expand(I2S_NUM_0,&zeroBuff[0],MAX_BUFFER_SIZE,8,16,&bytesWritten, 500 / portTICK_PERIOD_MS);
   

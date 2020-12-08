@@ -33,6 +33,8 @@ void playAudio(const char *audioFile) {
   
   if (myFile) {
     Serial.println("Close Current");
+    //Ramp in and ramp out functions prevent popping and clicking when starting/stopping playback
+    aaAudio.rampOut(0);
     aaAudio.disableDAC();
     myFile.close();
 
@@ -111,27 +113,17 @@ void playAudio(const char *audioFile) {
     //Skip past the WAV header
     myFile.seek(startPosition);
 
-    //This next bit of code gathers the first 10 samples
-    //and feeds the median value to the rampIn function
-    //in order to minimize the 'pop' when the sample starts
-    //or ends with a high value.
-    uint16_t avgSample = 0;
-    myFile.read(aaAudio.dacBuffer, 10);
-    for(int i=0; i< 10; i++){
-      avgSample += aaAudio.dacBuffer[i];
-    }
-    avgSample /= 10;
-    aaAudio.rampIn(avgSample);
-    
+   
     //Load one buffer
     loadBuffer();
     //Feed the DAC to start playback
 
-    /*if(aaAudio.dacBitsPerSample == 8){
+    if(aaAudio.dacBitsPerSample == 8){
       aaAudio.rampIn(aaAudio.dacBuffer[0]);
     }else{
       aaAudio.rampIn((uint8_t)aaAudio.dacBuffer16[0]);
-    }*/
+    }
+    
     aaAudio.feedDAC(channelSelection,MAX_BUFFER_SIZE,useTasks);
     
   }else{
@@ -167,7 +159,7 @@ uint32_t loadBuffer() {
         }
         myFile.read(aaAudio.dacBuffer, samplesToRead);
         for (int i = 0; i < samplesToRead; i++) {
-          uint16_t tmpVar = (uint16_t)aaAudio.dacBuffer[i] - 0x80;
+          int16_t tmpVar = (uint16_t)aaAudio.dacBuffer[i] - 0x80;
           tmpVar = (tmpVar / volumeVar) + 0x80;
           //int16_t tmpInt = ( ((int16_t)aaAudio.dacBuffer[i]) - 127) / volumeVar;
           aaAudio.dacBuffer[i] = tmpVar;
