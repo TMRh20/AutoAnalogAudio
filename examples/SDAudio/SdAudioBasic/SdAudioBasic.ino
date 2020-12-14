@@ -46,28 +46,28 @@ void setup() {
     return;
   }
   Serial.println("init ok");
-  
+
   Serial.println("Analog Audio Begin");
   aaAudio.begin(0, 1);  //Setup aaAudio using DAC
   aaAudio.autoAdjust = 0;
-  
+
   //Setup for audio at 8-bit, 16khz, mono
   aaAudio.dacBitsPerSample = 8;
   aaAudio.setSampleRate(16000);
-  
+
 }
 
 void loop() {
 
-  if(Serial.available()){
+  if (Serial.available()) {
     char input = Serial.read();
-    switch(input){
+    switch (input) {
       case '1': playAudio("M8b24kM.wav"); break;  //Play a *.wav file by name - 8bit, 24khz, Mono
       case '2': playAudio("M8b24kS.wav"); break;  //Play  8bit, 24khz, Stereo
       case '3': playAudio("audio.wav");   break;  //Play a random file called audio.wav
     }
   }
-  
+
   loadBuffer();
 }
 
@@ -77,29 +77,29 @@ void loop() {
 
 File myFile;
 
-void playAudio(char *audioFile){
+void playAudio(char *audioFile) {
 
   if (myFile) {
     myFile.close();
   }
   //Open the designated file
   myFile = SD.open(audioFile);
-  
+
   //Skip past the WAV header
   myFile.seek(44);
   loadBuffer();
-  
+
 }
 
-void loadBuffer(){
+void loadBuffer() {
   //Load 32 samples into the 8-bit dacBuffer
-  if(myFile.available()){
-    for(int i=0;i<32;i++){
+  if (myFile.available()) {
+    for (int i = 0; i < 32; i++) {
       aaAudio.dacBuffer[i] = myFile.read();
     }
     //Feed the dac with the buffer of data
-    aaAudio.feedDAC(0,32);
-  }  
-  
+    aaAudio.feedDAC(0, 32);
+  }
+
 }
 

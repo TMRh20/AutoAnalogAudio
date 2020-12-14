@@ -36,8 +36,8 @@
 
   1. This example uses the onboard ADC to sample audio/analog data via pin A0
   2. The data is then sent via radio to another device
-  3. Audio is captured in 8-bit,mono,16khz. 
-  
+  3. Audio is captured in 8-bit,mono,16khz.
+
   Library supports 8,10,12-bit sampling at various sample rates.
 
 */
@@ -61,7 +61,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Analog Audio Begin");
 
-  aaAudio.begin(1,0);  //Setup aaAudio using ADC only
+  aaAudio.begin(1, 0); //Setup aaAudio using ADC only
   aaAudio.autoAdjust = 0;
   aaAudio.adcBitsPerSample = 8;
   aaAudio.setSampleRate(16050);
@@ -90,7 +90,7 @@ void loop() {
 
   // With autoAdjust disabled, getADC() will block until the ADC data is ready
   aaAudio.getADC(32);
-  radio.writeFast(&aaAudio.adcBuffer,32);
+  radio.writeFast(&aaAudio.adcBuffer, 32);
 }
 
 /*********************************************************/

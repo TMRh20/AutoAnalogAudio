@@ -11,7 +11,7 @@ uint8_t pipeNo = 0;
 
 void RX();
 
-void setupRadio(){
+void setupRadio() {
 
   radio.begin();
   radio.setChannel(1);

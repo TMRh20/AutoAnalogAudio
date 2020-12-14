@@ -114,7 +114,7 @@ void RX() {
     } else {
 
       radio.read(&aaAudio.dacBuffer16, 32);                   // Read the available radio data
-      
+
       for (int i = 0; i < 16; i++) {                          //Convert signed 16-bit variables into unsigned 12-bit
         aaAudio.dacBuffer16[i] += 0x8000;
         aaAudio.dacBuffer16[i] = aaAudio.dacBuffer16[i] >> 4;

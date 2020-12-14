@@ -68,9 +68,9 @@ void loop() {
   if (Serial.available()) {
     char input = Serial.read();
     switch (input) {
-                 //Play an 8-bit, 22Khz, Stereo WAV file
+      //Play an 8-bit, 22Khz, Stereo WAV file
       case '1':  aaAudio.dacBitsPerSample = 8;  aaAudio.setSampleRate(24000); playAudio("M8b24kM.wav");  break;
-                 //Play an 8-bit, 32Khz, Stereo WAV file
+      //Play an 8-bit, 32Khz, Stereo WAV file
       case '2':  aaAudio.dacBitsPerSample = 8;  aaAudio.setSampleRate(48000); playAudio("M8b24kS.wav");  break;
       case '3':  channelSelection = 0;  break;
       case '4':  channelSelection = 1;  break;
@@ -107,13 +107,13 @@ void playAudio(char *audioFile) {
 /* Function called from DAC interrupt after dacHandler(). Loads data into the dacBuffer */
 
 void loadBuffer() {
-  
+
   if (myFile) {
     if (myFile.available()) {
       if (aaAudio.dacBitsPerSample == 8) {
         //Load 32 samples into the 8-bit dacBuffer
         myFile.read((byte*)aaAudio.dacBuffer, MAX_BUFFER_SIZE);
-      }else{
+      } else {
         //Load 32 samples (64 bytes) into the 16-bit dacBuffer
         myFile.read((byte*)aaAudio.dacBuffer16, MAX_BUFFER_SIZE * 2);
         //Convert the 16-bit samples to 12-bit
@@ -121,7 +121,7 @@ void loadBuffer() {
           aaAudio.dacBuffer16[i] = (aaAudio.dacBuffer16[i] + 0x8000) >> 4;
         }
       }
-    }else{
+    } else {
       myFile.close();
       dacc_disable_interrupt(DACC, DACC_IER_ENDTX);
     }
