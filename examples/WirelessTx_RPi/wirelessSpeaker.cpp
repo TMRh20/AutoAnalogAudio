@@ -43,33 +43,33 @@ int main(int argc, char** argv){
   cout << "RF24Audio On Rpi\n";
 
   // Configure radio settings for RF24Audio
-  radio.begin(); 
+  radio.begin();
   radio.setChannel(1);
   radio.setPALevel(RF24_PA_MAX);
   radio.setDataRate(RF24_1MBPS);
-  radio.setAutoAck(0); 
+  radio.setAutoAck(0);
   radio.setCRCLength(RF24_CRC_8);
   radio.setAddressWidth(5);
 
   radio.openWritingPipe(pipes[1]);
-  radio.openReadingPipe(1,pipes[0]);
+  radio.openReadingPipe(1, pipes[0]);
   radio.startListening();
   radio.txDelay = 0;
   radio.printDetails();
   radio.stopListening();
-  
+
   radio.stopListening();
 
-  
+
   uint32_t sampleDelay = 2000;
-  
+
   // Read the entire wav file into memory
   streampos size;
   char * memblock;
-  
+
   ifstream file (audioFile, ios::in|ios::binary|ios::ate);
   if (file.is_open()){
-      
+
     size = file.tellg();//file.tellg();
     sz = file.tellg();
     printf("%d\n",sz);
@@ -77,33 +77,33 @@ int main(int argc, char** argv){
     file.seekg (0, ios::beg);
     file.read (memblock, sz);
     file.close();
-    cout << "the entire file content is in memory\n";   
-    
+    cout << "the entire file content is in memory\n";
+
   }else{
       exit(1);
   }
-  
+
   // Get the sample rate of the wav file
     uint32_t sampleRate = memblock[24];
     sampleRate |= memblock[25] << 8;
     sampleRate |= memblock[26] << 16;
-    sampleRate |= memblock[27] << 24;    
-    cout << "Sample Rate " << sampleRate << "\n";      
-    
+    sampleRate |= memblock[27] << 24;
+    cout << "Sample Rate " << sampleRate << "\n";
+
     // Calculate the required delay based on sample rate
     sampleDelay = (1000000.0 / sampleRate * 32) - 1;
-    cout << "Sample Delay " << sampleDelay << "\n";    
-    
-    
+    cout << "Sample Delay " << sampleDelay << "\n";
+
+
     // Data starts at byte 44, after the .wav header as long as there is no metadata
-    int32_t filePos = 44;    
-    cout << "Output via radio...\n";    
-    
+    int32_t filePos = 44;
+    cout << "Output via radio...\n";
+
     //Sending 16-bit/2-Byte samples, so need double sample rate
     sampleDelay/=2;
     //Slight offset to ensure sample rate is close to accurate
     sampleDelay-=48;
-    
+
     //Send the sample rate to the wireless speaker using acknowledged payloads
     radio.setAutoAck(0,1);
     radio.openWritingPipe(pipes[2]);
@@ -116,17 +116,17 @@ int main(int argc, char** argv){
 
 
     uint32_t dTimer = 0;
-    
-    while (1){        
-     
-      radio.writeFast(&memblock[filePos],32,1);
-      
+
+    while (1){
+
+      radio.writeFast(&memblock[filePos],32, 1);
+
       ++writes;
 
       delayMicroseconds(sampleDelay);
       filePos+=32;
       if(filePos >= sz){
-        break;          
+        break;
       }
       if(millis()-dTimer>1000){
         dTimer=millis();
@@ -136,7 +136,7 @@ int main(int argc, char** argv){
       }
 } // loop
 
-cout << "Complete, exit...\n";  
+cout << "Complete, exit...\n";
 delete[] memblock;
 
 } // main
