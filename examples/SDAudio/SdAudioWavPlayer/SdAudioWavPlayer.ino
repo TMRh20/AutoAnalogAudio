@@ -25,7 +25,7 @@
   This example demonstrates a more complex method of playing *.wav files using AAAudio using interrupts to load the data
   while other code is able to run.
   Wav files in this example need to be 8 to 12-bit, 16-44khz, Mono or Stereo
-  
+
 */
 
 /******** User Config ************************************/
@@ -45,18 +45,18 @@ File myFile;
 /*********************************************************/
 
 void setup() {
-  
+
   Serial.begin(115200);
-  
+
   if (!SD.begin(SD_CS_PIN)) {
     Serial.println("SD init failed!");
     return;
   }
   Serial.println("SD ok\nAnalog Audio Begin");
-  
+
   aaAudio.begin(0, 1);     // Start AAAudio with only the DAC
   aaAudio.autoAdjust = 0;  // Disable automatic timer adjustment
-  
+
 }
 
 /*********************************************************/

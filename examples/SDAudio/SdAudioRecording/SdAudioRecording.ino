@@ -24,7 +24,7 @@
   SDAudioWavRecorder Example: (Higher quality recording requires Arduino Due or better)
   This example demonstrates a simple method to record WAV format files that will play back on any PC or audio device
   The default format is 8-bit, 11khz, Mono and can be adjusted as desired
-  
+
 */
 
 /******** User Config ************************************/
@@ -49,15 +49,15 @@ File recFile;
 /*********************************************************/
 
 void setup() {
-  
+
   Serial.begin(115200);
-  
+
   if (!SD.begin(SD_CS_PIN)) {
     Serial.println("SD init failed!");
     return;
   }
   Serial.println("SD ok\nAnalog Audio Begin");
-  
+
   aaAudio.begin(1, 1);     // Start AAAudio with ADC & DAC
   aaAudio.autoAdjust = 0;  // Disable automatic timer adjustment
 
@@ -68,9 +68,9 @@ uint32_t displayTimer = 0;
 
 void loop() {
 
-  if(millis()-displayTimer>1000){
+  if (millis() - displayTimer > 1000) {
     displayTimer = millis();
-    if(counter){
+    if (counter) {
       Serial.print("Samples per Second: ");
       Serial.println(counter * MAX_BUFFER_SIZE);
     }
@@ -89,12 +89,12 @@ void loop() {
       case '6':  channelSelection = 1;      break; //Play the audio on DAC1
       case '7':  channelSelection = 2;      break; //Play the audio on DAC0 & DAC1
       case '8':  Serial.println("OK");      break;
-      case '9':  startRecording(newWavFile,11000); break; //Start recording @11khz,8-bit,Mono
-      case '0':  stopRecording(newWavFile,11000);  break; //Stop the recording and finalize the file
+      case '9':  startRecording(newWavFile, 11000); break; //Start recording @11khz,8-bit,Mono
+      case '0':  stopRecording(newWavFile, 11000);  break; //Stop the recording and finalize the file
       case 'p':  playAudio(newWavFile);      break; //Play back the recorded audio
       case 'D':  SD.remove(newWavFile);      break; //Delete the file and start fresh
     }
-  }  
+  }
 }
 
 /*********************************************************/

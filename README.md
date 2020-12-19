@@ -5,12 +5,12 @@ Automated analog reads and analog output (streaming) using Arduino DAC(or PWM), 
 
 **New** Now also supports AVR devices (Uno,Nano,Mega,etc) with pseudo DAC using PWM
 
-Plays and records analog (wav/pcm audio) data using onboard DAC and ADC. 
+Plays and records analog (wav/pcm audio) data using onboard DAC and ADC.
 Timers are adjusted automatically based on the rate of data delivery, to ensure smooth playback.
 DMA transfers used to maximize efficiency.
 
-Documentation: http://tmrh20.github.io/AAAudio/
-Also see: http://tmrh20.github.io/RF24Audio/
+Documentation: http://TMRh20.github.io/AutoAnalogAudio/
+Also see: http://nRF24.github.io/RF24Audio/
 
     AutoAnalogAudio streaming via DAC & ADC by TMRh20
     Copyright (C) 2016  TMRh20 - tmrh20@gmail.com, github.com/TMRh20

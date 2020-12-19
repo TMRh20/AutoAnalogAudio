@@ -26,17 +26,17 @@ void playAudio(const char *audioFile) {
     aaAudio.adcInterrupts(false);
     recFile.close();
   }
-  
+
   if (myFile) {
     aaAudio.disableDAC();
     myFile.close();
     //delay(25);
   }
-  
-  
+
+
   //Open the designated file
   myFile = SD.open(audioFile);
-  
+
   if (myFile) {
     myFile.seek(22);
     myFile.read((byte*)&numChannels, 2);
@@ -47,55 +47,54 @@ void playAudio(const char *audioFile) {
     myFile.read((byte*)&dataSize, 4);
     dataSize += 44; //Set this variable to the total size of header + data
 
-    #if defined (AUDIO_DEBUG)
-      Serial.print("\nNow Playing ");
-      Serial.println(audioFile);
-      Serial.print("Channels ");
-      Serial.print(numChannels);
-      Serial.print(", SampleRate ");
-      Serial.print(sampleRate);
-      Serial.print(", BitsPerSample ");
-      Serial.println(bitsPerSample);      
-    #endif
+#if defined (AUDIO_DEBUG)
+    Serial.print("\nNow Playing ");
+    Serial.println(audioFile);
+    Serial.print("Channels ");
+    Serial.print(numChannels);
+    Serial.print(", SampleRate ");
+    Serial.print(sampleRate);
+    Serial.print(", BitsPerSample ");
+    Serial.println(bitsPerSample);
+#endif
 
-    if(myFile.size() > dataSize){
+    if (myFile.size() > dataSize) {
       startPosition = myFile.size() - dataSize;
-      #if defined (AUDIO_DEBUG)
-        Serial.println("Skipping metadata");
-      #endif 
+#if defined (AUDIO_DEBUG)
+      Serial.println("Skipping metadata");
+#endif
     }
 
-    if(bitsPerSample > 10 ){
-       bitsPerSample = 12;
-    }else
-    if(bitsPerSample > 8){
-       bitsPerSample = 10;
-    }else{
-       bitsPerSample = 8;
+    if (bitsPerSample > 10 ) {
+      bitsPerSample = 12;
+    } else if (bitsPerSample > 8) {
+      bitsPerSample = 10;
+    } else {
+      bitsPerSample = 8;
     }
 
     sampleRate *= numChannels;
     aaAudio.dacBitsPerSample = bitsPerSample;
     aaAudio.setSampleRate(sampleRate);
 
-   #if defined (AUDIO_DEBUG)
-      Serial.print("Timer Rate ");
-      Serial.print(sampleRate);
-      Serial.print(", DAC Bits Per Sample ");
-      Serial.println(bitsPerSample); 
-    #endif
-    
+#if defined (AUDIO_DEBUG)
+    Serial.print("Timer Rate ");
+    Serial.print(sampleRate);
+    Serial.print(", DAC Bits Per Sample ");
+    Serial.println(bitsPerSample);
+#endif
+
     //Skip past the WAV header
     myFile.seek(startPosition);
     //Load one buffer
     loadBuffer();
     //Feed the DAC to start playback
     aaAudio.feedDAC();
-  }else{
-    #if defined (AUDIO_DEBUG)
-      Serial.print("Failed to open ");
-      Serial.println(audioFile);
-    #endif
+  } else {
+#if defined (AUDIO_DEBUG)
+    Serial.print("Failed to open ");
+    Serial.println(audioFile);
+#endif
   }
 }
 
@@ -103,13 +102,13 @@ void playAudio(const char *audioFile) {
 /* Function called from DAC interrupt after dacHandler(). Loads data into the dacBuffer */
 
 void loadBuffer() {
-  
+
   if (myFile) {
     if (myFile.available()) {
       if (aaAudio.dacBitsPerSample == 8) {
         //Load 32 samples into the 8-bit dacBuffer
         myFile.read((byte*)aaAudio.dacBuffer, MAX_BUFFER_SIZE);
-      }else{
+      } else {
         //Load 32 samples (64 bytes) into the 16-bit dacBuffer
         myFile.read((byte*)aaAudio.dacBuffer16, MAX_BUFFER_SIZE * 2);
         //Convert the 16-bit samples to 12-bit
@@ -117,10 +116,10 @@ void loadBuffer() {
           aaAudio.dacBuffer16[i] = (aaAudio.dacBuffer16[i] + 0x8000) >> 4;
         }
       }
-    }else{
-      #if defined (AUDIO_DEBUG)
-        Serial.println("File close");
-      #endif
+    } else {
+#if defined (AUDIO_DEBUG)
+      Serial.println("File close");
+#endif
       myFile.close();
       aaAudio.disableDAC();
     }
