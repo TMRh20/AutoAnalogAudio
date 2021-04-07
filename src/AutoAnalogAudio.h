@@ -104,7 +104,7 @@ public:
   /** Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h
    * @param sampRate This sets the defined sample rate ie: 32000 is 32Khz
    * @param stereo Only used for the ESP32, this sets stereo or mono output and affects the sample rate
-  */
+   */
   void setSampleRate(uint32_t sampRate = 0, bool stereo = true);
 
   /** Function called by DAC IRQ */
@@ -173,13 +173,13 @@ public:
 
   void dacInterrupts(bool enabled = true, bool withinTask = false);
 
-  #if defined ESP32
-    /** Rampout and RampIn functions ramp the signal in/out to minimize 'pop' sound made when en/disabling the DAC
+  #if defined (ESP32) || defined (DOXYGEN_FORCED)
+  /** Rampout and RampIn functions ramp the signal in/out to minimize 'pop' sound made when en/disabling the DAC
 	 * @param sample For ESP32 only, provide the first or last sample to ramp the signal in/out
-	*/
-    void rampOut(uint8_t sample);
-    void rampIn(uint8_t sample);
-    TaskHandle_t dacTaskHandle;
+	 */
+  void rampOut(uint8_t sample);
+  void rampIn(uint8_t sample);
+  TaskHandle_t dacTaskHandle;
   #endif
 
   /**@}*/
@@ -259,7 +259,8 @@ private:
  * @example AudioRadioRelay.ino
  * <b>For Arduino Due</b><br>
  *
- * * Audio Relay & Peripheral Test Example:
+ * Audio Relay & Peripheral Test Example:
+ *
  * This example demonstrates how to manage incoming and outgoing audio streams using
  * the AAAudio library and nrf24l01+ radio modules on Arduino Due.
  *
@@ -276,12 +277,12 @@ private:
  * @example SimpleSine.ino
  * <b>For Arduino Due</b><br>
  *
- * * Simple Sine Wave Generation Example:
+ * Simple Sine Wave Generation Example:
  *
- *  This example demonstrates simple generation of a sine wave & optionally broadcasting
- *  the audio via radio
+ * This example demonstrates simple generation of a sine wave & optionally broadcasting
+ * the audio via radio
  *
- *  Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
+ * Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
  *
  * @note This code depends on [radio.h](SimpleSine_2myRadio_8h_source.html)
  * located in the same directory.
@@ -291,23 +292,23 @@ private:
  * @example SimpleSine12Bit.ino
  * <b>For Arduino Due</b><br>
  *
- * * Simple Sine Wave Generation Example:
+ * Simple Sine Wave Generation Example:
  *
- *  This example demonstrates simple generation of a 12-bit sine wave
+ * This example demonstrates simple generation of a 12-bit sine wave
  *
- *  Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
+ * Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume
  */
 
 /**
  * @example WirelessSpeaker.ino
  * <b>For Arduino Due</b><br>
  *
- * * Simple Wireless Speaker:
+ * Simple Wireless Speaker:
  *
- *  Demonstration of a single wireless speaker/wireless audio
+ * Demonstration of a single wireless speaker/wireless audio
  *
- *  The incoming audio format is 16bit mono <br>
- *  NRF24L01+ radios can support around 16-44khz sample rate w/16-bit samples, 88khz+ with 8-bit samples
+ * The incoming audio format is 16bit mono <br>
+ * NRF24L01+ radios can support around 16-44khz sample rate w/16-bit samples, 88khz+ with 8-bit samples
  *
  * @note This code depends on [radio.h](WirelessSpeaker_2myRadio_8h_source.html)
  * located in the same directory.
@@ -317,12 +318,12 @@ private:
  * @example WirelessMicrophone.ino
  * <b>For Arduino Due</b><br>
  *
- * * Simple Wireless Microphone:
+ * Simple Wireless Microphone:
  *
- *  Demonstration of a single wireless microphone/recording via ADC
+ * Demonstration of a single wireless microphone/recording via ADC
  *
- *  The outgoing audio format is 8bit, mono, 16khz <br>
- *  NRF24L01+ radios can support around 16-44khz sample rate w/12-bit samples, 88khz+ with 8-bit samples
+ * The outgoing audio format is 8bit, mono, 16khz <br>
+ * NRF24L01+ radios can support around 16-44khz sample rate w/12-bit samples, 88khz+ with 8-bit samples
  *
  * @note This code depends on [radio.h](WirelessMicrophone_2myRadio_8h_source.html)
  * located in the same directory.
@@ -332,63 +333,60 @@ private:
  * @example SimpleAdcStream.ino
  * <b>For Arduino Due</b><br>
  *
- * * Simple ADC capturing Example:
+ * Simple ADC capturing Example:
  *
- *  This example demonstrates how to capture a steady stream of ADC data
+ * This example demonstrates how to capture a steady stream of ADC data
  *
- *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks
+ * See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks
  */
 
 /**
  * @example MultiChannelAdcStream.ino
  * <b>For Arduino Due</b><br>
  *
- * * Multi Channel ADC Sampling Example:
+ * Multi Channel ADC Sampling Example:
  *
- *  This example demonstrates how to capture a steady stream of ADC data on
- *  multiple channels. Currently pins A0-A6 are supported.
+ * This example demonstrates how to capture a steady stream of ADC data on
+ * multiple channels. Currently pins A0-A6 are supported.
  *
- *  See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks of data
+ * See AnalogAudio_config.h to change the MAX_BUFFER_SIZE allowing larger chunks of data
  */
 
 /**
  * @example SdAudioBasic.ino
  * <b>For Arduino Due</b><br>
  *
- * * Basic SDAudio Example:
+ * Basic SDAudio Example:
  *
- *  This example demonstrates how to play *.wav files from SD Card.
- *
+ * This example demonstrates how to play *.wav files from SD Card.
  */
 
 /**
  * @example SdAudioAuto.ino
  * <b>For Arduino Due</b><br>
  *
- * * Auto SDAudio Example:
+ * Auto SDAudio Example:
  *
- *  This example demonstrates how to play *.wav files from SD Card using interrupts.
- *
+ * This example demonstrates how to play *.wav files from SD Card using interrupts.
  */
 
 /**
  * @example SdAudioWavPlayer.ino
  * <b>For Arduino Due</b><br>
  *
- * * Wav Player SDAudio Example:
+ * Wav Player SDAudio Example:
  *
- *  This example demonstrates a simple *.wav player with a few features
- *
+ * This example demonstrates a simple *.wav player with a few features
  */
 
 /**
  * @example SdAudioRecording.ino
  * <b>For Arduino Due</b><br>
  *
- * * Wav Recording SDAudio Example:
+ * Wav Recording SDAudio Example:
  *
- *  This example demonstrates recording standard format *.wav files
- *  for playback on any PC or audio device.
+ * This example demonstrates recording standard format *.wav files
+ * for playback on any PC or audio device.
  */
 
 /**
@@ -425,5 +423,4 @@ private:
  * **Library Source Code & Information:**<br>
  * http://github.com/TMRh20 <br>
  * http://tmrh20.blogspot.com <br>
- *
  */
