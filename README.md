@@ -9,7 +9,7 @@ Plays and records analog (wav/pcm audio) data using onboard DAC and ADC.
 Timers are adjusted automatically based on the rate of data delivery, to ensure smooth playback.
 DMA transfers used to maximize efficiency.
 
-Documentation: http://tmrh20.github.io/AutoAnalogAudio/
+Documentation: http://TMRh20.github.io/AutoAnalogAudio/
 Also see: http://nRF24.github.io/RF24Audio/
 
     AutoAnalogAudio streaming via DAC & ADC by TMRh20
