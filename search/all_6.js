@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['getadc_42',['getADC',['../classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504',1,'AutoAnalog']]]
+  ['rampin_24',['rampIn',['../classAutoAnalog.html#a20472840f8cd85e9a41a5a968f522d23',1,'AutoAnalog']]],
+  ['rampout_25',['rampOut',['../classAutoAnalog.html#a6a49d5ac89bf8edbc8e91f9686099dbc',1,'AutoAnalog']]]
 ];

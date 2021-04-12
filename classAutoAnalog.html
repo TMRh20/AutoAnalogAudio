@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Auto Analog Audio
-   &#160;<span id="projectnumber">1.42</span>
+   &#160;<span id="projectnumber">1.43</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -76,13 +76,13 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 class="groupheader">User Interface</h2></td></tr>
 <tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp93f513d52499bc3d21ffbcaa1dfa29d5"></a> Main methods to drive the library </p>
 </td></tr>
-<tr class="memitem:a4b5f46afb8f50e9bc28431cd467ee8bf"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf">dacBuffer</a> [<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td></tr>
+<tr class="memitem:a4b5f46afb8f50e9bc28431cd467ee8bf"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf">dacBuffer</a> [MAX_BUFFER_SIZE]</td></tr>
 <tr class="separator:a4b5f46afb8f50e9bc28431cd467ee8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a257d95cf5a0b43deaef32b761fc25792"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a257d95cf5a0b43deaef32b761fc25792">adcBuffer</a> [<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td></tr>
+<tr class="memitem:a257d95cf5a0b43deaef32b761fc25792"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a257d95cf5a0b43deaef32b761fc25792">adcBuffer</a> [MAX_BUFFER_SIZE]</td></tr>
 <tr class="separator:a257d95cf5a0b43deaef32b761fc25792"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a85377e5dc495fdbd129db30c6c88ca71"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a> [<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td></tr>
+<tr class="memitem:a85377e5dc495fdbd129db30c6c88ca71"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a> [MAX_BUFFER_SIZE]</td></tr>
 <tr class="separator:a85377e5dc495fdbd129db30c6c88ca71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64b99ccc41ac44398397f12c89d292f3"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a64b99ccc41ac44398397f12c89d292f3">adcBuffer16</a> [<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td></tr>
+<tr class="memitem:a64b99ccc41ac44398397f12c89d292f3"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a64b99ccc41ac44398397f12c89d292f3">adcBuffer16</a> [MAX_BUFFER_SIZE]</td></tr>
 <tr class="separator:a64b99ccc41ac44398397f12c89d292f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34814ebff21d9b602f1f33503c070a54"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">autoAdjust</a></td></tr>
 <tr class="separator:a34814ebff21d9b602f1f33503c070a54"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -90,15 +90,17 @@ $(function() {
 <tr class="separator:adf54b09207afbc94726a48642e3b611a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a122737d7a251d9da00ecf02be72c2e18"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a></td></tr>
 <tr class="separator:a122737d7a251d9da00ecf02be72c2e18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58ffe6c35c52bf503720a89546ad6d61"><td class="memItemLeft" align="right" valign="top">TaskHandle_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a58ffe6c35c52bf503720a89546ad6d61">dacTaskHandle</a></td></tr>
+<tr class="separator:a58ffe6c35c52bf503720a89546ad6d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3667d5820bc647c87517c1eaea8ff722"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a3667d5820bc647c87517c1eaea8ff722">AutoAnalog</a> ()</td></tr>
 <tr class="separator:a3667d5820bc647c87517c1eaea8ff722"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af050f10f4589e38907f4776bb49b0e07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">begin</a> (bool enADC, bool enDAC)</td></tr>
 <tr class="separator:af050f10f4589e38907f4776bb49b0e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedd70fc9f6f130c32ccb015b670f5318"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#aedd70fc9f6f130c32ccb015b670f5318">triggerADC</a> ()</td></tr>
 <tr class="separator:aedd70fc9f6f130c32ccb015b670f5318"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61f2ceee4ff61ec9323a30a6c44ab504"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC</a> (uint32_t samples=<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>)</td></tr>
+<tr class="memitem:a61f2ceee4ff61ec9323a30a6c44ab504"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC</a> (uint32_t samples=MAX_BUFFER_SIZE)</td></tr>
 <tr class="separator:a61f2ceee4ff61ec9323a30a6c44ab504"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6728b5d90528b5817c1b8aa661de5e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a> (uint8_t dacChannel=0, uint32_t samples=<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>, bool startInterrupts=false)</td></tr>
+<tr class="memitem:ad6728b5d90528b5817c1b8aa661de5e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a> (uint8_t dacChannel=0, uint32_t samples=MAX_BUFFER_SIZE, bool startInterrupts=false)</td></tr>
 <tr class="separator:ad6728b5d90528b5817c1b8aa661de5e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99cfa2255a20289a00274d3ead8d1f6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a> (uint32_t sampRate=0, bool stereo=true)</td></tr>
 <tr class="separator:a99cfa2255a20289a00274d3ead8d1f6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -114,6 +116,10 @@ $(function() {
 <tr class="separator:a04a015a15f13e2fdac6cc193d2818259"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa689bffc34485c3fc6cddfdd01ca399b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#aa689bffc34485c3fc6cddfdd01ca399b">dacInterrupts</a> (bool enabled=true, bool withinTask=false)</td></tr>
 <tr class="separator:aa689bffc34485c3fc6cddfdd01ca399b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a49d5ac89bf8edbc8e91f9686099dbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a6a49d5ac89bf8edbc8e91f9686099dbc">rampOut</a> (uint8_t sample)</td></tr>
+<tr class="separator:a6a49d5ac89bf8edbc8e91f9686099dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20472840f8cd85e9a41a5a968f522d23"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a20472840f8cd85e9a41a5a968f522d23">rampIn</a> (uint8_t sample)</td></tr>
+<tr class="separator:a20472840f8cd85e9a41a5a968f522d23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#_a0">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#_a0">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#_a0">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#_a0">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#_a0">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#_a0">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#_a0">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#_a0">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#_a0">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#_a0">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#_a0">WirelessSpeaker.ino</a>.</dd>
@@ -165,7 +171,7 @@ $(function() {
       </table>
 </div><div class="memdoc">
 <p>Setup the timer(s) </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a3">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a1">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a6">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a3">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a1">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a1">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a1">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a3">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a3">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a3">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a3">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a2">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a1">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a3">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a2">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a1">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a1">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a1">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a2">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a2">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a2">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a2">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -198,7 +204,7 @@ $(function() {
           <td class="memname">void AutoAnalog::getADC </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>samples</em> = <code><a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a></code></td><td>)</td>
+          <td class="paramname"><em>samples</em> = <code>MAX_BUFFER_SIZE</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -211,7 +217,7 @@ $(function() {
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Changes to the number of samples will not take place until one buffer has been returned with the previous number of samples </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a12">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a6">MultiChannelAdcStream.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a5">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a9">WirelessMicrophone.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a7">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a6">MultiChannelAdcStream.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a5">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a6">WirelessMicrophone.ino</a>.</dd>
 </dl>
 
 </div>
@@ -232,7 +238,7 @@ $(function() {
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>samples</em> = <code><a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a></code>, </td>
+          <td class="paramname"><em>samples</em> = <code>MAX_BUFFER_SIZE</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -256,7 +262,7 @@ $(function() {
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a11">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a3">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a11">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a6">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a7">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a13">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a6">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a1">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a7">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a5">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a6">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a7">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -286,14 +292,14 @@ $(function() {
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set sample rate. 0 enables the default rate specified in <a class="el" href="AutoAnalog__config_8h.html">AutoAnalog_config.h</a> </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">sampRate</td><td>This sets the defined sample rate ie: 32000 is 32Khz </td></tr>
     <tr><td class="paramname">stereo</td><td>Only used for the ESP32, this sets stereo or mono output and affects the sample rate </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a9">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a4">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a9">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a6">SdAudioBasic.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a4">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a5">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a5">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a6">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a11">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a4">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a4">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a6">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a5">SdAudioBasic.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a4">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a4">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a4">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a5">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a5">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -314,7 +320,7 @@ $(function() {
       </table>
 </div><div class="memdoc">
 <p>Function called by DAC IRQ </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a2">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a4">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a2">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a2">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a2">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a2">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a2">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a1">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a2">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a1">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a1">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a1">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a1">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a1">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -382,7 +388,7 @@ $(function() {
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="SdAudioAuto_8ino-example.html#a12">SdAudioAuto.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="SdAudioAuto_8ino-example.html#a7">SdAudioAuto.ino</a>.</dd>
 </dl>
 
 </div>
@@ -403,10 +409,9 @@ $(function() {
       </table>
 </div><div class="memdoc">
 <p>En/Disable the interrupt for the ADC</p>
-<p>If enabled, the following function needs to be added: </p><div class="fragment"><div class="line"><span class="keywordtype">void</span> <a class="code" href="myRecording_8h.html#ada953331e0adc056867e918bc80ce8a5">ADC_Handler</a>(<span class="keywordtype">void</span>){</div>
+<p>If enabled, the following function needs to be added: </p><div class="fragment"><div class="line"><span class="keywordtype">void</span> ADC_Handler(<span class="keywordtype">void</span>){</div>
 <div class="line"> -code here-</div>
 <div class="line">}</div>
-<div class="ttc" id="amyRecording_8h_html_ada953331e0adc056867e918bc80ce8a5"><div class="ttname"><a href="myRecording_8h.html#ada953331e0adc056867e918bc80ce8a5">ADC_Handler</a></div><div class="ttdeci">void ADC_Handler(void)</div><div class="ttdef"><b>Definition:</b> <a href="myRecording_8h_source.html#l00027">myRecording.h:27</a></div></div>
 </div><!-- fragment --> 
 </div>
 </div>
@@ -438,6 +443,48 @@ $(function() {
 
 </div>
 </div>
+<a id="a6a49d5ac89bf8edbc8e91f9686099dbc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a49d5ac89bf8edbc8e91f9686099dbc">&#9670;&nbsp;</a></span>rampOut()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AutoAnalog::rampOut </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>sample</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Rampout and RampIn functions ramp the signal in/out to minimize 'pop' sound made when en/disabling the DAC </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sample</td><td>For ESP32 only, provide the first or last sample to ramp the signal in/out </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a20472840f8cd85e9a41a5a968f522d23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20472840f8cd85e9a41a5a968f522d23">&#9670;&nbsp;</a></span>rampIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AutoAnalog::rampIn </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>sample</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a4b5f46afb8f50e9bc28431cd467ee8bf"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4b5f46afb8f50e9bc28431cd467ee8bf">&#9670;&nbsp;</a></span>dacBuffer</h2>
@@ -446,14 +493,14 @@ $(function() {
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t AutoAnalog::dacBuffer[<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td>
+          <td class="memname">uint8_t AutoAnalog::dacBuffer[MAX_BUFFER_SIZE]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>DAC data buffer for 8-bit samples</p>
 <p>8-bit user samples are loaded directly into this buffer before calling <a class="el" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC()</a> <br  />
  </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a10">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a13">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a10">SdAudioBasic.ino</a>, and <a class="el" href="SimpleSine_8ino-example.html#a7">SimpleSine.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a5">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a8">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a6">SdAudioBasic.ino</a>, and <a class="el" href="SimpleSine_8ino-example.html#a6">SimpleSine.ino</a>.</dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00081">81</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
@@ -467,14 +514,14 @@ $(function() {
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t AutoAnalog::adcBuffer[<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td>
+          <td class="memname">uint8_t AutoAnalog::adcBuffer[MAX_BUFFER_SIZE]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>ADC Data buffer for 8-bit samples</p>
 <p>8-bit samples are read directly from this buffer after calling <a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC()</a> <br  />
  </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classAutoAnalog.html#adf54b09207afbc94726a48642e3b611a">adcBitsPerSample</a> </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a13">AudioRadioRelay.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a11">WirelessMicrophone.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a8">AudioRadioRelay.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a7">WirelessMicrophone.ino</a>.</dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00088">88</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
@@ -488,14 +535,14 @@ $(function() {
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t AutoAnalog::dacBuffer16[<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td>
+          <td class="memname">uint16_t AutoAnalog::dacBuffer16[MAX_BUFFER_SIZE]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>DAC data buffer for 10 or 12-bit samples</p>
 <p>10 or 12-bit user samples are loaded directly into this buffer before calling <a class="el" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC()</a> <br  />
  </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="SdAudioAuto_8ino-example.html#a15">SdAudioAuto.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a8">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a12">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="SdAudioAuto_8ino-example.html#a9">SdAudioAuto.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a7">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a6">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00095">95</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
@@ -509,7 +556,7 @@ $(function() {
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t AutoAnalog::adcBuffer16[<a class="el" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>]</td>
+          <td class="memname">uint16_t AutoAnalog::adcBuffer16[MAX_BUFFER_SIZE]</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -536,7 +583,7 @@ $(function() {
 </div><div class="memdoc">
 <p>Auto &amp; Manual sample rates. En/Disables automatic adjustment of timers</p>
 <p>Default: true </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a4">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a2">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a7">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a4">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a2">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a2">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a2">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a4">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a4">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a4">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a4">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a3">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a2">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a4">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a3">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a2">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a2">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a2">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a3">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a3">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a3">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a3">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00117">117</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
@@ -562,7 +609,7 @@ $(function() {
  adcBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br  />
  adcBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br  />
  </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="MultiChannelAdcStream_8ino-example.html#a3">MultiChannelAdcStream.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a3">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a5">WirelessMicrophone.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="MultiChannelAdcStream_8ino-example.html#a3">MultiChannelAdcStream.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a3">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a4">WirelessMicrophone.ino</a>.</dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00128">128</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
@@ -588,10 +635,26 @@ $(function() {
  dacBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br  />
  dacBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br  />
  </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="SdAudioAuto_8ino-example.html#a8">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a5">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a6">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a5">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="SdAudioAuto_8ino-example.html#a5">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a4">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a5">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a4">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00139">139</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+
+</div>
+</div>
+<a id="a58ffe6c35c52bf503720a89546ad6d61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58ffe6c35c52bf503720a89546ad6d61">&#9670;&nbsp;</a></span>dacTaskHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TaskHandle_t AutoAnalog::dacTaskHandle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00182">182</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -601,7 +664,7 @@ $(function() {
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 7 2021 18:33:34 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Mon Apr 12 2021 16:45:51 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

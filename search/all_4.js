@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['enableadcchannel_37',['enableAdcChannel',['../classAutoAnalog.html#ab0f3ceccd76b77c0a6e407ba92f42346',1,'AutoAnalog']]],
-  ['endposition_38',['endPosition',['../ESP32_2ESP32__AudioTest_2myWAV_8h.html#a3fc7d72297512a5563c67a45a56a4153',1,'myWAV.h']]]
+  ['feeddac_22',['feedDAC',['../classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5',1,'AutoAnalog']]]
 ];

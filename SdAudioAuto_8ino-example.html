@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Auto Analog Audio
-   &#160;<span id="projectnumber">1.42</span>
+   &#160;<span id="projectnumber">1.43</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -70,11 +70,8 @@ $(function() {
 <div class="contents">
 <p><b>For Arduino Due</b><br  />
 </p>
-<ul>
-<li><p class="startli">Auto SDAudio Example:</p>
-<p class="startli">This example demonstrates how to play *.wav files from SD Card using interrupts.</p>
-</li>
-</ul>
+<p>Auto SDAudio Example:</p>
+<p>This example demonstrates how to play *.wav files from SD Card using interrupts.</p>
 <div class="fragment"><div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment">    AutoAnalogAudio streaming via DAC &amp; ADC by TMRh20</span></div>
 <div class="line"><span class="comment">    Copyright (C) 2016  TMRh20 - tmrh20@gmail.com, github.com/TMRh20</span></div>
@@ -112,14 +109,14 @@ $(function() {
 <div class="line"> </div>
 <div class="line">File myFile;</div>
 <div class="line"> </div>
-<div class="line">uint8_t <a name="a1"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 2;             <span class="comment">//Play audio on both DAC0 and DAC1 by default</span></div>
+<div class="line">uint8_t channelSelection = 2;             <span class="comment">//Play audio on both DAC0 and DAC1 by default</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/*********************************************************/</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a name="a2"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a4e5ace3081c1889b911e460ec4a1dbd2">DACC_Handler</a>(<span class="keywordtype">void</span>) {</div>
-<div class="line">  aaAudio.<a name="a3"></a><a class="code" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(<a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a>);      <span class="comment">//Feed the DAC with the data loaded into the dacBuffer</span></div>
-<div class="line">  aaAudio.<a name="a4"></a><a class="code" href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">dacHandler</a>();                   <span class="comment">//Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data</span></div>
-<div class="line">  <a name="a5"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#ab2b78c4d809057c8fa3d4074d99a33e6">loadBuffer</a>();                           <span class="comment">//Call the loadBuffer() function defined below to buffer from SD Card</span></div>
+<div class="line"><span class="keywordtype">void</span> DACC_Handler(<span class="keywordtype">void</span>) {</div>
+<div class="line">  aaAudio.<a name="a1"></a><a class="code" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(channelSelection);      <span class="comment">//Feed the DAC with the data loaded into the dacBuffer</span></div>
+<div class="line">  aaAudio.<a name="a2"></a><a class="code" href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">dacHandler</a>();                   <span class="comment">//Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data</span></div>
+<div class="line">  loadBuffer();                           <span class="comment">//Call the loadBuffer() function defined below to buffer from SD Card</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/*********************************************************/</span></div>
@@ -134,8 +131,8 @@ $(function() {
 <div class="line">  Serial.println(<span class="stringliteral">&quot;SD ok&quot;</span>);</div>
 <div class="line"> </div>
 <div class="line">  Serial.println(<span class="stringliteral">&quot;Analog Audio Begin&quot;</span>);</div>
-<div class="line">  aaAudio.<a name="a6"></a><a class="code" href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">begin</a>(0, 1);  <span class="comment">//Setup aaAudio using DAC</span></div>
-<div class="line">  aaAudio.<a name="a7"></a><a class="code" href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">autoAdjust</a> = 0;</div>
+<div class="line">  aaAudio.<a name="a3"></a><a class="code" href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">begin</a>(0, 1);  <span class="comment">//Setup aaAudio using DAC</span></div>
+<div class="line">  aaAudio.<a name="a4"></a><a class="code" href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">autoAdjust</a> = 0;</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/*********************************************************/</span></div>
@@ -146,12 +143,12 @@ $(function() {
 <div class="line">    <span class="keywordtype">char</span> input = Serial.read();</div>
 <div class="line">    <span class="keywordflow">switch</span> (input) {</div>
 <div class="line">      <span class="comment">//Play an 8-bit, 22Khz, Stereo WAV file</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;1&#39;</span>:  aaAudio.<a name="a8"></a><a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 8;  aaAudio.<a name="a9"></a><a class="code" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(24000); <a name="a10"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="stringliteral">&quot;M8b24kM.wav&quot;</span>);  <span class="keywordflow">break</span>;</div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;1&#39;</span>:  aaAudio.<a name="a5"></a><a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 8;  aaAudio.<a name="a6"></a><a class="code" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(24000); playAudio(<span class="stringliteral">&quot;M8b24kM.wav&quot;</span>);  <span class="keywordflow">break</span>;</div>
 <div class="line">      <span class="comment">//Play an 8-bit, 32Khz, Stereo WAV file</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;2&#39;</span>:  aaAudio.<a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 8;  aaAudio.<a class="code" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(48000); <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="stringliteral">&quot;M8b24kS.wav&quot;</span>);  <span class="keywordflow">break</span>;</div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;3&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 0;  <span class="keywordflow">break</span>;</div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;4&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 1;  <span class="keywordflow">break</span>;</div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;5&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 2;  <span class="keywordflow">break</span>;</div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;2&#39;</span>:  aaAudio.<a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 8;  aaAudio.<a class="code" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(48000); playAudio(<span class="stringliteral">&quot;M8b24kS.wav&quot;</span>);  <span class="keywordflow">break</span>;</div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;3&#39;</span>:  channelSelection = 0;  <span class="keywordflow">break</span>;</div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;4&#39;</span>:  channelSelection = 1;  <span class="keywordflow">break</span>;</div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;5&#39;</span>:  channelSelection = 2;  <span class="keywordflow">break</span>;</div>
 <div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;6&#39;</span>: Serial.println(<span class="stringliteral">&quot;OK&quot;</span>); <span class="keywordflow">break</span>;</div>
 <div class="line">    }</div>
 <div class="line">  }</div>
@@ -160,21 +157,21 @@ $(function() {
 <div class="line"><span class="comment">/*********************************************************/</span></div>
 <div class="line"><span class="comment">/* Function to open the audio file, seek to starting position and enable the DAC interrupt */</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="keywordtype">char</span> *<a name="a11"></a><a class="code" href="radioRelay_8cpp.html#aeb55d028079e845b63a47487a559a265">audioFile</a>) {</div>
+<div class="line"><span class="keywordtype">void</span> playAudio(<span class="keywordtype">char</span> *audioFile) {</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (myFile) {</div>
-<div class="line">    aaAudio.<a name="a12"></a><a class="code" href="classAutoAnalog.html#a7936ca7efd99bb3a66ece6115893af94">disableDAC</a>();</div>
+<div class="line">    aaAudio.<a name="a7"></a><a class="code" href="classAutoAnalog.html#a7936ca7efd99bb3a66ece6115893af94">disableDAC</a>();</div>
 <div class="line">    myFile.close();</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">//Open the designated file</span></div>
-<div class="line">  myFile = SD.open(<a class="code" href="radioRelay_8cpp.html#aeb55d028079e845b63a47487a559a265">audioFile</a>);</div>
+<div class="line">  myFile = SD.open(audioFile);</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (myFile) {</div>
 <div class="line">    <span class="comment">//Skip past the WAV header</span></div>
 <div class="line">    myFile.seek(44);</div>
 <div class="line">    <span class="comment">//Load one buffer</span></div>
-<div class="line">    <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#ab2b78c4d809057c8fa3d4074d99a33e6">loadBuffer</a>();</div>
+<div class="line">    loadBuffer();</div>
 <div class="line">    <span class="comment">//Feed the DAC to start playback</span></div>
 <div class="line">    aaAudio.<a class="code" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>();</div>
 <div class="line">  }</div>
@@ -183,18 +180,18 @@ $(function() {
 <div class="line"><span class="comment">/*********************************************************/</span></div>
 <div class="line"><span class="comment">/* Function called from DAC interrupt after dacHandler(). Loads data into the dacBuffer */</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#ab2b78c4d809057c8fa3d4074d99a33e6">loadBuffer</a>() {</div>
+<div class="line"><span class="keywordtype">void</span> loadBuffer() {</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (myFile) {</div>
 <div class="line">    <span class="keywordflow">if</span> (myFile.available()) {</div>
 <div class="line">      <span class="keywordflow">if</span> (aaAudio.<a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> == 8) {</div>
 <div class="line">        <span class="comment">//Load 32 samples into the 8-bit dacBuffer</span></div>
-<div class="line">        myFile.read((<span class="keywordtype">byte</span>*)aaAudio.<a name="a13"></a><a class="code" href="classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf">dacBuffer</a>, <a name="a14"></a><a class="code" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>);</div>
+<div class="line">        myFile.read((<span class="keywordtype">byte</span>*)aaAudio.<a name="a8"></a><a class="code" href="classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf">dacBuffer</a>, MAX_BUFFER_SIZE);</div>
 <div class="line">      } <span class="keywordflow">else</span> {</div>
 <div class="line">        <span class="comment">//Load 32 samples (64 bytes) into the 16-bit dacBuffer</span></div>
-<div class="line">        myFile.read((<span class="keywordtype">byte</span>*)aaAudio.<a name="a15"></a><a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>, <a class="code" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a> * 2);</div>
+<div class="line">        myFile.read((<span class="keywordtype">byte</span>*)aaAudio.<a name="a9"></a><a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>, MAX_BUFFER_SIZE * 2);</div>
 <div class="line">        <span class="comment">//Convert the 16-bit samples to 12-bit</span></div>
-<div class="line">        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>; i++) {</div>
+<div class="line">        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; MAX_BUFFER_SIZE; i++) {</div>
 <div class="line">          aaAudio.<a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[i] = (aaAudio.<a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[i] + 0x8000) &gt;&gt; 4;</div>
 <div class="line">        }</div>
 <div class="line">      }</div>
@@ -207,11 +204,6 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><span class="comment">/*********************************************************/</span></div>
 <div class="ttc" id="aAutoAnalogAudio_8h_html"><div class="ttname"><a href="AutoAnalogAudio_8h.html">AutoAnalogAudio.h</a></div></div>
-<div class="ttc" id="aAutoAnalog__config_8h_html_ad4d796b98c583d49e83adabd74a63bf6"><div class="ttname"><a href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a></div><div class="ttdeci">#define MAX_BUFFER_SIZE</div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalog__config_8h_source.html#l00031">AutoAnalog_config.h:31</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_a4e5ace3081c1889b911e460ec4a1dbd2"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a4e5ace3081c1889b911e460ec4a1dbd2">DACC_Handler</a></div><div class="ttdeci">void DACC_Handler(void)</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00010">myWAV.h:10</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_a8014c4ccf4648c5d80ea94067df04f63"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a></div><div class="ttdeci">uint8_t channelSelection</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00002">myWAV.h:2</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_a8b5e339ad4f30b0119d65d6b1cbed40d"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a></div><div class="ttdeci">void playAudio(const char *audioFile)</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00024">myWAV.h:24</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_ab2b78c4d809057c8fa3d4074d99a33e6"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#ab2b78c4d809057c8fa3d4074d99a33e6">loadBuffer</a></div><div class="ttdeci">uint32_t loadBuffer()</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00138">myWAV.h:138</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html"><div class="ttname"><a href="classAutoAnalog.html">AutoAnalog</a></div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalogAudio_8h_source.html#l00036">AutoAnalogAudio.h:37</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html_a0bf0cb2ddbf79748887551f09a7932ec"><div class="ttname"><a href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">AutoAnalog::dacHandler</a></div><div class="ttdeci">void dacHandler(void)</div></div>
 <div class="ttc" id="aclassAutoAnalog_html_a122737d7a251d9da00ecf02be72c2e18"><div class="ttname"><a href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">AutoAnalog::dacBitsPerSample</a></div><div class="ttdeci">uint8_t dacBitsPerSample</div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalogAudio_8h_source.html#l00139">AutoAnalogAudio.h:139</a></div></div>
@@ -222,11 +214,10 @@ $(function() {
 <div class="ttc" id="aclassAutoAnalog_html_a99cfa2255a20289a00274d3ead8d1f6e"><div class="ttname"><a href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">AutoAnalog::setSampleRate</a></div><div class="ttdeci">void setSampleRate(uint32_t sampRate=0, bool stereo=true)</div></div>
 <div class="ttc" id="aclassAutoAnalog_html_ad6728b5d90528b5817c1b8aa661de5e5"><div class="ttname"><a href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">AutoAnalog::feedDAC</a></div><div class="ttdeci">void feedDAC(uint8_t dacChannel=0, uint32_t samples=MAX_BUFFER_SIZE, bool startInterrupts=false)</div></div>
 <div class="ttc" id="aclassAutoAnalog_html_af050f10f4589e38907f4776bb49b0e07"><div class="ttname"><a href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">AutoAnalog::begin</a></div><div class="ttdeci">void begin(bool enADC, bool enDAC)</div></div>
-<div class="ttc" id="aradioRelay_8cpp_html_aeb55d028079e845b63a47487a559a265"><div class="ttname"><a href="radioRelay_8cpp.html#aeb55d028079e845b63a47487a559a265">audioFile</a></div><div class="ttdeci">char audioFile[]</div><div class="ttdef"><b>Definition:</b> <a href="radioRelay_8cpp_source.html#l00029">radioRelay.cpp:29</a></div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 7 2021 18:33:34 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Mon Apr 12 2021 16:45:51 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

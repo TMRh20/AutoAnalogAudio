@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['inthandler_43',['intHandler',['../radioRelay_8cpp.html#af7f8daedc0d0ef054185df4c8bd6e492',1,'intHandler():&#160;radioRelay.cpp'],['../wirelessSpeaker_8cpp.html#af7f8daedc0d0ef054185df4c8bd6e492',1,'intHandler():&#160;radioRelay.cpp']]]
+  ['setsamplerate_26',['setSampleRate',['../classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e',1,'AutoAnalog']]]
 ];

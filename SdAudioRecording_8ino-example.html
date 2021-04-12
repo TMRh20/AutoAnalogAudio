@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Auto Analog Audio
-   &#160;<span id="projectnumber">1.42</span>
+   &#160;<span id="projectnumber">1.43</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -70,11 +70,8 @@ $(function() {
 <div class="contents">
 <p><b>For Arduino Due</b><br  />
 </p>
-<ul>
-<li><p class="startli">Wav Recording SDAudio Example:</p>
-<p class="startli">This example demonstrates recording standard format *.wav files for playback on any PC or audio device.</p>
-</li>
-</ul>
+<p>Wav Recording SDAudio Example:</p>
+<p>This example demonstrates recording standard format *.wav files for playback on any PC or audio device.</p>
 <div class="fragment"><div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment">    AutoAnalogAudio streaming via DAC &amp; ADC by TMRh20</span></div>
 <div class="line"><span class="comment">    Copyright (C) 2016  TMRh20 - tmrh20@gmail.com, github.com/TMRh20</span></div>
@@ -122,7 +119,7 @@ $(function() {
 <div class="line">File recFile;</div>
 <div class="line"><span class="comment">/*********************************************************/</span></div>
 <div class="line"><span class="preprocessor">#include &quot;myWAV.h&quot;</span></div>
-<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="myRecording_8h.html">myRecording.h</a>&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;myRecording.h&quot;</span></div>
 <div class="line"><span class="comment">/*********************************************************/</span></div>
 <div class="line"> </div>
 <div class="line"><span class="keywordtype">void</span> setup() {</div>
@@ -147,28 +144,28 @@ $(function() {
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (millis() - displayTimer &gt; 1000) {</div>
 <div class="line">    displayTimer = millis();</div>
-<div class="line">    <span class="keywordflow">if</span> (<a name="a3"></a><a class="code" href="myRecording_8h.html#a51322ddb267b4729d6b5f2bb05d49fff">counter</a>) {</div>
+<div class="line">    <span class="keywordflow">if</span> (counter) {</div>
 <div class="line">      Serial.print(<span class="stringliteral">&quot;Samples per Second: &quot;</span>);</div>
-<div class="line">      Serial.println(<a class="code" href="myRecording_8h.html#a51322ddb267b4729d6b5f2bb05d49fff">counter</a> * <a name="a4"></a><a class="code" href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a>);</div>
+<div class="line">      Serial.println(counter * MAX_BUFFER_SIZE);</div>
 <div class="line">    }</div>
-<div class="line">    <a class="code" href="myRecording_8h.html#a51322ddb267b4729d6b5f2bb05d49fff">counter</a> = 0;</div>
+<div class="line">    counter = 0;</div>
 <div class="line">  }</div>
 <div class="line"> </div>
 <div class="line">  <span class="keywordflow">if</span> (Serial.available()) {</div>
 <div class="line">    <span class="keywordtype">char</span> input = Serial.read();</div>
 <div class="line">    <span class="keywordflow">switch</span> (input) {</div>
 <div class="line"> </div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;1&#39;</span>:  <a name="a5"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="stringliteral">&quot;M8b24kM.wav&quot;</span>);  <span class="keywordflow">break</span>; <span class="comment">//Play a *.wav file by name - 8bit, 24khz, Mono</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;2&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="stringliteral">&quot;M8b24kS.wav&quot;</span>);  <span class="keywordflow">break</span>; <span class="comment">//Play  8bit, 24khz, Stereo</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;3&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="stringliteral">&quot;M16b24kS.wav&quot;</span>); <span class="keywordflow">break</span>; <span class="comment">//Play 16bit, 24khz, Stereo</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;4&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(<span class="stringliteral">&quot;M8b44kST.wav&quot;</span>); <span class="keywordflow">break</span>; <span class="comment">//Play  8bit, 44khz, Stereo</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;5&#39;</span>:  <a name="a6"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 0;      <span class="keywordflow">break</span>; <span class="comment">//Play the audio on DAC0</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;6&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 1;      <span class="keywordflow">break</span>; <span class="comment">//Play the audio on DAC1</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;7&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a> = 2;      <span class="keywordflow">break</span>; <span class="comment">//Play the audio on DAC0 &amp; DAC1</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;1&#39;</span>:  playAudio(<span class="stringliteral">&quot;M8b24kM.wav&quot;</span>);  <span class="keywordflow">break</span>; <span class="comment">//Play a *.wav file by name - 8bit, 24khz, Mono</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;2&#39;</span>:  playAudio(<span class="stringliteral">&quot;M8b24kS.wav&quot;</span>);  <span class="keywordflow">break</span>; <span class="comment">//Play  8bit, 24khz, Stereo</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;3&#39;</span>:  playAudio(<span class="stringliteral">&quot;M16b24kS.wav&quot;</span>); <span class="keywordflow">break</span>; <span class="comment">//Play 16bit, 24khz, Stereo</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;4&#39;</span>:  playAudio(<span class="stringliteral">&quot;M8b44kST.wav&quot;</span>); <span class="keywordflow">break</span>; <span class="comment">//Play  8bit, 44khz, Stereo</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;5&#39;</span>:  channelSelection = 0;      <span class="keywordflow">break</span>; <span class="comment">//Play the audio on DAC0</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;6&#39;</span>:  channelSelection = 1;      <span class="keywordflow">break</span>; <span class="comment">//Play the audio on DAC1</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;7&#39;</span>:  channelSelection = 2;      <span class="keywordflow">break</span>; <span class="comment">//Play the audio on DAC0 &amp; DAC1</span></div>
 <div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;8&#39;</span>:  Serial.println(<span class="stringliteral">&quot;OK&quot;</span>);      <span class="keywordflow">break</span>;</div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;9&#39;</span>:  <a name="a7"></a><a class="code" href="myRecording_8h.html#a4ea53321b85f86e188fd80d36c9189ed">startRecording</a>(newWavFile, 11000); <span class="keywordflow">break</span>; <span class="comment">//Start recording @11khz,8-bit,Mono</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;0&#39;</span>:  <a name="a8"></a><a class="code" href="myRecording_8h.html#abc4265fd9d0dfc06a3a6acb4ab597fb0">stopRecording</a>(newWavFile, 11000);  <span class="keywordflow">break</span>; <span class="comment">//Stop the recording and finalize the file</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;p&#39;</span>:  <a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a>(newWavFile);      <span class="keywordflow">break</span>; <span class="comment">//Play back the recorded audio</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;9&#39;</span>:  startRecording(newWavFile, 11000); <span class="keywordflow">break</span>; <span class="comment">//Start recording @11khz,8-bit,Mono</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;0&#39;</span>:  stopRecording(newWavFile, 11000);  <span class="keywordflow">break</span>; <span class="comment">//Stop the recording and finalize the file</span></div>
+<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;p&#39;</span>:  playAudio(newWavFile);      <span class="keywordflow">break</span>; <span class="comment">//Play back the recorded audio</span></div>
 <div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;D&#39;</span>:  SD.remove(newWavFile);      <span class="keywordflow">break</span>; <span class="comment">//Delete the file and start fresh</span></div>
 <div class="line">    }</div>
 <div class="line">  }</div>
@@ -178,20 +175,13 @@ $(function() {
 <div class="line"> </div>
 <div class="line"> </div>
 <div class="ttc" id="aAutoAnalogAudio_8h_html"><div class="ttname"><a href="AutoAnalogAudio_8h.html">AutoAnalogAudio.h</a></div></div>
-<div class="ttc" id="aAutoAnalog__config_8h_html_ad4d796b98c583d49e83adabd74a63bf6"><div class="ttname"><a href="AutoAnalog__config_8h.html#ad4d796b98c583d49e83adabd74a63bf6">MAX_BUFFER_SIZE</a></div><div class="ttdeci">#define MAX_BUFFER_SIZE</div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalog__config_8h_source.html#l00031">AutoAnalog_config.h:31</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_a8014c4ccf4648c5d80ea94067df04f63"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8014c4ccf4648c5d80ea94067df04f63">channelSelection</a></div><div class="ttdeci">uint8_t channelSelection</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00002">myWAV.h:2</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_a8b5e339ad4f30b0119d65d6b1cbed40d"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a8b5e339ad4f30b0119d65d6b1cbed40d">playAudio</a></div><div class="ttdeci">void playAudio(const char *audioFile)</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00024">myWAV.h:24</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html"><div class="ttname"><a href="classAutoAnalog.html">AutoAnalog</a></div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalogAudio_8h_source.html#l00036">AutoAnalogAudio.h:37</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html_a34814ebff21d9b602f1f33503c070a54"><div class="ttname"><a href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">AutoAnalog::autoAdjust</a></div><div class="ttdeci">bool autoAdjust</div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalogAudio_8h_source.html#l00117">AutoAnalogAudio.h:117</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html_af050f10f4589e38907f4776bb49b0e07"><div class="ttname"><a href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">AutoAnalog::begin</a></div><div class="ttdeci">void begin(bool enADC, bool enDAC)</div></div>
-<div class="ttc" id="amyRecording_8h_html"><div class="ttname"><a href="myRecording_8h.html">myRecording.h</a></div></div>
-<div class="ttc" id="amyRecording_8h_html_a4ea53321b85f86e188fd80d36c9189ed"><div class="ttname"><a href="myRecording_8h.html#a4ea53321b85f86e188fd80d36c9189ed">startRecording</a></div><div class="ttdeci">void startRecording(const char *fileName, uint32_t sampleRate)</div><div class="ttdef"><b>Definition:</b> <a href="myRecording_8h_source.html#l00037">myRecording.h:37</a></div></div>
-<div class="ttc" id="amyRecording_8h_html_a51322ddb267b4729d6b5f2bb05d49fff"><div class="ttname"><a href="myRecording_8h.html#a51322ddb267b4729d6b5f2bb05d49fff">counter</a></div><div class="ttdeci">uint32_t counter</div><div class="ttdef"><b>Definition:</b> <a href="myRecording_8h_source.html#l00024">myRecording.h:24</a></div></div>
-<div class="ttc" id="amyRecording_8h_html_abc4265fd9d0dfc06a3a6acb4ab597fb0"><div class="ttname"><a href="myRecording_8h.html#abc4265fd9d0dfc06a3a6acb4ab597fb0">stopRecording</a></div><div class="ttdeci">void stopRecording(const char *fileName, uint32_t sampleRate)</div><div class="ttdef"><b>Definition:</b> <a href="myRecording_8h_source.html#l00123">myRecording.h:123</a></div></div>
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 7 2021 18:33:34 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Mon Apr 12 2021 16:45:51 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

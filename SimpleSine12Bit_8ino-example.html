@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Auto Analog Audio
-   &#160;<span id="projectnumber">1.42</span>
+   &#160;<span id="projectnumber">1.43</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -70,12 +70,9 @@ $(function() {
 <div class="contents">
 <p><b>For Arduino Due</b><br  />
 </p>
-<ul>
-<li><p class="startli">Simple Sine Wave Generation Example:</p>
-<p class="startli">This example demonstrates simple generation of a 12-bit sine wave</p>
-<p class="startli">Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume</p>
-</li>
-</ul>
+<p>Simple Sine Wave Generation Example:</p>
+<p>This example demonstrates simple generation of a 12-bit sine wave</p>
+<p>Send a number 1 or 2 over Serial to change frequency, +/- to adjust volume</p>
 <div class="fragment"><div class="line"> </div>
 <div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment">    AutoAnalogAudio streaming via DAC &amp; ADC by TMRh20</span></div>
@@ -106,8 +103,8 @@ $(function() {
 <div class="line"> </div>
 <div class="line"><a name="_a0"></a><a class="code" href="classAutoAnalog.html">AutoAnalog</a> aaAudio;</div>
 <div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> <a name="a1"></a><a class="code" href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a4e5ace3081c1889b911e460ec4a1dbd2">DACC_Handler</a>(<span class="keywordtype">void</span>) {</div>
-<div class="line">  aaAudio.<a name="a2"></a><a class="code" href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">dacHandler</a>();   <span class="comment">//Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data</span></div>
+<div class="line"><span class="keywordtype">void</span> DACC_Handler(<span class="keywordtype">void</span>) {</div>
+<div class="line">  aaAudio.<a name="a1"></a><a class="code" href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">dacHandler</a>();   <span class="comment">//Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data</span></div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"> </div>
@@ -116,10 +113,10 @@ $(function() {
 <div class="line">  Serial.begin(115200);</div>
 <div class="line">  Serial.println(<span class="stringliteral">&quot;Analog Audio Begin&quot;</span>);</div>
 <div class="line"> </div>
-<div class="line">  aaAudio.<a name="a3"></a><a class="code" href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">begin</a>(0, 1);          <span class="comment">//Setup aaAudio using DAC</span></div>
-<div class="line">  aaAudio.<a name="a4"></a><a class="code" href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">autoAdjust</a> = 0;       <span class="comment">//Disable automatic timer adjustment</span></div>
-<div class="line">  aaAudio.<a name="a5"></a><a class="code" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(16000); <span class="comment">//Set the sample rate to 16khz</span></div>
-<div class="line">  aaAudio.<a name="a6"></a><a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 12; <span class="comment">//Use 12-bit samples for the DAC</span></div>
+<div class="line">  aaAudio.<a name="a2"></a><a class="code" href="classAutoAnalog.html#af050f10f4589e38907f4776bb49b0e07">begin</a>(0, 1);          <span class="comment">//Setup aaAudio using DAC</span></div>
+<div class="line">  aaAudio.<a name="a3"></a><a class="code" href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">autoAdjust</a> = 0;       <span class="comment">//Disable automatic timer adjustment</span></div>
+<div class="line">  aaAudio.<a name="a4"></a><a class="code" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(16000); <span class="comment">//Set the sample rate to 16khz</span></div>
+<div class="line">  aaAudio.<a name="a5"></a><a class="code" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 12; <span class="comment">//Use 12-bit samples for the DAC</span></div>
 <div class="line">  arraysetup();                 <span class="comment">//Load the DAC buffer using a 32-step sine wave</span></div>
 <div class="line"> </div>
 <div class="line">}</div>
@@ -133,7 +130,7 @@ $(function() {
 <div class="line">  <span class="comment">//AutoAdjust is disabled above, so this function will block until the DAC is ready for more data</span></div>
 <div class="line">  <span class="comment">//All other processing needs to be completed before the DAC is out of data</span></div>
 <div class="line">  <span class="comment">//In this example, the DAC is being fed data in chunks of 32 bytes or 32 8-bit samples</span></div>
-<div class="line">  aaAudio.<a name="a7"></a><a class="code" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(0, 32);</div>
+<div class="line">  aaAudio.<a name="a6"></a><a class="code" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(0, 32);</div>
 <div class="line"> </div>
 <div class="line">  <span class="comment">//Choose between two different frequencies via Serial command</span></div>
 <div class="line">  <span class="comment">//Adjust the volume by sending a &#39;+&#39; or &#39;-&#39; over Serial</span></div>
@@ -155,7 +152,7 @@ $(function() {
 <div class="line"><span class="comment">//Load a 32-step sine wave into the dacBuffer</span></div>
 <div class="line"><span class="comment">//Shift the values according to volume</span></div>
 <div class="line"><span class="keywordtype">void</span> arraysetup(<span class="keywordtype">void</span>) {</div>
-<div class="line">  aaAudio.<a name="a8"></a><a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[0] = 0x800 &gt;&gt; shiftVal;</div>
+<div class="line">  aaAudio.<a name="a7"></a><a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[0] = 0x800 &gt;&gt; shiftVal;</div>
 <div class="line">  aaAudio.<a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[1] = 0x990 &gt;&gt; shiftVal;</div>
 <div class="line">  aaAudio.<a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[2] = 0xB10 &gt;&gt; shiftVal;</div>
 <div class="line">  aaAudio.<a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[3] = 0xC72  &gt;&gt; shiftVal;</div>
@@ -227,7 +224,6 @@ $(function() {
 <div class="line">  aaAudio.<a class="code" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[31] = 0x4F0 &gt;&gt; shiftVal;</div>
 <div class="line">}</div>
 <div class="ttc" id="aAutoAnalogAudio_8h_html"><div class="ttname"><a href="AutoAnalogAudio_8h.html">AutoAnalogAudio.h</a></div></div>
-<div class="ttc" id="aESP32_2ESP32__AudioTest_2myWAV_8h_html_a4e5ace3081c1889b911e460ec4a1dbd2"><div class="ttname"><a href="ESP32_2ESP32__AudioTest_2myWAV_8h.html#a4e5ace3081c1889b911e460ec4a1dbd2">DACC_Handler</a></div><div class="ttdeci">void DACC_Handler(void)</div><div class="ttdef"><b>Definition:</b> <a href="ESP32_2ESP32__AudioTest_2myWAV_8h_source.html#l00010">myWAV.h:10</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html"><div class="ttname"><a href="classAutoAnalog.html">AutoAnalog</a></div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalogAudio_8h_source.html#l00036">AutoAnalogAudio.h:37</a></div></div>
 <div class="ttc" id="aclassAutoAnalog_html_a0bf0cb2ddbf79748887551f09a7932ec"><div class="ttname"><a href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">AutoAnalog::dacHandler</a></div><div class="ttdeci">void dacHandler(void)</div></div>
 <div class="ttc" id="aclassAutoAnalog_html_a122737d7a251d9da00ecf02be72c2e18"><div class="ttname"><a href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">AutoAnalog::dacBitsPerSample</a></div><div class="ttdeci">uint8_t dacBitsPerSample</div><div class="ttdef"><b>Definition:</b> <a href="AutoAnalogAudio_8h_source.html#l00139">AutoAnalogAudio.h:139</a></div></div>
@@ -239,7 +235,7 @@ $(function() {
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 7 2021 18:33:34 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Mon Apr 12 2021 16:45:51 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

@@ -23,7 +23,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Auto Analog Audio
-   &#160;<span id="projectnumber">1.42</span>
+   &#160;<span id="projectnumber">1.43</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -83,17 +83,20 @@ $(function() {
   <tr><td class="entry"><a class="el" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a></td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
   <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">dacHandler</a>(void)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
   <tr><td class="entry"><a class="el" href="classAutoAnalog.html#aa689bffc34485c3fc6cddfdd01ca399b">dacInterrupts</a>(bool enabled=true, bool withinTask=false)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#af23ab64cf3d4881f55ba1d5c0b1d607b">disableAdcChannel</a>(uint8_t pinAx)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#a7936ca7efd99bb3a66ece6115893af94">disableDAC</a>(bool withinTask=false)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#ab0f3ceccd76b77c0a6e407ba92f42346">enableAdcChannel</a>(uint8_t pinAx)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(uint8_t dacChannel=0, uint32_t samples=MAX_BUFFER_SIZE, bool startInterrupts=false)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC</a>(uint32_t samples=MAX_BUFFER_SIZE)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(uint32_t sampRate=0, bool stereo=true)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#aedd70fc9f6f130c32ccb015b670f5318">triggerADC</a>()</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#a58ffe6c35c52bf503720a89546ad6d61">dacTaskHandle</a></td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#af23ab64cf3d4881f55ba1d5c0b1d607b">disableAdcChannel</a>(uint8_t pinAx)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#a7936ca7efd99bb3a66ece6115893af94">disableDAC</a>(bool withinTask=false)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#ab0f3ceccd76b77c0a6e407ba92f42346">enableAdcChannel</a>(uint8_t pinAx)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(uint8_t dacChannel=0, uint32_t samples=MAX_BUFFER_SIZE, bool startInterrupts=false)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC</a>(uint32_t samples=MAX_BUFFER_SIZE)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#a20472840f8cd85e9a41a5a968f522d23">rampIn</a>(uint8_t sample)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#a6a49d5ac89bf8edbc8e91f9686099dbc">rampOut</a>(uint8_t sample)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e">setSampleRate</a>(uint32_t sampRate=0, bool stereo=true)</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
+  <tr><td class="entry"><a class="el" href="classAutoAnalog.html#aedd70fc9f6f130c32ccb015b670f5318">triggerADC</a>()</td><td class="entry"><a class="el" href="classAutoAnalog.html">AutoAnalog</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 7 2021 18:33:34 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
+Generated on Mon Apr 12 2021 16:45:51 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1
 </small></address>
 </body>
 </html>

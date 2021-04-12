@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['bitspersample_129',['bitsPerSample',['../structwavStruct.html#a649c279336b4d4e015d40843b171aca0',1,'wavStruct']]],
-  ['blockalign_130',['blockAlign',['../structwavStruct.html#a8f84ef76f9cda4505e663e6899756a72',1,'wavStruct']]],
-  ['bufr_131',['bufR',['../radioRelay_8cpp.html#a51ee633ac58c12ea248bbd19f56083a2',1,'bufR():&#160;radioRelay.cpp'],['../wirelessSpeaker_8cpp.html#a51ee633ac58c12ea248bbd19f56083a2',1,'bufR():&#160;wirelessSpeaker.cpp']]],
-  ['byterate_132',['byteRate',['../structwavStruct.html#a53216ad90372c322e87ef53a02c1ce77',1,'wavStruct']]]
+  ['dacbitspersample_49',['dacBitsPerSample',['../classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18',1,'AutoAnalog']]],
+  ['dacbuffer_50',['dacBuffer',['../classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf',1,'AutoAnalog']]],
+  ['dacbuffer16_51',['dacBuffer16',['../classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71',1,'AutoAnalog']]],
+  ['dactaskhandle_52',['dacTaskHandle',['../classAutoAnalog.html#a58ffe6c35c52bf503720a89546ad6d61',1,'AutoAnalog']]]
 ];

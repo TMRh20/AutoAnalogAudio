@@ -1,5 +1,0 @@
-var searchData=
-[
-  ['radio_112',['radio',['../AudioRadioRelay_2myRadio_8h.html#a771b97fa1e21682b39948f2978229a0b',1,'radio(radioCEPin, radioCSPin):&#160;myRadio.h'],['../SimpleSine_2myRadio_8h.html#acec3bd1a95deddaf2b9ec088482bf555',1,'radio(46, 52):&#160;myRadio.h'],['../WirelessMicrophone_2myRadio_8h.html#acec3bd1a95deddaf2b9ec088482bf555',1,'radio(46, 52):&#160;myRadio.h'],['../WirelessSpeaker_2myRadio_8h.html#acec3bd1a95deddaf2b9ec088482bf555',1,'radio(46, 52):&#160;myRadio.h'],['../radioRelay_8cpp.html#a5532258cd0ecd1ad2497775a64aa3a2b',1,'radio(25, 0):&#160;radioRelay.cpp'],['../wirelessSpeaker_8cpp.html#a5532258cd0ecd1ad2497775a64aa3a2b',1,'radio(25, 0):&#160;wirelessSpeaker.cpp']]],
-  ['rx_113',['RX',['../AudioRadioRelay_2myRadio_8h.html#a83c842c62d349a53b8ab92de31655d65',1,'RX():&#160;myRadio.h'],['../SimpleSine_2myRadio_8h.html#a83c842c62d349a53b8ab92de31655d65',1,'RX():&#160;myRadio.h'],['../WirelessMicrophone_2myRadio_8h.html#a83c842c62d349a53b8ab92de31655d65',1,'RX():&#160;myRadio.h'],['../WirelessSpeaker_2myRadio_8h.html#a83c842c62d349a53b8ab92de31655d65',1,'RX():&#160;myRadio.h']]]
-];
