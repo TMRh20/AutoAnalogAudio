@@ -232,7 +232,7 @@ private:
   i2s_config_t i2s_cfg;
 
   bool i2sStopped;
-
+  adc1_channel_t adcChannel;
 
   bool taskCreated;
 
