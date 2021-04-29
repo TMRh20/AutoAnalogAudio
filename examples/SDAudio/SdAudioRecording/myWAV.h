@@ -6,9 +6,11 @@ void loadBuffer();
 /*********************************************************/
 
 void DACC_Handler(void) {
-  aaAudio.feedDAC(channelSelection);      //Feed the DAC with the data loaded into the dacBuffer
-  aaAudio.dacHandler();                   //Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data
+  aaAudio.dacHandler();
   loadBuffer();
+  aaAudio.feedDAC(channelSelection);      //Feed the DAC with the data loaded into the dacBuffer
+                     //Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data
+  
 }
 
 /*********************************************************/
@@ -89,7 +91,11 @@ void playAudio(const char *audioFile) {
     //Load one buffer
     loadBuffer();
     //Feed the DAC to start playback
-    aaAudio.feedDAC();
+    #if defined (ESP32)
+      aaAudio.feedDAC(0,MAX_BUFFER_SIZE,true);
+    #else
+      aaAudio.feedDAC();
+    #endif
   } else {
 #if defined (AUDIO_DEBUG)
     Serial.print("Failed to open ");
@@ -108,6 +114,7 @@ void loadBuffer() {
       if (aaAudio.dacBitsPerSample == 8) {
         //Load 32 samples into the 8-bit dacBuffer
         myFile.read((byte*)aaAudio.dacBuffer, MAX_BUFFER_SIZE);
+
       } else {
         //Load 32 samples (64 bytes) into the 16-bit dacBuffer
         myFile.read((byte*)aaAudio.dacBuffer16, MAX_BUFFER_SIZE * 2);

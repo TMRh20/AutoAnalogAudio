@@ -25,10 +25,16 @@ uint32_t counter = 0;
 /*********************************************************/
 
 void ADC_Handler(void) {                                   //ADC Interrupt triggered by ADC sampling completion
-  aaAudio.getADC();
+  aaAudio.getADC(MAX_BUFFER_SIZE);
   if (recFile) {
+    #if defined (ESP32)
+      for(int i=0; i<MAX_BUFFER_SIZE;i++){
+        aaAudio.adcBuffer[i] = aaAudio.adcBuffer16[i]>>4;
+      }
+    #endif
     recFile.write(aaAudio.adcBuffer, MAX_BUFFER_SIZE);     //Write the data to SD as it is available
     counter++;
+
   }
 }
 
@@ -83,8 +89,10 @@ void createWavHeader(const char *fileName, uint32_t sampleRate ) {
 #endif
     return;
   }
-  recFile = SD.open(fileName, FILE_WRITE);
-
+  #if !defined (ESP32)
+    recFile = SD.open(fileName, FILE_WRITE);
+  #endif
+  
   if (recFile.size() <= 44) {
 #if defined (RECORD_DEBUG)
     Serial.println("File contains no data, exiting");
@@ -123,7 +131,11 @@ void createWavHeader(const char *fileName, uint32_t sampleRate ) {
 void stopRecording(const char *fileName, uint32_t sampleRate) {
 
   aaAudio.adcInterrupts(false);                        //Disable the ADC interrupt
-  recFile.close();                                         //Close the file
+  #if defined (ESP32)
+    recFile.flush();
+  #else
+    recFile.close();                                         //Close the file
+  #endif
   createWavHeader(fileName, sampleRate);                   //Add appropriate header info, to make it a valid *.wav file
 #if defined (RECORD_DEBUG)
   Serial.println("Recording Stopped");
@@ -131,5 +143,3 @@ void stopRecording(const char *fileName, uint32_t sampleRate) {
 }
 
 /*********************************************************/
-
-
