@@ -22,9 +22,9 @@
   
     #define MAX_BUFFER_SIZE 256
   
-  #elif defined ESP32
+  #elif defined ESP32 || defined ARDUINO_ARCH_NRF52840
       
-    #define MAX_BUFFER_SIZE 512
+    #define MAX_BUFFER_SIZE 1600
 
   #else    
   

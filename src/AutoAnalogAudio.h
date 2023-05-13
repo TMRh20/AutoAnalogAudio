@@ -99,8 +99,12 @@ public:
    *  10 or 12-bit samples are read directly from this buffer after calling getADC() <br>
    * @see adcBitsPerSample
    */
+  #if !defined(ARDUINO_ARCH_NRF52840)
   uint16_t adcBuffer16[MAX_BUFFER_SIZE];
-
+  #else
+  inline static int16_t adcBuffer16[MAX_BUFFER_SIZE];  
+  #endif
+  
   /** Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h
    * @param sampRate This sets the defined sample rate ie: 32000 is 32Khz
    * @param stereo Only used for the ESP32, this sets stereo or mono output and affects the sample rate
@@ -184,6 +188,25 @@ public:
 
   /**@}*/
 
+#if defined (ARDUINO_ARCH_NRF52840)
+  inline static uint8_t aCtr;
+  inline static uint32_t aSize;
+  inline static uint16_t *buf0 = NULL;
+  inline static uint16_t *buf1 = NULL;
+  inline static void (*_onReceive)(uint16_t *buf, uint32_t buf_len) = NULL;
+  inline static void adcCallback(uint16_t *buf, uint32_t buf_len);
+  inline static void set_callback(void(*function)(uint16_t *buf, uint32_t buf_len));
+  inline static bool adcReady;
+  inline static uint16_t dacBuf0[MAX_BUFFER_SIZE];
+  inline static uint16_t dacBuf1[MAX_BUFFER_SIZE];
+  bool micOn;
+  int pwrPin;
+  int dinPin;
+  int clkPin;
+  int8_t gain;
+  inline static uint32_t sampleCounter;
+#endif
+
 private:
 
   /**
@@ -194,7 +217,7 @@ private:
    *  may want to extend this class.
    */
   /**@{*/
-#if defined (ARDUINO_ARCH_SAM)
+#if defined (ARDUINO_ARCH_SAM) 
   bool whichDma = 0;
   bool whichDac;
   bool dacChan;
