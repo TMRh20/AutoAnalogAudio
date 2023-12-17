@@ -9,6 +9,7 @@ void setup() {
   aaAudio.begin(1, 1);
   aaAudio.autoAdjust = 0;
   aaAudio.adcBitsPerSample = 16; // 16-bit audio at 16khz is the default on NRF52 and cannot be modified currently (in progress)
+  aaAudio.dacBitsPerSample = 16;
   aaAudio.setSampleRate(16000);
 
 }

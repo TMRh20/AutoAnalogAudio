@@ -191,7 +191,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
   NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
   NRF_PWM0->PRESCALER = (PWM_PRESCALER_PRESCALER_DIV_1 << PWM_PRESCALER_PRESCALER_Pos);
-  NRF_PWM0->COUNTERTOP = (1003 << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
+  NRF_PWM0->COUNTERTOP = (((16000000/DEFAULT_FREQUENCY) + 5) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
   NRF_PWM0->LOOP = (1 << PWM_LOOP_CNT_Pos);
   NRF_PWM0->DECODER = (PWM_DECODER_LOAD_Common << PWM_DECODER_LOAD_Pos) | (PWM_DECODER_MODE_RefreshCount << PWM_DECODER_MODE_Pos);
   NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
@@ -211,6 +211,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
+    NRF_PWM0->COUNTERTOP = (((16000000/sampRate) + 5) << PWM_COUNTERTOP_COUNTERTOP_Pos);
 
 }
 
@@ -272,12 +273,17 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
     if(millis() - timer > 10){ break; }
     NRF_PWM0->EVENTS_SEQEND[0] = 0;
   }
-  memcpy(dacBuf0, dacBuffer16, samples);
+  
+  if(dacBitsPerSample > 8){
+    memcpy(dacBuf0, dacBuffer16, samples);
+  }else{
+    for(int i=0; i<samples; i++){
+      dacBuf0[i] = dacBuffer[i] << 8;
+    }
+  }
   NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
   NRF_PWM0->SEQ[0].CNT = (samples << PWM_SEQ_CNT_CNT_Pos);
   NRF_PWM0->TASKS_SEQSTART[0] = 1; 
-   
-   
    
 }
 
