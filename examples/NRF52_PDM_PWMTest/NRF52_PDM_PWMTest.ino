@@ -5,7 +5,7 @@ AutoAnalog aaAudio;
 
 void setup() {
   
-  //Startup the PDM Microphone on pin A0 and PWM(pseudo DAC) on pin 5
+  //Startup the PDM Microphone and PWM(pseudo DAC) on pin 5
   aaAudio.begin(1, 1);
   aaAudio.autoAdjust = 0;
   aaAudio.adcBitsPerSample = 16; // 16-bit audio at 16khz is the default on NRF52 and cannot be modified currently (in progress)
