@@ -18,20 +18,22 @@
     
 /****************************************************************************/
 
-#if defined (ARDUINO_ARCH_NRF52840)
+#if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52)
 
 #include "../AutoAnalogAudio.h"
 #include <hal/nrf_pdm.h>
 #include <hal/nrf_i2s.h>
 
-#define PDM_IRQ_PRIORITY     7
-#define NRF_PDM_FREQ_1280K  (nrf_pdm_freq_t)(0x0A000000UL)               ///< PDM_CLK= 1.280 MHz (32 MHz / 25) => Fs= 20000 Hz
-#define DEFAULT_PDM_GAIN     20
-#define PIN_MCK    (13)
-#define PIN_SCK    (14)
-#define PIN_LRCK   (15)
-#define PIN_SDOUT  (2)
-
+#if !defined ARDUINO_NRF52840_FEATHER
+  #define PDM_IRQ_PRIORITY     7
+  #define NRF_PDM_FREQ_1280K  (nrf_pdm_freq_t)(0x0A000000UL)               ///< PDM_CLK= 1.280 MHz (32 MHz / 25) => Fs= 20000 Hz
+  #define DEFAULT_PDM_GAIN     20
+#endif
+  #define PIN_MCK    12//(13)
+  #define PIN_SCK    13//(14)
+  #define PIN_LRCK   14//(15)
+  #define PIN_SDOUT  (28)
+  #define DEFAULT_PWM_PIN 5
 /****************************************************************************/
 /* Public Functions */
 /****************************************************************************/
@@ -44,26 +46,29 @@
   //int16_t sine_table[] = { 0, 0, 23170, 23170, 32767, 32767, 23170, 23170, 0, 0, -23170, -23170, -32768, -32768, -23170, -23170};
   
 AutoAnalog::AutoAnalog(){
-   
+#if !defined ARDUINO_NRF52840_FEATHER   
   adcReady = false;   
   adcBitsPerSample = 8;
+#endif
   dacBitsPerSample = 8;
   autoAdjust = true;
   for(int i=0; i<MAX_BUFFER_SIZE; i++){
       dacBuffer[i] = 0;
   }
 
+#if !defined ARDUINO_NRF52840_FEATHER
   aSize = MAX_BUFFER_SIZE;//&buf_size;
   buf0 = &adcBuf0[0];
   buf1 = &adcBuf1[0];  
   aCtr = 0;
   micOn = 0;
   sampleCounter = 0;
-  
+#endif
 }
 
 void AutoAnalog::begin(bool enADC, bool enDAC){
   
+#if !defined ARDUINO_NRF52840_FEATHER  
   if(enADC){
 
     set_callback(adcCallback);
@@ -81,6 +86,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   //Set default 16khz sample rate
   NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
   nrf_pdm_clock_set(NRF_PDM_FREQ_1280K);
+//nrf_pdm_clock_set(NRF_PDM_FREQ_1032K);
   //nrf_pdm_clock_set(NRF_PDM_FREQ_1067K);
  //   NRF_PDM_FREQ_1000K = PDM_PDMCLKCTRL_FREQ_1000K,  ///< PDM_CLK = 1.000 MHz.
  //   NRF_PDM_FREQ_1032K = PDM_PDMCLKCTRL_FREQ_Default,  ///< PDM_CLK = 1.032 MHz.
@@ -128,22 +134,22 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
   //Serial.println("ADC START");
   
-  
+
   
   }
-  
+   #endif 
   
   
   if(enDAC){
       // Enable transmission
-  NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
+  /*NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
   
   // Enable MCK generator
   NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_ENABLE << I2S_CONFIG_MCKEN_MCKEN_Pos);
   
   // MCKFREQ = 4 MHz
-  //NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV11  << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-  NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV63 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+  NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV31  << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+  //NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV63 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
  
   // Ratio = 64 
   NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_64X << I2S_CONFIG_RATIO_RATIO_Pos;
@@ -151,7 +157,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
  
   // Master mode, 16Bit, left aligned
   NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_MASTER << I2S_CONFIG_MODE_MODE_Pos;
-  NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_8BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+  NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
   NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_LEFT << I2S_CONFIG_ALIGN_ALIGN_Pos;
   
   // Format = I2S
@@ -166,16 +172,35 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   NRF_I2S->PSEL.LRCK = (PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos); 
   NRF_I2S->PSEL.SDOUT = (PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos);
   
-  NRF_I2S->ENABLE = 1;
+
   
   // Configure data pointer
-  NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+  NRF_I2S->TXD.PTR = (uint32_t)dacBuf0;
+  NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
   NRF_I2S->RXTXD.MAXCNT = MAX_BUFFER_SIZE / sizeof(uint32_t);
   //NRF_I2S->TXD.PTR = (uint32_t)&sine_table[0];
   //NRF_I2S->RXTXD.MAXCNT = sizeof(sine_table) / sizeof(uint32_t);
-  
+  NRF_I2S->ENABLE = 1;  
   // Start transmitting I2S data
-  NRF_I2S->TASKS_START = 1;
+  NRF_I2S->TASKS_START = 1;*/
+  
+  pinMode(DEFAULT_PWM_PIN,OUTPUT);
+  digitalWrite(DEFAULT_PWM_PIN,LOW);
+  
+  NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos);
+  NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
+  NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
+  NRF_PWM0->PRESCALER = (PWM_PRESCALER_PRESCALER_DIV_1 << PWM_PRESCALER_PRESCALER_Pos);
+  NRF_PWM0->COUNTERTOP = (1000 << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
+  NRF_PWM0->LOOP = (1 << PWM_LOOP_CNT_Pos);
+  NRF_PWM0->DECODER = (PWM_DECODER_LOAD_Common << PWM_DECODER_LOAD_Pos) | (PWM_DECODER_MODE_RefreshCount << PWM_DECODER_MODE_Pos);
+  NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
+  NRF_PWM0->SEQ[0].CNT = ((sizeof(dacBuf0) / sizeof(uint16_t)) << PWM_SEQ_CNT_CNT_Pos);
+  NRF_PWM0->SEQ[0].REFRESH = 0;
+  NRF_PWM0->SEQ[0].ENDDELAY = 0;
+
+  NRF_PWM0->TASKS_SEQSTART[0] = 1;
+
   }
    
   
@@ -200,27 +225,27 @@ void AutoAnalog::triggerADC(){
 /****************************************************************************/
 
 void AutoAnalog::enableAdcChannel(uint8_t pinAx){
-    
+#if !defined ARDUINO_NRF52840_FEATHER    
   nrf_pdm_enable();
-
+#endif
 }
 
 /****************************************************************************/
 
 void AutoAnalog::disableAdcChannel(uint8_t pinAx){
-    
+#if !defined ARDUINO_NRF52840_FEATHER    
   nrf_pdm_disable();
-
+#endif
 }
 
 /****************************************************************************/
 
 void AutoAnalog::getADC(uint32_t samples){
-  
+ #if !defined ARDUINO_NRF52840_FEATHER 
   while(!adcReady){__WFE();};
   aSize = samples;  
   adcReady = false;
-  
+  #endif
 }
 
 /****************************************************************************/
@@ -228,18 +253,32 @@ bool dacBufCtr = 0;
 
 void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
     
-   uint32_t ctr = millis();
+   /*uint32_t ctr = millis();
    while(!nrf_i2s_event_check(NRF_I2S,NRF_I2S_EVENT_TXPTRUPD));//{ if(millis() - ctr > 5){break;}};
+   nrf_i2s_event_clear(NRF_I2S,NRF_I2S_EVENT_TXPTRUPD);
+   
+   for(uint32_t i=0; i<samples; i++){
+     dacBuf0[i] = dacBuffer16[i];
+   }
+   //memcpy(dacBuf0, dacBuffer16, samples * 2);
    
    
-   //for(uint32_t i=0; i<samples; i++){
-   //  dacBuf0[i] = dacBuffer16[i];
-   //}
-   memcpy(dacBuf0, dacBuffer, samples);
+   
    //NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
    //memcpy(&dacBuf[0], &dacBuffer16[0], samples);
-   NRF_I2S->RXTXD.MAXCNT = samples /4;//sizeof(uint32_t);
-   nrf_i2s_event_clear(NRF_I2S,NRF_I2S_EVENT_TXPTRUPD);
+   NRF_I2S->RXTXD.MAXCNT = 8;// * 2 / sizeof(uint32_t);*/
+  uint32_t timer = millis();
+  while(NRF_PWM0->EVENTS_SEQEND[0] == 0){
+    if(millis() - timer > 10){ break; }
+    NRF_PWM0->EVENTS_SEQEND[0] = 0;
+  }
+  memcpy(dacBuf0, dacBuffer16, samples);
+  NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
+  NRF_PWM0->SEQ[0].CNT = (samples << PWM_SEQ_CNT_CNT_Pos);
+  NRF_PWM0->TASKS_SEQSTART[0] = 1; 
+   
+   
+   
 }
 
 /****************************************************************************/
@@ -256,6 +295,7 @@ void AutoAnalog::dacBufferStereo(uint8_t dacChannel){
 
 uint32_t AutoAnalog::frequencyToTimerCount(uint32_t frequency){
 
+return 1;
 }
 
 /****************************************************************************/
@@ -281,7 +321,8 @@ void AutoAnalog::dacSetup(void){
 /****************************************************************************/
 
 void AutoAnalog::disableDAC(bool withinTask){
-    NRF_I2S->ENABLE = 0;
+    //NRF_I2S->ENABLE = 0;
+    NRF_PWM0->TASKS_STOP = 1;
 } 
 
 /****************************************************************************/
@@ -308,7 +349,7 @@ void AutoAnalog::tc2Setup (uint32_t sampRate)
 }
 
 /****************************************************************************/
-
+#if !defined ARDUINO_NRF52840_FEATHER
 extern "C" {
   __attribute__((__used__)) void PDM_IRQHandler_v(void)
   {
@@ -357,4 +398,5 @@ void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
   
   adcReady = true;
 }
+#endif //#if !defined ARDUINO_NRF52840_FEATHER
 #endif //#if defined (ARDUINO_ARCH_SAM)

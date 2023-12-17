@@ -29,6 +29,7 @@
   #include "driver/i2s.h"
 #endif
 
+
 #define AAA_CHANNEL0 0
 #define AAA_CHANNEL1 1
 #define AAA_MODE_STEREO 2
@@ -99,7 +100,7 @@ public:
    *  10 or 12-bit samples are read directly from this buffer after calling getADC() <br>
    * @see adcBitsPerSample
    */
-  #if !defined(ARDUINO_ARCH_NRF52840)
+  #if !defined(ARDUINO_ARCH_NRF52840) && !defined (ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF52840_FEATHER
   uint16_t adcBuffer16[MAX_BUFFER_SIZE];
   #else
   inline static int16_t adcBuffer16[MAX_BUFFER_SIZE];  
@@ -188,7 +189,7 @@ public:
 
   /**@}*/
 
-#if defined (ARDUINO_ARCH_NRF52840)
+#if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER 
   inline static uint8_t aCtr;
   inline static uint32_t aSize;
   inline static uint16_t *buf0 = NULL;
@@ -205,6 +206,11 @@ public:
   int clkPin;
   int8_t gain;
   inline static uint32_t sampleCounter;
+#endif
+
+#if defined ARDUINO_NRF52840_FEATHER 
+  uint16_t dacBuf0[MAX_BUFFER_SIZE];
+  uint16_t dacBuf1[MAX_BUFFER_SIZE];
 #endif
 
 private:
