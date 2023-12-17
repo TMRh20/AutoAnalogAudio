@@ -419,6 +419,16 @@ private:
  */
 
 /**
+ * @example NRF52_PDM_PWMTest.ino
+ * <b>For Arduino XIAO 52840 Sense</b><br>
+ *
+ * Recording (pin A0) and playback (pin 5)
+ *
+ * This example demonstrates recording and playback on a single device
+ * using PDM microphone and PWM output
+ */
+ 
+/**
  * @mainpage Automatic Analog Audio Library for Arduino
  *
  * @section LibInfo Auto Analog Audio (Automatic DAC, ADC & Timer) library
