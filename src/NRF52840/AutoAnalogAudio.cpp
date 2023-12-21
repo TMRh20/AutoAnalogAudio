@@ -277,7 +277,7 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
   if(dacBitsPerSample > 8){
     memcpy(dacBuf0, dacBuffer16, samples);
   }else{
-    for(int i=0; i<samples; i++){
+    for(uint32_t i=0; i<samples; i++){
       dacBuf0[i] = dacBuffer[i] << 8;
     }
   }
@@ -398,7 +398,7 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
-  for(int i=0; i < buf_len; i++){
+  for(uint32_t i=0; i < buf_len; i++){
     adcBuffer16[i] = buf[i];
   }
   
