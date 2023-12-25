@@ -47,7 +47,7 @@
   
 AutoAnalog::AutoAnalog(){
 #if !defined ARDUINO_NRF52840_FEATHER   
-  adcReady = false;   
+  adcReady = true;   
   adcBitsPerSample = 8;
 #endif
   dacBitsPerSample = 8;
@@ -191,11 +191,11 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
   NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
   NRF_PWM0->PRESCALER = (PWM_PRESCALER_PRESCALER_DIV_1 << PWM_PRESCALER_PRESCALER_Pos);
-  NRF_PWM0->COUNTERTOP = (((16000000/DEFAULT_FREQUENCY) + 5) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
-  NRF_PWM0->LOOP = (1 << PWM_LOOP_CNT_Pos);
+  NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/DEFAULT_FREQUENCY) + 5)) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
+  NRF_PWM0->LOOP = (0 << PWM_LOOP_CNT_Pos);
   NRF_PWM0->DECODER = (PWM_DECODER_LOAD_Common << PWM_DECODER_LOAD_Pos) | (PWM_DECODER_MODE_RefreshCount << PWM_DECODER_MODE_Pos);
   NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
-  NRF_PWM0->SEQ[0].CNT = ((sizeof(dacBuf0) / sizeof(uint16_t)) << PWM_SEQ_CNT_CNT_Pos);
+  NRF_PWM0->SEQ[0].CNT = 1 << PWM_SEQ_CNT_CNT_Pos;//((sizeof(dacBuf0) / sizeof(uint16_t)) << PWM_SEQ_CNT_CNT_Pos);
   NRF_PWM0->SEQ[0].REFRESH = 0;
   NRF_PWM0->SEQ[0].ENDDELAY = 0;
 
@@ -211,8 +211,12 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
-    NRF_PWM0->COUNTERTOP = (((16000000/sampRate) + 5) << PWM_COUNTERTOP_COUNTERTOP_Pos);
-
+    NRF_PWM0->TASKS_STOP = 1;
+    uint32_t timer = millis();
+    while(NRF_PWM0->EVENTS_STOPPED == 0){ if(millis() - timer > 1000){break;} }
+    
+    NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/sampRate) + 5)) << PWM_COUNTERTOP_COUNTERTOP_Pos);
+    NRF_PWM0->TASKS_SEQSTART[0] = 1;
 }
 
 /****************************************************************************/
@@ -270,15 +274,15 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
    NRF_I2S->RXTXD.MAXCNT = 8;// * 2 / sizeof(uint32_t);*/
   uint32_t timer = millis();
   while(NRF_PWM0->EVENTS_SEQEND[0] == 0){
-    if(millis() - timer > 10){ break; }
-    NRF_PWM0->EVENTS_SEQEND[0] = 0;
+    if(millis() - timer > 1000){ Serial.println("return"); NRF_PWM0->TASKS_SEQSTART[0] = 1; return; }    
   }
+  NRF_PWM0->EVENTS_SEQEND[0] = 0;
   
   if(dacBitsPerSample > 8){
-    memcpy(dacBuf0, dacBuffer16, samples);
+    memcpy(dacBuf0, dacBuffer16, samples * 2);
   }else{
     for(uint32_t i=0; i<samples; i++){
-      dacBuf0[i] = dacBuffer[i] << 8;
+      dacBuf0[i] = (uint16_t)(dacBuffer[i]);
     }
   }
   NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
