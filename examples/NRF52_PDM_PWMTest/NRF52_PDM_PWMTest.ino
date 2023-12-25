@@ -18,7 +18,7 @@ void loop() {
 
   aaAudio.getADC(320); // Get 320 Samples from the ADC
   for (int i = 0; i < 320; i++) {  // Copy them into the DAC Buffer and change from signed to unsigned ( + 0x8000)
-    aaAudio.dacBuffer16[i] = aaAudio.adcBuffer16[i];
+    aaAudio.dacBuffer16[i] = (uint16_t)(aaAudio.adcBuffer16[i] + 0x8000);
   }
   aaAudio.feedDAC(0,320); // Feed the DAC with the ADC data
 }
