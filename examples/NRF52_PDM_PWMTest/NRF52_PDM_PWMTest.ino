@@ -20,5 +20,5 @@ void loop() {
   for (int i = 0; i < 320; i++) {  // Copy them into the DAC Buffer and change from signed to unsigned ( + 0x8000)
     aaAudio.dacBuffer16[i] = (uint16_t)(aaAudio.adcBuffer16[i] + 0x8000);
   }
-  aaAudio.feedDAC(320); // Feed the DAC with the ADC data
+  aaAudio.feedDAC(0,320); // Feed the DAC with the ADC data
 }
