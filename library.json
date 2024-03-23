@@ -11,16 +11,17 @@
   {
     "name": "TMRh20",
     "email": "tmrh20@gmail.com",
-    "url": "http://tmrh20.github.io/AAAudio",
+    "url": "https://tmrh20.github.io/AutoAnalogAudio/",
     "maintainer": true
   },
-  "version": "1.44",
+  "version": "1.45",
   "frameworks": "arduino",
   "platforms": 
   [
     "atmelavr",
     "atmelsam",
-    "espressifesp32"
+    "espressifesp32",
+    "nordicnrf52"
   ],
   "export": {
     "exclude": "examples/*/*.wav"
