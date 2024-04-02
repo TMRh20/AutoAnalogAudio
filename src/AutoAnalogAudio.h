@@ -200,14 +200,15 @@ public:
   inline static void adcCallback(uint16_t *buf, uint32_t buf_len);
   inline static void set_callback(void(*function)(uint16_t *buf, uint32_t buf_len));
   inline static bool adcReady;
-  inline static int16_t dacBuf0[MAX_BUFFER_SIZE];
-  inline static int16_t dacBuf1[MAX_BUFFER_SIZE];
+  inline static uint16_t dacBuf0[MAX_BUFFER_SIZE];
+  inline static uint16_t dacBuf1[MAX_BUFFER_SIZE];
   bool micOn;
   int pwrPin;
   int dinPin;
   int clkPin;
   int8_t gain;
   inline static uint32_t sampleCounter;
+  
 #elif defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (ARDUINO_NRF52840_FEATHER) && !defined __MBED__
   uint16_t dacBuf0[MAX_BUFFER_SIZE];
   uint16_t dacBuf1[MAX_BUFFER_SIZE];
@@ -225,6 +226,7 @@ public:
   int clkPin;
   int8_t gain;
   uint32_t sampleCounter;
+  //void DACC_Handler();
 #endif
 
 private:
