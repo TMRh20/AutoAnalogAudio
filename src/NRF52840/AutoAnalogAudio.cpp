@@ -49,6 +49,15 @@
   #define PIN_LRCK   14//(15)
   #define PIN_SDOUT  (5)
   #define DEFAULT_PWM_PIN 5
+  
+  #ifndef PIN_PDM_DIN
+    #define PIN_PDM_DIN 1
+    #define PIN_PDM_CLK 2
+    #define PIN_PDM_PWR 3
+    #define DEFAULT_PDM_GAIN 20
+    #define PDM_IRQ_PRIORITY 1
+  #endif
+  
 /****************************************************************************/
 /* Public Functions */
 /****************************************************************************/
@@ -288,6 +297,8 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   NRF_PWM0->SEQ[0].REFRESH = 0;
   NRF_PWM0->SEQ[0].ENDDELAY = 0;
 
+  //NRF_PWM0->INTENSET = PWM_INTENSET_SEQEND0_Enabled << PWM_INTENSET_SEQEND0_Pos;
+  //NVIC_EnableIRQ(PWM0_IRQn);
   NRF_PWM0->TASKS_SEQSTART[0] = 1;
   #endif //USE_I2s
   }
@@ -578,15 +589,27 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
   _onReceive = function;
 }
 
-void DACC_Handler();
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
   for(uint32_t i=0; i < buf_len; i++){
     adcBuffer16[i] = buf[i];
   }
-  DACC_Handler();
   adcReady = true;
 }
+
+extern "C" {
+  __attribute__((__used__)) void PWM0_IRQHandler(void){
+  
+   //AutoAnalog::sampleCounter++;
+  
+  }
+
+ 
+}
+  
+  
+  
+  
 #endif
 #endif //#if defined (ARDUINO_ARCH_SAM)
