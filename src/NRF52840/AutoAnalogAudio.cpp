@@ -300,12 +300,19 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
-/*    NRF_PWM0->TASKS_STOP = 1;
+    NRF_PWM0->TASKS_STOP = 1;
     uint32_t timer = millis();
     while(NRF_PWM0->EVENTS_STOPPED == 0){ if(millis() - timer > 1000){break;} }
     
     NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/sampRate) + 5)) << PWM_COUNTERTOP_COUNTERTOP_Pos);
-    NRF_PWM0->TASKS_SEQSTART[0] = 1;*/
+    NRF_PWM0->TASKS_SEQSTART[0] = 1;
+
+    if(sampRate == 20000){
+        NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+    }else{
+        NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+    }        
+
 }
 
 /****************************************************************************/
@@ -571,14 +578,14 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
   _onReceive = function;
 }
 
-
+void DACC_Handler();
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
   for(uint32_t i=0; i < buf_len; i++){
     adcBuffer16[i] = buf[i];
   }
-  
+  DACC_Handler();
   adcReady = true;
 }
 #endif
