@@ -37,13 +37,13 @@
   void (*AutoAnalog::_onReceive)(uint16_t *buf, uint32_t buf_len);
 #endif
 
-#if !defined ARDUINO_NRF52840_FEATHER
+
   #define PDM_IRQ_PRIORITY     7
   #ifndef NRF_PDM_FREQ_1280K
     #define NRF_PDM_FREQ_1280K  (nrf_pdm_freq_t)(0x0A000000UL)               ///< PDM_CLK= 1.280 MHz (32 MHz / 25) => Fs= 20000 Hz
   #endif
   #define DEFAULT_PDM_GAIN     40
-#endif
+
   #define PIN_MCK    15//(13)
   #define PIN_SCK    13//(14)
   #define PIN_LRCK   14//(15)
@@ -54,8 +54,6 @@
     #define PIN_PDM_DIN 1
     #define PIN_PDM_CLK 2
     #define PIN_PDM_PWR 3
-    #define DEFAULT_PDM_GAIN 20
-    #define PDM_IRQ_PRIORITY 1
   #endif
   
 /****************************************************************************/
