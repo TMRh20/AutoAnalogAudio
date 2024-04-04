@@ -22,9 +22,11 @@
 
 #include "../AutoAnalogAudio.h"
 #include <hal/nrf_pdm.h>
-#include <hal/nrf_i2s.h>
 
 //#define USE_I2s
+#if defined USE_I2s
+  #include <hal/nrf_i2s.h>
+#endif
 
 #if !defined __MBED__
   #define myPDM NRF_PDM0
@@ -42,18 +44,30 @@
   #ifndef NRF_PDM_FREQ_1280K
     #define NRF_PDM_FREQ_1280K  (nrf_pdm_freq_t)(0x0A000000UL)               ///< PDM_CLK= 1.280 MHz (32 MHz / 25) => Fs= 20000 Hz
   #endif
-  #define DEFAULT_PDM_GAIN     40
+  #ifndef NRF_PDM_FREQ_2667K
+    #define NRF_PDM_FREQ_2667K  (nrf_pdm_freq_t)(0x15000000UL)
+  #endif
+  #ifndef NRF_PDM_FREQ_2000K
+    #define NRF_PDM_FREQ_2000K  (nrf_pdm_freq_t)(0x10000000UL)
+  #endif
 
+/******************* USER DEFINES - Configure pins etc here *****************/
+  #define DEFAULT_PDM_GAIN     40
+  
+  /* I2s config */
   #define PIN_MCK    15//(13)
   #define PIN_SCK    13//(14)
   #define PIN_LRCK   14//(15)
-  #define PIN_SDOUT  (5)
-  #define DEFAULT_PWM_PIN 5
+  #define PIN_SDOUT  (5) // GPIO Pin numbers
   
-  #ifndef PIN_PDM_DIN
-    #define PIN_PDM_DIN 1
-    #define PIN_PDM_CLK 2
-    #define PIN_PDM_PWR 3
+  /* PWM Config */
+  #define DEFAULT_PWM_PIN 5  //GPIO Pin number
+  //#define DEFAULT_PWM_PIN2 4
+
+  #ifndef PIN_PDM_DIN  // Arduino pin numbers
+    #define PIN_PDM_DIN 35
+    #define PIN_PDM_CLK 36
+    #define PIN_PDM_PWR -1
   #endif
   
 /****************************************************************************/
@@ -94,6 +108,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   if(enADC){
 
     set_callback(adcCallback);
+ 
     dinPin = PIN_PDM_DIN;
     clkPin = PIN_PDM_CLK;
     pwrPin = PIN_PDM_PWR;
@@ -177,11 +192,6 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   //Set default 16khz sample rate
   NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
   nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
-//nrf_pdm_clock_set(NRF_PDM_FREQ_1032K);
-  //nrf_pdm_clock_set(NRF_PDM_FREQ_1067K);
- //   NRF_PDM_FREQ_1000K = PDM_PDMCLKCTRL_FREQ_1000K,  ///< PDM_CLK = 1.000 MHz.
- //   NRF_PDM_FREQ_1032K = PDM_PDMCLKCTRL_FREQ_Default,  ///< PDM_CLK = 1.032 MHz.
- //   NRF_PDM_FREQ_1067K = PDM_PDMCLKCTRL_FREQ_1067K   ///< PDM_CLK = 1.067 MHz.
   
   //Set default channel mono
   nrf_pdm_mode_set(myPDM,NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTFALLING);
@@ -280,14 +290,15 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   // Start transmitting I2S data
   NRF_I2S->TASKS_START = 1;
   #else
-  pinMode(DEFAULT_PWM_PIN,OUTPUT);
-  digitalWrite(DEFAULT_PWM_PIN,LOW);
-  
+      
   NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos);
+  #if defined DEFAULT_PWM_PIN2
+    NRF_PWM0->PSEL.OUT[1] = (DEFAULT_PWM_PIN2 << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos);
+  #endif
   NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
   NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
   NRF_PWM0->PRESCALER = (PWM_PRESCALER_PRESCALER_DIV_1 << PWM_PRESCALER_PRESCALER_Pos);
-  NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/DEFAULT_FREQUENCY) + 5)) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
+  NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/DEFAULT_FREQUENCY))) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
   NRF_PWM0->LOOP = (0 << PWM_LOOP_CNT_Pos);
   NRF_PWM0->DECODER = (PWM_DECODER_LOAD_Common << PWM_DECODER_LOAD_Pos) | (PWM_DECODER_MODE_RefreshCount << PWM_DECODER_MODE_Pos);
   NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
@@ -313,14 +324,27 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     uint32_t timer = millis();
     while(NRF_PWM0->EVENTS_STOPPED == 0){ if(millis() - timer > 1000){break;} }
     
-    NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/sampRate) + 5)) << PWM_COUNTERTOP_COUNTERTOP_Pos);
+    NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/sampRate))) << PWM_COUNTERTOP_COUNTERTOP_Pos);
     NRF_PWM0->TASKS_SEQSTART[0] = 1;
-
-    if(sampRate == 20000){
-        NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
-    }else{
-        NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
-    }        
+    
+    
+    if(sampRate <= 16000){
+       //Set default 16khz sample rate
+       NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+       nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
+    }else
+    if(sampRate <= 20000){
+       NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+       nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
+    }else
+    if(sampRate <= 31250){
+      NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+      nrf_pdm_clock_set(myPDM, NRF_PDM_FREQ_2000K);  //2667 / 64 = 33.337khz, /80 = 41.667  
+    }else
+    if(sampRate <= 41672){    
+      NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+      nrf_pdm_clock_set(myPDM, NRF_PDM_FREQ_2667K);  //2667 / 64 = 33.337khz, /80 = 41.667
+    }
 
 }
 
@@ -355,11 +379,9 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx){
 /****************************************************************************/
 
 void AutoAnalog::getADC(uint32_t samples){
-// #if defined __MBED__
   while(!adcReady){__WFE();};
   aSize = samples;  
   adcReady = false;
-//  #endif
 }
 
 /****************************************************************************/
@@ -534,19 +556,8 @@ if (nrf_pdm_event_check(NRF_PDM_EVENT_STARTED)) {
   }
 }
 
-void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
-  _onReceive = function;
-}
-
-void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
-
-  for(uint32_t i=0; i < buf_len; i++){
-    adcBuffer16[i] = buf[i];
-  }
-  
-  adcReady = true;
-}
 #elif !defined MBED
+
 extern "C" {
   __attribute__((__used__)) void PDM_IRQHandler(void)
   {
@@ -583,19 +594,6 @@ if (nrf_pdm_event_check(myPDM,NRF_PDM_EVENT_STARTED)) {
   }
 }
 
-void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
-  _onReceive = function;
-}
-
-
-void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
-
-  for(uint32_t i=0; i < buf_len; i++){
-    adcBuffer16[i] = buf[i];
-  }
-  adcReady = true;
-}
-
 extern "C" {
   __attribute__((__used__)) void PWM0_IRQHandler(void){
   
@@ -605,9 +603,19 @@ extern "C" {
 
  
 }
-  
-  
-  
-  
-#endif
+#endif  // defined __MBED__
+
+void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
+  _onReceive = function;
+}
+
+void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
+
+  for(uint32_t i=0; i < buf_len; i++){
+    adcBuffer16[i] = buf[i];
+  }
+  adcReady = true;
+}
+
+
 #endif //#if defined (ARDUINO_ARCH_SAM)
