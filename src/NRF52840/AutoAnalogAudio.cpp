@@ -63,8 +63,10 @@
   
   /* PWM Config */
   #define DEFAULT_PWM_PIN 5  //GPIO Pin number
+  #define DEFAULT_PWM_PORT 0 // On XIAO port 0 is for pins 1-5 port 1 is for all higher pins
   //#define DEFAULT_PWM_PIN2 4  //Enable a second output pin
-
+  //#define DEFAULT_PWM_PORT2 0
+  
   #ifndef PIN_PDM_DIN  // Arduino pin numbers
     #define PIN_PDM_DIN 35
     #define PIN_PDM_CLK 36
@@ -155,8 +157,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
     pinMode(pwrPin, OUTPUT);
     digitalWrite(pwrPin, HIGH);
     micOn=1;
-  }else{
-    Serial.println(pwrPin);
+  }else
   }
   
   // set the PDM IRQ priority and enable
@@ -220,7 +221,6 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
     digitalWrite(pwrPin, HIGH);
     micOn=1;
   }else{
-    Serial.println(pwrPin);
   }
   
   // set the PDM IRQ priority and enable
@@ -293,9 +293,9 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
   NRF_I2S->TASKS_START = 1;
   #else
 
-  NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos);
+  NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT << PWM_PSEL_OUT_PORT_Pos);
   #if defined DEFAULT_PWM_PIN2
-    NRF_PWM0->PSEL.OUT[1] = (DEFAULT_PWM_PIN2 << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos);
+    NRF_PWM0->PSEL.OUT[1] = (DEFAULT_PWM_PIN2 << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT2 << PWM_PSEL_OUT_PORT_Pos);
   #endif
   NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
   NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
@@ -455,7 +455,7 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
  #else
   uint32_t timer = millis();
   while(NRF_PWM0->EVENTS_SEQEND[0] == 0){
-    if(millis() - timer > 1000){ Serial.println("return"); NRF_PWM0->TASKS_SEQSTART[0] = 1; return; }    
+    if(millis() - timer > 1000){ NRF_PWM0->TASKS_SEQSTART[0] = 1; return; }    
   }
   NRF_PWM0->EVENTS_SEQEND[0] = 0;
   
