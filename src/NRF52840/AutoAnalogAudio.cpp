@@ -157,7 +157,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
     pinMode(pwrPin, OUTPUT);
     digitalWrite(pwrPin, HIGH);
     micOn=1;
-  }else
+  }else{
   }
   
   // set the PDM IRQ priority and enable
