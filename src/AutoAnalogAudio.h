@@ -49,7 +49,7 @@ public:
   AutoAnalog();
 
   /** Setup the timer(s) */
-  void begin(bool enADC, bool enDAC);
+  void begin(bool enADC, bool enDAC, uint8_t _useI2S = false);
 
   /**
    * @note This function is no longer required and does nothing
@@ -208,6 +208,7 @@ public:
   int clkPin;
   int8_t gain;
   inline static uint32_t sampleCounter;
+  bool useI2S;
   
 #elif defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (ARDUINO_NRF52840_FEATHER) && !defined __MBED__
   uint16_t dacBuf0[MAX_BUFFER_SIZE];
@@ -227,6 +228,7 @@ public:
   int8_t gain;
   uint32_t sampleCounter;
   //void DACC_Handler();
+  bool useI2S;
 #endif
 
 private:

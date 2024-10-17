@@ -24,7 +24,7 @@
   
   #elif defined ESP32 || defined ARDUINO_ARCH_NRF52840 || defined (ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF52840_FEATHER
       
-    #define MAX_BUFFER_SIZE 1600
+    #define MAX_BUFFER_SIZE 6400
 
   #else    
   
