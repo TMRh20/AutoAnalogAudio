@@ -338,15 +338,23 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
       }else
       if(dacBitsPerSample == 24){
         NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
-      } */          
-          
+      } */
+      
+      if(stereo){
+        NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_STEREO << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
+      }
+      
       if(sampRate <= 16000){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
       }else
       if(sampRate <= 20000){
-        NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV8 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-        NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_256X << I2S_CONFIG_RATIO_RATIO_Pos;
+        NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV15 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+        NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+      }else
+      if(sampRate <= 24000){
+        NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV11 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+        NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
       }else
       if(sampRate <= 32000){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
@@ -376,6 +384,14 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
        #else
          nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
        #endif
+    }else
+    if(sampRate <= 24000){
+      NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+      #if defined __MBED__
+        nrf_pdm_clock_set(NRF_PDM_FREQ_2000K);
+      #else
+        nrf_pdm_clock_set(myPDM, NRF_PDM_FREQ_2000K);       
+      #endif
     }else
     if(sampRate <= 32000){
       NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);

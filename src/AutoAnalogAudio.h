@@ -110,9 +110,9 @@ public:
   
   /** Set sample rate. 0 enables the default rate specified in AutoAnalog_config.h
    * @param sampRate This sets the defined sample rate ie: 32000 is 32Khz
-   * @param stereo Only used for the ESP32, this sets stereo or mono output and affects the sample rate
+   * @param stereo Only used for the ESP32 & NRF52840 this sets stereo or mono output and affects the sample rate
    */
-  void setSampleRate(uint32_t sampRate = 0, bool stereo = true);
+  void setSampleRate(uint32_t sampRate = 0, bool stereo = false);
 
   /** Function called by DAC IRQ */
   void dacHandler(void);
