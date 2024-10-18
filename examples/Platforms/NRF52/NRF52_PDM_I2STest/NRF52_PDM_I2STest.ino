@@ -8,7 +8,7 @@ AutoAnalog aaAudio;
 #endif
 
 /*********************************************************/
-/* Tested with MAX98357A I2S breakout
+/* Tested with MAX98357A I2S breakout on XIAO 52840 Sense
 /* BCLK connected to Arduino D1 (p0.03)
 /* LRCK connected to Arduino D3 (p0.29)
 /* DIN  connected to Arduino D5 (p0.05)
