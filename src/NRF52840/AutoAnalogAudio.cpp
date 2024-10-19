@@ -106,208 +106,14 @@ AutoAnalog::AutoAnalog(){
 
 void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
   
-#if defined __MBED__
+
   if(enADC){
-
-    set_callback(adcCallback);
- 
-    dinPin = PIN_PDM_DIN;
-    clkPin = PIN_PDM_CLK;
-    pwrPin = PIN_PDM_PWR;
-    gain = -1;
-
-    // Enable high frequency oscillator if not already enabled
-    if (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) {
-      NRF_CLOCK->TASKS_HFCLKSTART    = 1;
-      while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) { }
-    }
-  
-  //Set default 16khz sample rate
-  NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
-  nrf_pdm_clock_set(NRF_PDM_FREQ_1280K);
-//nrf_pdm_clock_set(NRF_PDM_FREQ_1032K);
-  //nrf_pdm_clock_set(NRF_PDM_FREQ_1067K);
- //   NRF_PDM_FREQ_1000K = PDM_PDMCLKCTRL_FREQ_1000K,  ///< PDM_CLK = 1.000 MHz.
- //   NRF_PDM_FREQ_1032K = PDM_PDMCLKCTRL_FREQ_Default,  ///< PDM_CLK = 1.032 MHz.
- //   NRF_PDM_FREQ_1067K = PDM_PDMCLKCTRL_FREQ_1067K   ///< PDM_CLK = 1.067 MHz.
-  
-  //Set default channel mono
-  nrf_pdm_mode_set(NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTFALLING);
-  if(gain == -1) {
-    gain = DEFAULT_PDM_GAIN;
+    adcSetup();
   }
-  nrf_pdm_gain_set(gain, gain);
-  
-  pinMode(clkPin, OUTPUT);
-  digitalWrite(clkPin, LOW);
-  
-  pinMode(dinPin, INPUT);
-  
-  nrf_pdm_psel_connect(digitalPinToPinName(clkPin), digitalPinToPinName(dinPin));
- 
-  //Enable PDM interrupts and clear events
-  nrf_pdm_event_clear(NRF_PDM_EVENT_STARTED);
-  nrf_pdm_event_clear(NRF_PDM_EVENT_END);
-  nrf_pdm_event_clear(NRF_PDM_EVENT_STOPPED);
-  nrf_pdm_int_enable(NRF_PDM_INT_STARTED | NRF_PDM_INT_STOPPED);
-  
-  //Turn on the mic
-  if (pwrPin > -1) {
-    pinMode(pwrPin, OUTPUT);
-    digitalWrite(pwrPin, HIGH);
-    micOn=1;
-  }else{
-  }
-  
-  // set the PDM IRQ priority and enable
-  NVIC_SetPriority(PDM_IRQn, PDM_IRQ_PRIORITY);
-  NVIC_ClearPendingIRQ(PDM_IRQn);
-  NVIC_EnableIRQ(PDM_IRQn);
-  
-  // enable and trigger start task
-  nrf_pdm_enable();
-  nrf_pdm_event_clear(NRF_PDM_EVENT_STARTED);
-  nrf_pdm_task_trigger(NRF_PDM_TASK_START);
-  
-
-  //Serial.println("ADC START");
-  
-
-  
-  }
-   #else
-  if(enADC){
-
-    set_callback(adcCallback);
-    dinPin = PIN_PDM_DIN;
-    clkPin = PIN_PDM_CLK;
-    pwrPin = PIN_PDM_PWR;
-    gain = -1;
-
-    // Enable high frequency oscillator if not already enabled
-    if (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) {
-      NRF_CLOCK->TASKS_HFCLKSTART    = 1;
-      while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) { }
-    }
-  
-  //Set default 16khz sample rate
-  NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
-  nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
-  
-  //Set default channel mono
-  nrf_pdm_mode_set(myPDM,NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTFALLING);
-  if(gain == -1) {
-    gain = DEFAULT_PDM_GAIN;
-  }
-  nrf_pdm_gain_set(myPDM,gain, gain);
-  
-  pinMode(clkPin, OUTPUT);
-  digitalWrite(clkPin, LOW);
-  
-  pinMode(dinPin, INPUT);
-  
-  nrf_pdm_psel_connect(myPDM,digitalPinToPinName(clkPin), digitalPinToPinName(dinPin));
- 
-  //Enable PDM interrupts and clear events
-  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_STARTED);
-  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_END);
-  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_STOPPED);
-  nrf_pdm_int_enable(myPDM,NRF_PDM_INT_STARTED | NRF_PDM_INT_STOPPED);
-  
-  //Turn on the mic
-  if (pwrPin > -1) {
-    pinMode(pwrPin, OUTPUT);
-    digitalWrite(pwrPin, HIGH);
-    micOn=1;
-  }else{
-  }
-  
-  // set the PDM IRQ priority and enable
-  NVIC_SetPriority(PDM_IRQn, PDM_IRQ_PRIORITY);
-  NVIC_ClearPendingIRQ(PDM_IRQn);
-  NVIC_EnableIRQ(PDM_IRQn);
-  
-  // enable and trigger start task
-  nrf_pdm_enable(myPDM);
-  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_STARTED);
-  nrf_pdm_task_trigger(myPDM,NRF_PDM_TASK_START);
-  }   
-   #endif
-   
-
   
   if(enDAC){
-  if(_useI2S){
-      // Enable transmission
-  NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
-  
-  // Enable MCK generator
-  NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_ENABLE << I2S_CONFIG_MCKEN_MCKEN_Pos);
-  
-
- 
-  // Ratio = 64 
-
-  //NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_32X << I2S_CONFIG_RATIO_RATIO_Pos;
- 
-  // Master mode, 16Bit, left aligned
-  NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_MASTER << I2S_CONFIG_MODE_MODE_Pos;
-  
-  NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
-  NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-  NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
-  NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_LEFT << I2S_CONFIG_ALIGN_ALIGN_Pos;
-  
-  // Format = I2S
-  NRF_I2S->CONFIG.FORMAT = I2S_CONFIG_FORMAT_FORMAT_I2S << I2S_CONFIG_FORMAT_FORMAT_Pos;
-  
-  // Use stereo 
-  NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
-  
-  // Configure pins
-  NRF_I2S->PSEL.MCK = (PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
-  NRF_I2S->PSEL.SCK = (PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
-  NRF_I2S->PSEL.LRCK = (PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
-  NRF_I2S->PSEL.SDOUT = (PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos) | (I2S_PSEL_SDOUT_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (PORT_SDOUT << I2S_PSEL_SDOUT_PORT_Pos);
-
-  
-  //NRF_I2S->INTENSET = I2S_INTEN_TXPTRUPD_Enabled << I2S_INTEN_TXPTRUPD_Pos;
-  //NVIC_EnableIRQ(I2S_IRQn);
-  
-  // Configure data pointer
-  NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
-  NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
-  NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);
-  
-  
-  //NRF_I2S->INTENSET = I2S_INTENSET_TXPTRUPD_Enabled << I2S_INTENSET_TXPTRUPD_Pos;
-  //NVIC_EnableIRQ(I2S_IRQn);
-  //NRF_I2S->TXD.PTR = (uint32_t)&sine_table[0];
-  //NRF_I2S->RXTXD.MAXCNT = sizeof(sine_table) / sizeof(uint32_t);
-  NRF_I2S->ENABLE = 1;  
-  NRF_I2S->TASKS_START = 1;
-  useI2S = _useI2S;
-  }else{
-
-  NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT << PWM_PSEL_OUT_PORT_Pos);
-  #if defined DEFAULT_PWM_PIN2
-    NRF_PWM0->PSEL.OUT[1] = (DEFAULT_PWM_PIN2 << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT2 << PWM_PSEL_OUT_PORT_Pos);
-  #endif
-  NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
-  NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
-  NRF_PWM0->PRESCALER = (PWM_PRESCALER_PRESCALER_DIV_1 << PWM_PRESCALER_PRESCALER_Pos);
-  NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/DEFAULT_FREQUENCY))) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
-  NRF_PWM0->LOOP = (0 << PWM_LOOP_CNT_Pos);
-  NRF_PWM0->DECODER = (PWM_DECODER_LOAD_Common << PWM_DECODER_LOAD_Pos) | (PWM_DECODER_MODE_RefreshCount << PWM_DECODER_MODE_Pos);
-  NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
-  NRF_PWM0->SEQ[0].CNT = 1 << PWM_SEQ_CNT_CNT_Pos;//((sizeof(dacBuf0) / sizeof(uint16_t)) << PWM_SEQ_CNT_CNT_Pos);
-  NRF_PWM0->SEQ[0].REFRESH = 0;
-  NRF_PWM0->SEQ[0].ENDDELAY = 0;
-
-  //NRF_PWM0->INTENSET = PWM_INTENSET_SEQEND0_Enabled << PWM_INTENSET_SEQEND0_Pos;
-  //NVIC_EnableIRQ(PWM0_IRQn);
-  NRF_PWM0->TASKS_SEQSTART[0] = 1;
-  }
+    useI2S = _useI2S;
+    dacSetup();
   }
    
   
@@ -329,16 +135,6 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
       // Stop transmitting I2S data
       NRF_I2S->TASKS_STOP = 1;
       NRF_I2S->ENABLE = 0;
-      
-      /*if(dacBitsPerSample == 8){
-        NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_8BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
-      }else
-      if(dacBitsPerSample == 16){
-        NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
-      }else
-      if(dacBitsPerSample == 24){
-        NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
-      } */
       
       if(stereo){
         NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_STEREO << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
@@ -456,10 +252,6 @@ bool whichBuf = 0;
 void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
  
  if(useI2S){
-   uint32_t ctr = millis();
-   //while(!nrf_i2s_event_check(NRF_I2S,NRF_I2S_EVENT_TXPTRUPD));//{ if(millis() - ctr > 5){break;}};
-   
-
      
    while(NRF_I2S->EVENTS_TXPTRUPD == 0){}  
 
@@ -471,8 +263,14 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
      NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
    }else
    if(dacBitsPerSample == 16){
+     if(whichBuf){
        memcpy(dacBuf0,dacBuffer16,samples * 2);
        NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+     }else{
+       memcpy(dacBuf1,dacBuffer16,samples * 2);
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
+     }
+     whichBuf = !whichBuf;
    }
 
    uint8_t divider = 2;
@@ -528,7 +326,110 @@ return 1;
 
 void AutoAnalog::adcSetup(void){
     
+    
+  set_callback(adcCallback);
+  dinPin = PIN_PDM_DIN;
+  clkPin = PIN_PDM_CLK;
+  pwrPin = PIN_PDM_PWR;
+  gain = -1;
+
+  // Enable high frequency oscillator if not already enabled
+  if (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) {
+    NRF_CLOCK->TASKS_HFCLKSTART    = 1;
+    while (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) { }
+  }
+  
+  //Set default 16khz sample rate
+  NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
+
+  
+#if defined __MBED__
+
+  nrf_pdm_clock_set(NRF_PDM_FREQ_1280K);
+  //Set default channel mono
+  nrf_pdm_mode_set(NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTFALLING);
+  if(gain == -1) {
+    gain = DEFAULT_PDM_GAIN;
+  }
+  nrf_pdm_gain_set(gain, gain);
+  
+  pinMode(clkPin, OUTPUT);
+  digitalWrite(clkPin, LOW);
+  
+  pinMode(dinPin, INPUT);
+  
+  nrf_pdm_psel_connect(digitalPinToPinName(clkPin), digitalPinToPinName(dinPin));
  
+  //Enable PDM interrupts and clear events
+  nrf_pdm_event_clear(NRF_PDM_EVENT_STARTED);
+  nrf_pdm_event_clear(NRF_PDM_EVENT_END);
+  nrf_pdm_event_clear(NRF_PDM_EVENT_STOPPED);
+  nrf_pdm_int_enable(NRF_PDM_INT_STARTED | NRF_PDM_INT_STOPPED);
+  
+  //Turn on the mic
+  if (pwrPin > -1) {
+    pinMode(pwrPin, OUTPUT);
+    digitalWrite(pwrPin, HIGH);
+    micOn=1;
+  }else{
+  }
+  
+  // set the PDM IRQ priority and enable
+  NVIC_SetPriority(PDM_IRQn, PDM_IRQ_PRIORITY);
+  NVIC_ClearPendingIRQ(PDM_IRQn);
+  NVIC_EnableIRQ(PDM_IRQn);
+  
+  // enable and trigger start task
+  nrf_pdm_enable();
+  nrf_pdm_event_clear(NRF_PDM_EVENT_STARTED);
+  nrf_pdm_task_trigger(NRF_PDM_TASK_START);
+  
+ 
+  
+#else  // MBED / Non-Mbed
+
+
+  nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
+
+  //Set default channel mono
+  nrf_pdm_mode_set(myPDM,NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTFALLING);
+  if(gain == -1) {
+    gain = DEFAULT_PDM_GAIN;
+  }
+  nrf_pdm_gain_set(myPDM,gain, gain);
+  
+  pinMode(clkPin, OUTPUT);
+  digitalWrite(clkPin, LOW);
+  
+  pinMode(dinPin, INPUT);
+  
+  nrf_pdm_psel_connect(myPDM,digitalPinToPinName(clkPin), digitalPinToPinName(dinPin));
+ 
+  //Enable PDM interrupts and clear events
+  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_STARTED);
+  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_END);
+  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_STOPPED);
+  nrf_pdm_int_enable(myPDM,NRF_PDM_INT_STARTED | NRF_PDM_INT_STOPPED);
+  
+  //Turn on the mic
+  if (pwrPin > -1) {
+    pinMode(pwrPin, OUTPUT);
+    digitalWrite(pwrPin, HIGH);
+    micOn=1;
+  }else{
+  }
+  
+  // set the PDM IRQ priority and enable
+  NVIC_SetPriority(PDM_IRQn, PDM_IRQ_PRIORITY);
+  NVIC_ClearPendingIRQ(PDM_IRQn);
+  NVIC_EnableIRQ(PDM_IRQn);
+  
+  // enable and trigger start task
+  nrf_pdm_enable(myPDM);
+  nrf_pdm_event_clear(myPDM,NRF_PDM_EVENT_STARTED);
+  nrf_pdm_task_trigger(myPDM,NRF_PDM_TASK_START);
+  
+  #endif 
 }
 
 /****************************************************************************/
@@ -541,23 +442,88 @@ void AutoAnalog::adcInterrupts(bool enabled){
   
 void AutoAnalog::dacSetup(void){
     
+  if(useI2S){
+      // Enable transmission
+  NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
+  
+  // Enable MCK generator
+  NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_ENABLE << I2S_CONFIG_MCKEN_MCKEN_Pos);
+ 
+  // Master mode, 16Bit, left aligned
+  NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_MASTER << I2S_CONFIG_MODE_MODE_Pos;
+  
+  NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+  NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+  NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+  NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_LEFT << I2S_CONFIG_ALIGN_ALIGN_Pos;
+  
+  // Format = I2S
+  NRF_I2S->CONFIG.FORMAT = I2S_CONFIG_FORMAT_FORMAT_I2S << I2S_CONFIG_FORMAT_FORMAT_Pos;
+  
+  // Use stereo 
+  NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
+  
+  // Configure pins
+  NRF_I2S->PSEL.MCK = (PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
+  NRF_I2S->PSEL.SCK = (PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
+  NRF_I2S->PSEL.LRCK = (PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
+  NRF_I2S->PSEL.SDOUT = (PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos) | (I2S_PSEL_SDOUT_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (PORT_SDOUT << I2S_PSEL_SDOUT_PORT_Pos);
 
+  
+  //NRF_I2S->INTENSET = I2S_INTEN_TXPTRUPD_Enabled << I2S_INTEN_TXPTRUPD_Pos;
+  //NVIC_EnableIRQ(I2S_IRQn);
+  
+  // Configure data pointer
+  NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+  NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
+  NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);
+  
+  
+  //NRF_I2S->INTENSET = I2S_INTENSET_TXPTRUPD_Enabled << I2S_INTENSET_TXPTRUPD_Pos;
+  //NVIC_EnableIRQ(I2S_IRQn);
+  //NRF_I2S->TXD.PTR = (uint32_t)&sine_table[0];
+  //NRF_I2S->RXTXD.MAXCNT = sizeof(sine_table) / sizeof(uint32_t);
+  NRF_I2S->ENABLE = 1;  
+  NRF_I2S->TASKS_START = 1;
+
+  }else{
+
+  NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT << PWM_PSEL_OUT_PORT_Pos);
+  #if defined DEFAULT_PWM_PIN2
+    NRF_PWM0->PSEL.OUT[1] = (DEFAULT_PWM_PIN2 << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT2 << PWM_PSEL_OUT_PORT_Pos);
+  #endif
+  NRF_PWM0->ENABLE = (PWM_ENABLE_ENABLE_Enabled << PWM_ENABLE_ENABLE_Pos);
+  NRF_PWM0->MODE = (PWM_MODE_UPDOWN_Up << PWM_MODE_UPDOWN_Pos);
+  NRF_PWM0->PRESCALER = (PWM_PRESCALER_PRESCALER_DIV_1 << PWM_PRESCALER_PRESCALER_Pos);
+  NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/DEFAULT_FREQUENCY))) << PWM_COUNTERTOP_COUNTERTOP_Pos); //1 msec
+  NRF_PWM0->LOOP = (0 << PWM_LOOP_CNT_Pos);
+  NRF_PWM0->DECODER = (PWM_DECODER_LOAD_Common << PWM_DECODER_LOAD_Pos) | (PWM_DECODER_MODE_RefreshCount << PWM_DECODER_MODE_Pos);
+  NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
+  NRF_PWM0->SEQ[0].CNT = 1 << PWM_SEQ_CNT_CNT_Pos;//((sizeof(dacBuf0) / sizeof(uint16_t)) << PWM_SEQ_CNT_CNT_Pos);
+  NRF_PWM0->SEQ[0].REFRESH = 0;
+  NRF_PWM0->SEQ[0].ENDDELAY = 0;
+
+  //NRF_PWM0->INTENSET = PWM_INTENSET_SEQEND0_Enabled << PWM_INTENSET_SEQEND0_Pos;
+  //NVIC_EnableIRQ(PWM0_IRQn);
+  NRF_PWM0->TASKS_SEQSTART[0] = 1;
+  }
 }
 
 /****************************************************************************/
 
 void AutoAnalog::disableDAC(bool withinTask){
-  #if defined USE_I2s  
-    NRF_I2S->ENABLE = 0;
-  #else
+  if(useI2S){
+    NRF_I2S->TASKS_STOP = 1;
+    NRF_I2S->ENABLE = 0;      
+  }else{
     NRF_PWM0->TASKS_STOP = 1;
-  #endif
+  }
 } 
 
 /****************************************************************************/
 
 void AutoAnalog::dacHandler(void){
-
+  
 
 }
 
@@ -576,11 +542,11 @@ void AutoAnalog::tc2Setup (uint32_t sampRate)
 
   
 }
+extern "C" {
+  __attribute__((__used__)) void I2S_IRQHandler_v(void){
 
-void I2S_IRQHandler_v(void){
- //   AutoAnalog::testCounter++;
+ }
 }
-
 
 /****************************************************************************/
 #if defined __MBED__
@@ -675,10 +641,9 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
-  for(uint32_t i=0; i < buf_len; i++){
-    adcBuffer16[i] = buf[i];
-  }
+  memcpy(adcBuffer16, buf, buf_len * 2);
   adcReady = true;
+
 }
 
 
