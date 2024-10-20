@@ -59,7 +59,7 @@ AutoAnalog::AutoAnalog(){
   adcSampleCounter = 0;
 }
 
-void AutoAnalog::begin(bool enADC, bool enDAC){
+void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
   
   if(enADC){
     analogRead(A0);
@@ -73,7 +73,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC){
 
 /****************************************************************************/
 
-void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo = true){
+void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
 
   if(sampRate > 0){

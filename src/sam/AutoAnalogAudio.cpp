@@ -54,7 +54,7 @@ AutoAnalog::AutoAnalog(){
   adcNumSamples = 0;
 }
 
-void AutoAnalog::begin(bool enADC, bool enDAC){
+void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
   
   if(enADC){
     adcSetup();
