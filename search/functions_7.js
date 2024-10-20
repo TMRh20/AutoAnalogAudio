@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['setsamplerate_0',['setSampleRate',['../classAutoAnalog.html#a99cfa2255a20289a00274d3ead8d1f6e',1,'AutoAnalog']]]
+  ['setsamplerate_0',['setSampleRate',['../classAutoAnalog.html#a1c595377f0593c783d04828bb5fbaaa7',1,'AutoAnalog']]]
 ];
