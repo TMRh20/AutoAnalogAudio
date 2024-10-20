@@ -10,7 +10,7 @@ AutoAnalog aaAudio;
 nrf_to_nrf radio;
 
 uint8_t address[][6] = { "1Node", "2Node" };
-#define BUFFER_SIZE 125
+#define BUFFER_SIZE 124
 #define USE_I2S 0 // Change to 1 to enable I2S output instead of PWM
 
 void setup() {
