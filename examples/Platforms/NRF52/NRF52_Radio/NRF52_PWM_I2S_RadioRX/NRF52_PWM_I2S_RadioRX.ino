@@ -1,6 +1,6 @@
 /* Example of receiving audio over radio and playing it back. 
- * Note: This example uses I2S output. Modify the USE_I2S #define
- * below to enable PWM output.
+ * Note: This example uses PWM output. Modify the USE_I2S #define
+ * below to enable I2S output.
  */ 
 
 #include <AutoAnalogAudio.h>
