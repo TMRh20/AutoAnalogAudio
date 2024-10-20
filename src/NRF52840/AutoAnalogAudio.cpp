@@ -105,7 +105,6 @@ AutoAnalog::AutoAnalog(){
 }
 
 void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
-  
 
   if(enADC){
     adcSetup();
@@ -115,9 +114,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
     useI2S = _useI2S;
     dacSetup();
   }
-   
-  
-  //maybe need to call __WFE(); from the main loop for DAC
+
 }
 
 /****************************************************************************/
@@ -132,9 +129,6 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
       NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/sampRate))) << PWM_COUNTERTOP_COUNTERTOP_Pos);
       NRF_PWM0->TASKS_SEQSTART[0] = 1;
     }else{
-      // Stop transmitting I2S data
-      NRF_I2S->TASKS_STOP = 1;
-      NRF_I2S->ENABLE = 0;
       
       if(stereo){
         NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_STEREO << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
@@ -160,8 +154,6 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV23 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_32X << I2S_CONFIG_RATIO_RATIO_Pos;
       }
-      NRF_I2S->ENABLE = 1;
-      NRF_I2S->TASKS_START = 1;
     }
         
     if(sampRate <= 16000){
@@ -253,14 +245,20 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
  
  if(useI2S){
      
-   while(NRF_I2S->EVENTS_TXPTRUPD == 0){}  
-
-   
+   while(NRF_I2S->EVENTS_TXPTRUPD == 0){}
    if(dacBitsPerSample == 8){
-     for(uint32_t i=0; i< samples; i++){
-        dacBuf0[i] = dacBuffer[i] << 7;
+     if(whichBuf){
+       for(uint32_t i=0; i< samples; i++){
+          dacBuf0[i] = dacBuffer[i] << 7;
+       }
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+     }else{
+       for(uint32_t i=0; i< samples; i++){
+          dacBuf1[i] = dacBuffer[i] << 7;
+       }
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
      }
-     NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+
    }else
    if(dacBitsPerSample == 16){
      if(whichBuf){
@@ -270,8 +268,9 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
        memcpy(dacBuf1,dacBuffer16,samples * 2);
        NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
      }
-     whichBuf = !whichBuf;
    }
+
+   whichBuf = !whichBuf;
 
    uint8_t divider = 2;
    if(dacBitsPerSample == 16){
