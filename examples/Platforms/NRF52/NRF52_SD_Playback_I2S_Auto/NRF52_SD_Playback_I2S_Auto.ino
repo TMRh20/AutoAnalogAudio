@@ -40,7 +40,7 @@ SdFat SD;
 /* SD   connected to Arduino D6 (p1.11)
 /*********************************************************/
 float volumeControl = 0.2;
-#define BUFFER_SIZE 640
+#define BUFFER_SIZE 6400
 
 void setup() {
 
