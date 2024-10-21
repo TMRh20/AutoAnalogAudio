@@ -121,9 +121,9 @@ void loadBuffer() {
     } else {
       myFile.read(aaAudio.dacBuffer16, BUFFER_SIZE);  // Change this to dacBuffer16 for 16-bit samples
       for (uint32_t i = 0; i < BUFFER_SIZE / 2; i++) {
-        aaAudio.dacBuffer16[i] += 0x8000;
-        aaAudio.dacBuffer16[i] *= volumeControl;
-        aaAudio.dacBuffer16[i] -= 0x8000;
+        int16_t sample = aaAudio.dacBuffer16[i];
+        sample *= volumeControl;
+        aaAudio.dacBuffer16[i] = (uint16_t)sample;
       }
       aaAudio.feedDAC(0, BUFFER_SIZE / 2);  // change this to 3200 for 16-bit samples
     }
