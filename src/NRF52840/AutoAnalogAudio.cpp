@@ -132,6 +132,8 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
       
       if(stereo){
         NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_STEREO << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
+      }else{
+        NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
       }
       
       if(sampRate <= 16000){
