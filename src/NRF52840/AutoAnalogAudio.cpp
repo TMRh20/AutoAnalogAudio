@@ -140,7 +140,7 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
       }else
-      if(sampRate <= 20000){
+      if(sampRate <= 22500){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV15 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
       }else
@@ -152,7 +152,7 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_64X << I2S_CONFIG_RATIO_RATIO_Pos;
       }else
-      if(sampRate <= 44000){
+      if(sampRate <= 45000){
         NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV23 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_32X << I2S_CONFIG_RATIO_RATIO_Pos;
       }
@@ -167,7 +167,7 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
           nrf_pdm_clock_set(myPDM,NRF_PDM_FREQ_1280K);
        #endif
     }else
-    if(sampRate <= 20000){
+    if(sampRate <= 22500){
        NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
        #if defined __MBED__
          nrf_pdm_clock_set(NRF_PDM_FREQ_1280K);
@@ -191,7 +191,7 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
         nrf_pdm_clock_set(myPDM, NRF_PDM_FREQ_2000K);  //2667 / 64 = 33.337khz, /80 = 41.667            
       #endif
     }else
-    if(sampRate <= 44000){ //41.67khz
+    if(sampRate <= 45000){ //41.67khz
       NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio64 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
       #if defined __MBED__
         nrf_pdm_clock_set(NRF_PDM_FREQ_2667K); 
