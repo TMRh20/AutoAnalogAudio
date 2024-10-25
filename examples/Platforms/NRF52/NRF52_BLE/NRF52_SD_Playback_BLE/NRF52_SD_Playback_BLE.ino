@@ -49,7 +49,7 @@ float volumeControl = 0.2;
 BLEService audioService("1853");  // BLE LED Service
 
 // BLE Audio Charactaristic
-BLECharacteristic audioDataCharacteristic("2b79", BLERead | BLEWrite | BLENotify, FILENAME_BUFFER_LENGTH);
+BLECharacteristic audioDataCharacteristic("2b79", BLERead | BLEWrite, FILENAME_BUFFER_LENGTH);
 BLEByteCharacteristic audioVolumeCharactaristic("2b7b", BLERead | BLEWrite);
 
 void setup() {
