@@ -22,7 +22,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Auto Analog Audio<span id="projectnumber">&#160;v1.51.0</span>
+   <div id="projectname">Auto Analog Audio<span id="projectnumber">&#160;v1.51.1</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -97,8 +97,8 @@ $(function() {
 <div class="line"><span class="keywordtype">void</span> loop() {</div>
 <div class="line"> </div>
 <div class="line">  aaAudio.<a id="a6" name="a6"></a><a class="code hl_function" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC</a>(320); <span class="comment">// Get 320 Samples from the ADC</span></div>
-<div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 320; i++) {  <span class="comment">// Copy them into the DAC Buffer and change from signed to unsigned ( + 0x8000)</span></div>
-<div class="line">    aaAudio.<a id="a7" name="a7"></a><a class="code hl_variable" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[i] = (uint16_t)(aaAudio.<a id="a8" name="a8"></a><a class="code hl_variable" href="classAutoAnalog.html#a64b99ccc41ac44398397f12c89d292f3">adcBuffer16</a>[i] + 0x8000);</div>
+<div class="line">  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 320; i++) {  <span class="comment">// Copy them into the DAC Buffer</span></div>
+<div class="line">    aaAudio.<a id="a7" name="a7"></a><a class="code hl_variable" href="classAutoAnalog.html#a85377e5dc495fdbd129db30c6c88ca71">dacBuffer16</a>[i] = (uint16_t)(aaAudio.<a id="a8" name="a8"></a><a class="code hl_variable" href="classAutoAnalog.html#a64b99ccc41ac44398397f12c89d292f3">adcBuffer16</a>[i]);</div>
 <div class="line">  }</div>
 <div class="line">  aaAudio.<a id="a9" name="a9"></a><a class="code hl_function" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(0,320); <span class="comment">// Feed the DAC with the ADC data</span></div>
 <div class="line">}</div>
@@ -116,7 +116,7 @@ $(function() {
 </div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Oct 20 2024 11:39:53 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
+Generated on Fri Oct 25 2024 18:36:11 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
 </small></address>
 </body>
 </html>
