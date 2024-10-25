@@ -202,13 +202,7 @@ public:
   inline static bool adcReady;
   inline static uint16_t dacBuf0[MAX_BUFFER_SIZE];
   inline static uint16_t dacBuf1[MAX_BUFFER_SIZE];
-  bool micOn;
-  int pwrPin;
-  int dinPin;
-  int clkPin;
-  int8_t gain;
   inline static uint32_t sampleCounter;
-  bool useI2S;
   
 #elif defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (ARDUINO_NRF52840_FEATHER) && !defined __MBED__
   uint16_t dacBuf0[MAX_BUFFER_SIZE];
@@ -221,15 +215,27 @@ public:
   static void adcCallback(uint16_t *buf, uint32_t buf_len);
   void set_callback(void(*function)(uint16_t *buf, uint32_t buf_len));
   static bool adcReady;
+  uint32_t sampleCounter;
+  //void DACC_Handler();
+#endif
+#if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52)
   bool micOn;
   int pwrPin;
   int dinPin;
   int clkPin;
   int8_t gain;
-  uint32_t sampleCounter;
-  //void DACC_Handler();
   bool useI2S;
+  uint16_t I2S_PIN_MCK;
+  uint8_t  I2S_PORT_MCK;
+  uint16_t I2S_PIN_SCK;
+  uint8_t  I2S_PORT_SCK;
+  uint16_t I2S_PIN_LRCK;
+  uint8_t  I2S_PORT_LRCK;
+  uint16_t I2S_PIN_SDOUT;
+  uint8_t  I2S_PORT_SDOUT;  
+  
 #endif
+
 
 private:
 

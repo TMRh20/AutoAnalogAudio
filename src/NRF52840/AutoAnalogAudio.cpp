@@ -50,16 +50,19 @@
 /******************* USER DEFINES - Configure pins etc here *****************/
   #define DEFAULT_PDM_GAIN     40
   
-  /* I2s config */       // MAX98357A Breakout also needs SD pin set HIGH
-  #define PIN_MCK    2   // Not used with MAX98357A
-  #define PORT_MCK   0 
-  #define PIN_SCK    3   // BCLK
-  #define PORT_SCK   0
-  #define PIN_LRCK   29  // LRCK
-  #define PORT_LRCK  0
-  #define PIN_SDOUT  5   // GPIO Pin numbers
-  #define PORT_SDOUT 0
-  
+  /* I2s default config  MAX98357A Breakout also needs SD pin set HIGH
+  I2S_PIN_MCK    2   // Not used with MAX98357A
+  I2S_PORT_MCK   0 
+  I2S_PIN_SCK    3   // BCLK
+  I2S_PORT_SCK   0
+  I2S_PIN_LRCK   29  // LRCK
+  I2S_PORT_LRCK  0
+  I2S_PIN_SDOUT  5   // GPIO Pin numbers
+  I2S_PORT_SDOUT 0   
+  */
+
+
+
   /* PWM Config */
   #define DEFAULT_PWM_PIN 5  //GPIO Pin number
   #define DEFAULT_PWM_PORT 0 // On XIAO port 0 is for pins 1-5 port 1 is for all higher pins
@@ -94,14 +97,20 @@ AutoAnalog::AutoAnalog(){
       dacBuffer[i] = 0;
   }
 
-
   aSize = MAX_BUFFER_SIZE;//&buf_size;
   buf0 = &adcBuf0[0];
   buf1 = &adcBuf1[0];  
   aCtr = 0;
   micOn = 0;
   sampleCounter = 0;
-
+  I2S_PIN_MCK = 2;
+  I2S_PORT_MCK = 0;
+  I2S_PIN_SCK = 3;
+  I2S_PORT_SCK = 0;
+  I2S_PIN_LRCK = 29;
+  I2S_PORT_LRCK = 0;
+  I2S_PIN_SDOUT = 5;
+  I2S_PORT_SDOUT = 0;
 }
 
 void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
@@ -465,10 +474,10 @@ void AutoAnalog::dacSetup(void){
   NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
   
   // Configure pins
-  NRF_I2S->PSEL.MCK = (PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
-  NRF_I2S->PSEL.SCK = (PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
-  NRF_I2S->PSEL.LRCK = (PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
-  NRF_I2S->PSEL.SDOUT = (PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos) | (I2S_PSEL_SDOUT_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (PORT_SDOUT << I2S_PSEL_SDOUT_PORT_Pos);
+  NRF_I2S->PSEL.MCK = (I2S_PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (I2S_PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
+  NRF_I2S->PSEL.SCK = (I2S_PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (I2S_PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
+  NRF_I2S->PSEL.LRCK = (I2S_PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (I2S_PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
+  NRF_I2S->PSEL.SDOUT = (I2S_PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos) | (I2S_PSEL_SDOUT_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (I2S_PORT_SDOUT << I2S_PSEL_SDOUT_PORT_Pos);
 
   
   //NRF_I2S->INTENSET = I2S_INTEN_TXPTRUPD_Enabled << I2S_INTEN_TXPTRUPD_Pos;
