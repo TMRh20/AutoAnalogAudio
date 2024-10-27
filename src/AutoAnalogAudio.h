@@ -48,7 +48,13 @@ public:
 
   AutoAnalog();
 
-  /** Setup the timer(s) */
+  /** Setup the timer(s)
+   *  
+   *  NRF52 Only: Call the below code prior to begin() to limit memory usage/buffer sizes:
+   *  @code
+   *  aaAudio.maxBufferSize = YOUR_AUDIO_BUFFER_SIZE;
+   *  @endcode  
+  */
   void begin(bool enADC, bool enDAC, uint8_t _useI2S = false);
 
   /**
@@ -194,23 +200,23 @@ public:
 #if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && defined __MBED__
   inline static uint8_t aCtr;
   inline static uint32_t aSize;
-  inline static uint16_t *buf0 = NULL;
-  inline static uint16_t *buf1 = NULL;
+  inline static uint16_t *adcBuf0 = NULL;
+  inline static uint16_t *adcBuf1 = NULL;
   inline static void (*_onReceive)(uint16_t *buf, uint32_t buf_len) = NULL;
   inline static void adcCallback(uint16_t *buf, uint32_t buf_len);
   inline static void set_callback(void(*function)(uint16_t *buf, uint32_t buf_len));
   inline static bool adcReady;
-  inline static uint16_t dacBuf0[MAX_BUFFER_SIZE];
-  inline static uint16_t dacBuf1[MAX_BUFFER_SIZE];
+  inline static uint16_t *dacBuf0;
+  inline static uint16_t *dacBuf1;
   inline static uint32_t sampleCounter;
   
 #elif defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (ARDUINO_NRF52840_FEATHER) && !defined __MBED__
-  uint16_t dacBuf0[MAX_BUFFER_SIZE];
-  uint16_t dacBuf1[MAX_BUFFER_SIZE];
+  uint16_t *dacBuf0;
+  uint16_t *dacBuf1;
   static uint8_t aCtr;
   static uint32_t aSize;
-  static uint16_t *buf0;
-  static uint16_t *buf1;
+  static uint16_t *adcBuf0;
+  static uint16_t *adcBuf1;
   static void (*_onReceive)(uint16_t *buf, uint32_t buf_len);
   static void adcCallback(uint16_t *buf, uint32_t buf_len);
   void set_callback(void(*function)(uint16_t *buf, uint32_t buf_len));
@@ -224,7 +230,7 @@ public:
   int dinPin;
   int clkPin;
   int8_t gain;
-  bool useI2S;
+  uint8_t useI2S;
   uint16_t I2S_PIN_MCK;
   uint8_t  I2S_PORT_MCK;
   uint16_t I2S_PIN_SCK;
@@ -233,7 +239,9 @@ public:
   uint8_t  I2S_PORT_LRCK;
   uint16_t I2S_PIN_SDOUT;
   uint8_t  I2S_PORT_SDOUT;  
-  
+  uint16_t I2S_PIN_SDIN;
+  uint8_t  I2S_PORT_SDIN;
+  uint32_t maxBufferSize;
 #endif
 
 
