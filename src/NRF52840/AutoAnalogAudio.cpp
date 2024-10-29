@@ -249,6 +249,7 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx){
 }
 
 /****************************************************************************/
+bool adcWhichBuf = 0;
 
 void AutoAnalog::getADC(uint32_t samples){
     
@@ -257,22 +258,41 @@ void AutoAnalog::getADC(uint32_t samples){
     
     uint8_t divider = 2;
     if(adcBitsPerSample == 24){
-      for(uint32_t i=0; i<samples; i++){
-        adcBuffer16[i] = ((uint32_t)&adcBuf0[0]) >> 8;
+      if( NRF_I2S->CONFIG.SWIDTH != I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
+        NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
       }
+      if(adcWhichBuf == 0){
+        memcpy(adcBuffer16, adcBuf0, samples * 4);
+      }else{
+        memcpy(adcBuffer16, adcBuf1, samples * 4);  
+      }
+      divider = 1;
     }else
     if(adcBitsPerSample == 16){
-      memcpy(adcBuffer16,adcBuf0,samples*2);
+      if(adcWhichBuf == 0){
+        memcpy(adcBuffer16,adcBuf0,samples*2);
+      }else{
+        memcpy(adcBuffer16,adcBuf1,samples*2);
+      }
     }else
     if(adcBitsPerSample == 8){
-      memcpy(adcBuffer, adcBuf0, samples);
+      if(adcWhichBuf == 0){  
+        memcpy(adcBuffer, adcBuf0, samples);
+      }else{
+        memcpy(adcBuffer, adcBuf1, samples);
+      }
       divider = 4;
     }
-    NRF_I2S->RXD.PTR = (uint32_t)&adcBuf0[0];
+    if(adcWhichBuf == 0){
+      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf0[0];
+    }else{
+      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf1[0];
+    }
+    adcWhichBuf = !adcWhichBuf;
 
 
       
-    if(useI2S == 2){
+    if(useI2S == 2 || useI2S == 3){
       NRF_I2S->RXTXD.MAXCNT = samples / divider;
     }
     NRF_I2S->EVENTS_RXPTRUPD = 0;
@@ -318,6 +338,18 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
        NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
      }else{
        memcpy(dacBuf1,dacBuffer16,samples * 2);
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
+     }
+   }else
+   if(dacBitsPerSample == 24){
+     if( NRF_I2S->CONFIG.SWIDTH != I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
+       NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+     }
+     if(whichBuf){
+       memcpy(dacBuf0,dacBuffer16,samples * 4);
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+     }else{
+       memcpy(dacBuf1,dacBuffer16,samples * 4);
        NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
      }
    }
@@ -402,7 +434,7 @@ if(useI2S == 2 || useI2S == 3){
   NRF_I2S->PSEL.MCK = (I2S_PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (I2S_PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
   NRF_I2S->PSEL.SCK = (I2S_PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (I2S_PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
   NRF_I2S->PSEL.LRCK = (I2S_PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (I2S_PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
-  NRF_I2S->PSEL.SDIN = (I2S_PIN_SDOUT << I2S_PSEL_SDIN_PIN_Pos) | (I2S_PSEL_SDIN_CONNECT_Connected << I2S_PSEL_SDIN_CONNECT_Pos) | (I2S_PORT_SDIN << I2S_PSEL_SDIN_PORT_Pos);
+  NRF_I2S->PSEL.SDIN = (I2S_PIN_SDIN << I2S_PSEL_SDIN_PIN_Pos) | (I2S_PSEL_SDIN_CONNECT_Connected << I2S_PSEL_SDIN_CONNECT_Pos) | (I2S_PORT_SDIN << I2S_PSEL_SDIN_PORT_Pos);
 
   
   
@@ -733,7 +765,11 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
-  memcpy(adcBuffer16, buf, buf_len * 2);
+  uint8_t multiplier = 2;
+  if( NRF_I2S->CONFIG.SWIDTH == I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
+    multiplier = 4;
+  }
+  memcpy(adcBuffer16, buf, buf_len * multiplier);
   adcReady = true;
 
 }
