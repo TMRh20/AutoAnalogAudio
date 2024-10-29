@@ -765,11 +765,7 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
-  uint8_t multiplier = 2;
-  if( NRF_I2S->CONFIG.SWIDTH == I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
-    multiplier = 4;
-  }
-  memcpy(adcBuffer16, buf, buf_len * multiplier);
+  memcpy(adcBuffer16, buf, buf_len * 2);
   adcReady = true;
 
 }
