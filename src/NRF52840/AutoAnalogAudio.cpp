@@ -30,8 +30,8 @@
   bool AutoAnalog::adcReady;
   uint32_t AutoAnalog::aSize;
   uint8_t AutoAnalog::aCtr;
-  uint16_t *AutoAnalog::buf0;
-  uint16_t *AutoAnalog::buf1;
+  uint16_t *AutoAnalog::adcBuf0;
+  uint16_t *AutoAnalog::adcBuf1;
   void (*AutoAnalog::_onReceive)(uint16_t *buf, uint32_t buf_len);
 #endif
 
@@ -79,10 +79,7 @@
 /* Public Functions */
 /****************************************************************************/
 
-  uint16_t adcBuf0[MAX_BUFFER_SIZE];
-  uint16_t adcBuf1[MAX_BUFFER_SIZE];
   uint8_t analogCounter = 0;
-  uint32_t buf_size = MAX_BUFFER_SIZE;
   uint16_t mycounter = 0;
   //int16_t sine_table[] = { 0, 0, 23170, 23170, 32767, 32767, 23170, 23170, 0, 0, -23170, -23170, -32768, -32768, -23170, -23170};
   
@@ -97,12 +94,11 @@ AutoAnalog::AutoAnalog(){
       dacBuffer[i] = 0;
   }
 
-  aSize = MAX_BUFFER_SIZE;//&buf_size;
-  buf0 = &adcBuf0[0];
-  buf1 = &adcBuf1[0];  
+  aSize = MAX_BUFFER_SIZE;
   aCtr = 0;
   micOn = 0;
   sampleCounter = 0;
+  maxBufferSize = 0;
   I2S_PIN_MCK = 2;
   I2S_PORT_MCK = 0;
   I2S_PIN_SCK = 3;
@@ -111,16 +107,28 @@ AutoAnalog::AutoAnalog(){
   I2S_PORT_LRCK = 0;
   I2S_PIN_SDOUT = 5;
   I2S_PORT_SDOUT = 0;
+  I2S_PIN_SDIN = 4;
+  I2S_PORT_SDIN = 0;
 }
 
 void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
 
+  maxBufferSize = maxBufferSize > 0 ? maxBufferSize : MAX_BUFFER_SIZE;
+  useI2S = _useI2S;
+  
   if(enADC){
+    adcBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+    memset(adcBuf0,0,maxBufferSize * 2);
+    adcBuf1 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+    memset(adcBuf1,0,maxBufferSize * 2);
     adcSetup();
   }
   
   if(enDAC){
-    useI2S = _useI2S;
+    dacBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+    memset(dacBuf0,0,maxBufferSize * 2);
+    dacBuf1 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+    memset(dacBuf1,0,maxBufferSize * 2);
     dacSetup();
   }
 
@@ -241,11 +249,59 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx){
 }
 
 /****************************************************************************/
+bool adcWhichBuf = 0;
 
 void AutoAnalog::getADC(uint32_t samples){
-  while(!adcReady){__WFE();};
-  aSize = samples;  
-  adcReady = false;
+    
+  if(useI2S == 2 || useI2S == 3){
+    while(NRF_I2S->EVENTS_RXPTRUPD == 0){}
+    
+    uint8_t divider = 2;
+    if(adcBitsPerSample == 24){
+      if( NRF_I2S->CONFIG.SWIDTH != I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
+        NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+      }
+      if(adcWhichBuf == 0){
+        memcpy(adcBuffer16, adcBuf0, samples * 4);
+      }else{
+        memcpy(adcBuffer16, adcBuf1, samples * 4);  
+      }
+      divider = 1;
+    }else
+    if(adcBitsPerSample == 16){
+      if(adcWhichBuf == 0){
+        memcpy(adcBuffer16,adcBuf0,samples*2);
+      }else{
+        memcpy(adcBuffer16,adcBuf1,samples*2);
+      }
+    }else
+    if(adcBitsPerSample == 8){
+      if(adcWhichBuf == 0){  
+        memcpy(adcBuffer, adcBuf0, samples);
+      }else{
+        memcpy(adcBuffer, adcBuf1, samples);
+      }
+      divider = 4;
+    }
+    if(adcWhichBuf == 0){
+      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf0[0];
+    }else{
+      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf1[0];
+    }
+    adcWhichBuf = !adcWhichBuf;
+
+
+      
+    if(useI2S == 2 || useI2S == 3){
+      NRF_I2S->RXTXD.MAXCNT = samples / divider;
+    }
+    NRF_I2S->EVENTS_RXPTRUPD = 0;
+  
+  }else{
+    while(!adcReady){__WFE();};
+    aSize = samples;  
+    adcReady = false;
+  }
 }
 
 /****************************************************************************/
@@ -254,8 +310,13 @@ bool whichBuf = 0;
 
 void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
  
- if(useI2S){
+ if(useI2S == 1 || useI2S == 3){
      
+   if(NRF_I2S->ENABLE == 0){
+     NRF_I2S->ENABLE = 1;
+     NRF_I2S->TASKS_START = 1;
+   }
+   
    while(NRF_I2S->EVENTS_TXPTRUPD == 0){}
    if(dacBitsPerSample == 8){
      if(whichBuf){
@@ -277,6 +338,18 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
        NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
      }else{
        memcpy(dacBuf1,dacBuffer16,samples * 2);
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
+     }
+   }else
+   if(dacBitsPerSample == 24){
+     if( NRF_I2S->CONFIG.SWIDTH != I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
+       NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+     }
+     if(whichBuf){
+       memcpy(dacBuf0,dacBuffer16,samples * 4);
+       NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
+     }else{
+       memcpy(dacBuf1,dacBuffer16,samples * 4);
        NRF_I2S->TXD.PTR = (uint32_t)&dacBuf1[0];
      }
    }
@@ -335,7 +408,47 @@ return 1;
 /****************************************************************************/
 
 void AutoAnalog::adcSetup(void){
+   
+if(useI2S == 2 || useI2S == 3){
     
+  NRF_I2S->CONFIG.RXEN = (I2S_CONFIG_RXEN_RXEN_ENABLE << I2S_CONFIG_RXEN_RXEN_Pos);
+  
+  // Enable MCK generator
+  NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_ENABLE << I2S_CONFIG_MCKEN_MCKEN_Pos);
+ 
+  // Master mode, 16Bit, left aligned
+  NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_MASTER << I2S_CONFIG_MODE_MODE_Pos;
+  
+  NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+  NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+  NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+  NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_LEFT << I2S_CONFIG_ALIGN_ALIGN_Pos;
+  
+  // Format = I2S
+  NRF_I2S->CONFIG.FORMAT = I2S_CONFIG_FORMAT_FORMAT_I2S << I2S_CONFIG_FORMAT_FORMAT_Pos;
+  
+  // Use stereo 
+  NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
+  
+  // Configure pins
+  NRF_I2S->PSEL.MCK = (I2S_PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (I2S_PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
+  NRF_I2S->PSEL.SCK = (I2S_PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (I2S_PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
+  NRF_I2S->PSEL.LRCK = (I2S_PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (I2S_PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
+  NRF_I2S->PSEL.SDIN = (I2S_PIN_SDIN << I2S_PSEL_SDIN_PIN_Pos) | (I2S_PSEL_SDIN_CONNECT_Connected << I2S_PSEL_SDIN_CONNECT_Pos) | (I2S_PORT_SDIN << I2S_PSEL_SDIN_PORT_Pos);
+
+  
+  
+  // Configure data pointer
+  NRF_I2S->RXD.PTR = (uint32_t)adcBuf0;
+  NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);
+  
+  NRF_I2S->ENABLE = 1;  
+  NRF_I2S->TASKS_START = 1;    
+    
+}else{
+
+
+   
     
   set_callback(adcCallback);
   dinPin = PIN_PDM_DIN;
@@ -440,6 +553,7 @@ void AutoAnalog::adcSetup(void){
   nrf_pdm_task_trigger(myPDM,NRF_PDM_TASK_START);
   
   #endif 
+} // USE_I2S
 }
 
 /****************************************************************************/
@@ -452,7 +566,7 @@ void AutoAnalog::adcInterrupts(bool enabled){
   
 void AutoAnalog::dacSetup(void){
     
-  if(useI2S){
+  if(useI2S == 1 || useI2S == 3){
       // Enable transmission
   NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
   
@@ -477,7 +591,7 @@ void AutoAnalog::dacSetup(void){
   NRF_I2S->PSEL.MCK = (I2S_PIN_MCK << I2S_PSEL_MCK_PIN_Pos) | (I2S_PSEL_MCK_CONNECT_Connected << I2S_PSEL_MCK_CONNECT_Pos) | (I2S_PORT_MCK << I2S_PSEL_MCK_PORT_Pos);
   NRF_I2S->PSEL.SCK = (I2S_PIN_SCK << I2S_PSEL_SCK_PIN_Pos) | (I2S_PSEL_SCK_CONNECT_Connected << I2S_PSEL_SCK_CONNECT_Pos) | (I2S_PORT_SCK << I2S_PSEL_SCK_PORT_Pos);
   NRF_I2S->PSEL.LRCK = (I2S_PIN_LRCK << I2S_PSEL_LRCK_PIN_Pos) | (I2S_PSEL_LRCK_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (I2S_PORT_LRCK << I2S_PSEL_LRCK_PORT_Pos);
-  NRF_I2S->PSEL.SDOUT = (I2S_PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos) | (I2S_PSEL_SDOUT_CONNECT_Connected << I2S_PSEL_LRCK_CONNECT_Pos) | (I2S_PORT_SDOUT << I2S_PSEL_SDOUT_PORT_Pos);
+  NRF_I2S->PSEL.SDOUT = (I2S_PIN_SDOUT << I2S_PSEL_SDOUT_PIN_Pos) | (I2S_PSEL_SDOUT_CONNECT_Connected << I2S_PSEL_SDOUT_CONNECT_Pos) | (I2S_PORT_SDOUT << I2S_PSEL_SDOUT_PORT_Pos);
 
   
   //NRF_I2S->INTENSET = I2S_INTEN_TXPTRUPD_Enabled << I2S_INTEN_TXPTRUPD_Pos;
@@ -522,7 +636,7 @@ void AutoAnalog::dacSetup(void){
 /****************************************************************************/
 
 void AutoAnalog::disableDAC(bool withinTask){
-  if(useI2S){
+  if(useI2S > 0){
     NRF_I2S->TASKS_STOP = 1;
     NRF_I2S->ENABLE = 0;      
   }else{
@@ -569,17 +683,17 @@ if (nrf_pdm_event_check(NRF_PDM_EVENT_STARTED)) {
     // switch to fill
 	
     if (AutoAnalog::aCtr) {
-        nrf_pdm_buffer_set((uint32_t*)(AutoAnalog::buf0), AutoAnalog::aSize);
+        nrf_pdm_buffer_set((uint32_t*)(AutoAnalog::adcBuf0), AutoAnalog::aSize);
         if(AutoAnalog::_onReceive){
             NVIC_DisableIRQ(PDM_IRQn);
-            AutoAnalog::_onReceive(AutoAnalog::buf1, AutoAnalog::aSize);
+            AutoAnalog::_onReceive(AutoAnalog::adcBuf1, AutoAnalog::aSize);
             NVIC_EnableIRQ(PDM_IRQn);
         }
     } else {
-        nrf_pdm_buffer_set((uint32_t*)(AutoAnalog::buf1), AutoAnalog::aSize);
+        nrf_pdm_buffer_set((uint32_t*)(AutoAnalog::adcBuf1), AutoAnalog::aSize);
         if(AutoAnalog::_onReceive){
             NVIC_DisableIRQ(PDM_IRQn);
-            AutoAnalog::_onReceive(AutoAnalog::buf0, AutoAnalog::aSize);
+            AutoAnalog::_onReceive(AutoAnalog::adcBuf0, AutoAnalog::aSize);
             NVIC_EnableIRQ(PDM_IRQn);
         }
     }
@@ -607,17 +721,17 @@ if (nrf_pdm_event_check(myPDM,NRF_PDM_EVENT_STARTED)) {
     // switch to fill
 	
     if (AutoAnalog::aCtr) {
-        nrf_pdm_buffer_set(myPDM,(uint32_t*)(AutoAnalog::buf0), AutoAnalog::aSize);
+        nrf_pdm_buffer_set(myPDM,(uint32_t*)(AutoAnalog::adcBuf0), AutoAnalog::aSize);
         if(AutoAnalog::_onReceive){
             NVIC_DisableIRQ(PDM_IRQn);
-            AutoAnalog::_onReceive(AutoAnalog::buf1, AutoAnalog::aSize);
+            AutoAnalog::_onReceive(AutoAnalog::adcBuf1, AutoAnalog::aSize);
             NVIC_EnableIRQ(PDM_IRQn);
         }
     } else {
-        nrf_pdm_buffer_set(myPDM,(uint32_t*)(AutoAnalog::buf1), AutoAnalog::aSize);
+        nrf_pdm_buffer_set(myPDM,(uint32_t*)(AutoAnalog::adcBuf1), AutoAnalog::aSize);
         if(AutoAnalog::_onReceive){
             NVIC_DisableIRQ(PDM_IRQn);
-            AutoAnalog::_onReceive(AutoAnalog::buf0, AutoAnalog::aSize);
+            AutoAnalog::_onReceive(AutoAnalog::adcBuf0, AutoAnalog::aSize);
             NVIC_EnableIRQ(PDM_IRQn);
         }
     }
@@ -651,7 +765,11 @@ void AutoAnalog::set_callback(void(*function)(uint16_t *buf, uint32_t buf_len)){
 
 void AutoAnalog::adcCallback(uint16_t *buf, uint32_t buf_len){
 
-  memcpy(adcBuffer16, buf, buf_len * 2);
+  uint8_t multiplier = 2;
+  if( NRF_I2S->CONFIG.SWIDTH == I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
+    multiplier = 4;
+  }
+  memcpy(adcBuffer16, buf, buf_len * multiplier);
   adcReady = true;
 
 }
