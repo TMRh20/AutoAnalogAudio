@@ -138,7 +138,7 @@ void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
 
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
-    if(!useI2S){
+    if(useI2S == 0){
       NRF_PWM0->TASKS_STOP = 1;
       uint32_t timer = millis();
       while(NRF_PWM0->EVENTS_STOPPED == 0){ if(millis() - timer > 1000){break;} }
@@ -254,6 +254,12 @@ bool adcWhichBuf = 0;
 void AutoAnalog::getADC(uint32_t samples){
     
   if(useI2S == 2 || useI2S == 3){
+    
+    if(NRF_I2S->ENABLE == 0){
+      NRF_I2S->ENABLE = 1;
+      NRF_I2S->TASKS_START = 1;
+    }
+    
     while(NRF_I2S->EVENTS_RXPTRUPD == 0){}
     
     uint8_t divider = 2;
@@ -375,13 +381,30 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
   NRF_PWM0->EVENTS_SEQEND[0] = 0;
   
   if(dacBitsPerSample > 8){
-    memcpy(dacBuf0, dacBuffer16, samples * 2);
-  }else{
-    for(uint32_t i=0; i<samples; i++){
-      dacBuf0[i] = (uint16_t)(dacBuffer[i] << 1) ;
+    if(whichBuf){
+      memcpy(dacBuf0, dacBuffer16, samples * 2);
+    }else{
+      memcpy(dacBuf1, dacBuffer16, samples * 2);
     }
+  }else{
+    if(whichBuf){
+      for(uint32_t i=0; i<samples; i++){
+        dacBuf0[i] = (uint16_t)(dacBuffer[i] << 1) ;
+      }
+    }else{
+      for(uint32_t i=0; i<samples; i++){
+        dacBuf1[i] = (uint16_t)(dacBuffer[i] << 1) ;
+      }
+    }
+    
   }
-  NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
+  if(whichBuf){
+    NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf0[0]) << PWM_SEQ_PTR_PTR_Pos);
+  }else{
+    NRF_PWM0->SEQ[0].PTR = ((uint32_t)(&dacBuf1[0]) << PWM_SEQ_PTR_PTR_Pos);
+  }
+  whichBuf = !whichBuf;  
+
   NRF_PWM0->SEQ[0].CNT = (samples << PWM_SEQ_CNT_CNT_Pos);
   NRF_PWM0->TASKS_SEQSTART[0] = 1; 
  }
@@ -440,10 +463,7 @@ if(useI2S == 2 || useI2S == 3){
   
   // Configure data pointer
   NRF_I2S->RXD.PTR = (uint32_t)adcBuf0;
-  NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);
-  
-  NRF_I2S->ENABLE = 1;  
-  NRF_I2S->TASKS_START = 1;    
+  NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);   
     
 }else{
 
@@ -602,14 +622,6 @@ void AutoAnalog::dacSetup(void){
   NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
   NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);
   
-  
-  //NRF_I2S->INTENSET = I2S_INTENSET_TXPTRUPD_Enabled << I2S_INTENSET_TXPTRUPD_Pos;
-  //NVIC_EnableIRQ(I2S_IRQn);
-  //NRF_I2S->TXD.PTR = (uint32_t)&sine_table[0];
-  //NRF_I2S->RXTXD.MAXCNT = sizeof(sine_table) / sizeof(uint32_t);
-  NRF_I2S->ENABLE = 1;  
-  NRF_I2S->TASKS_START = 1;
-
   }else{
 
   NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT << PWM_PSEL_OUT_PORT_Pos);
