@@ -87,6 +87,10 @@ AutoAnalog::AutoAnalog(){
 
   adcReady = true;   
   adcBitsPerSample = 8;
+  pwrPin = PIN_PDM_PWR;
+  dinPin = PIN_PDM_DIN;
+  clkPin = PIN_PDM_CLK;
+  gain = -1;
 
   dacBitsPerSample = 8;
   autoAdjust = true;
@@ -96,7 +100,6 @@ AutoAnalog::AutoAnalog(){
 
   aSize = MAX_BUFFER_SIZE;
   aCtr = 0;
-  micOn = 0;
   sampleCounter = 0;
   maxBufferSize = 0;
   I2S_PIN_MCK = 2;
@@ -471,10 +474,6 @@ if(useI2S == 2 || useI2S == 3){
    
     
   set_callback(adcCallback);
-  dinPin = PIN_PDM_DIN;
-  clkPin = PIN_PDM_CLK;
-  pwrPin = PIN_PDM_PWR;
-  gain = -1;
 
   // Enable high frequency oscillator if not already enabled
   if (NRF_CLOCK->EVENTS_HFCLKSTARTED == 0) {
@@ -513,7 +512,6 @@ if(useI2S == 2 || useI2S == 3){
   if (pwrPin > -1) {
     pinMode(pwrPin, OUTPUT);
     digitalWrite(pwrPin, HIGH);
-    micOn=1;
   }else{
   }
   
@@ -558,7 +556,6 @@ if(useI2S == 2 || useI2S == 3){
   if (pwrPin > -1) {
     pinMode(pwrPin, OUTPUT);
     digitalWrite(pwrPin, HIGH);
-    micOn=1;
   }else{
   }
   

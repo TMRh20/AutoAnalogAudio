@@ -47,7 +47,7 @@ void setup() {
   Serial.begin(115200);
 
   Serial.print("Init SD card...");
-  if (!SD.begin(2, 32000000)) {
+  if (!SD.begin(2)) {
     Serial.println("init failed!");
     return;
   }

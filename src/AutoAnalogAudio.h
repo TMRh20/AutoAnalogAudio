@@ -195,7 +195,6 @@ public:
   TaskHandle_t dacTaskHandle;
   #endif
 
-  /**@}*/
 
 #if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && defined __MBED__
   inline static uint8_t aCtr;
@@ -224,13 +223,74 @@ public:
   uint32_t sampleCounter;
   //void DACC_Handler();
 #endif
-#if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52)
-  bool micOn;
+
+#if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (DOXYGEN_FORCED)
+    /**@}*/
+    /**
+     * @name Section for nRF52 Devices Only
+     *
+     * This section is for nRF52 devices only  
+     *  
+     * 
+     */
+    /**@{*/
+    
+  /**
+   * Set the Power Pin for PDM  
+   * By default this is PIN_PDM_PWR  
+   * If PIN_PDM_PWR is not defined, it is set to -1 by default  
+   * Configure this before calling `begin()`  
+   */
   int pwrPin;
+  
+  /**
+  * Set the Input Pin for PDM  
+  * By default this is PIN_PDM_DIN  
+  * If PIN_PDM_DIN is not defined, it is set to 35 by default  
+   * Configure this before calling `begin()`  
+  */
   int dinPin;
+  
+  /**
+  * Set the Clock Pin for PDM  
+  * By default this is PIN_PDM_CLK  
+  * If PIN_PDM_CLK is not defined, it is set to 36 by default  
+   * Configure this before calling `begin()`  
+  */
   int clkPin;
+  
+  /**
+  * Set the Gain for PDM  
+  * By default this is set to 40  
+   * Configure this before calling `begin()`  
+  */
   int8_t gain;
+  
+  /**
+  * Enable I2S on nRF52
+  * By default this is disabled (analog output using PWM)
+  * 
+  * @code
+  * aaAudio.begin(1,1,3);
+  * @endcode
+  * @param Set to 1 for I2S DAC, 2 for I2S ADC, 3 for both
+  */
   uint8_t useI2S;
+  
+  /**
+  * Configure the pins and ports for nRF52 using GPIO numbers before calling `begin()`  
+  * Defaults:  
+  * I2S_PIN_MCK = 2;  
+  * I2S_PORT_MCK = 0;  
+  * I2S_PIN_SCK = 3;  
+  * I2S_PORT_SCK = 0;  
+  * I2S_PIN_LRCK = 29;  
+  * I2S_PORT_LRCK = 0;  
+  * I2S_PIN_SDOUT = 5;  
+  * I2S_PORT_SDOUT = 0;  
+  * I2S_PIN_SDIN = 4;  
+  * I2S_PORT_SDIN = 0;  
+  */
   uint16_t I2S_PIN_MCK;
   uint8_t  I2S_PORT_MCK;
   uint16_t I2S_PIN_SCK;
@@ -241,12 +301,18 @@ public:
   uint8_t  I2S_PORT_SDOUT;  
   uint16_t I2S_PIN_SDIN;
   uint8_t  I2S_PORT_SDIN;
+  
+  /**
+  * Set the maximum buffer size for nRF52  
+  * The internal buffers are all allocated dynamically.  
+  * By default the MAX_BUFFER_SIZE is defined in AutoAnalogAudio_config.h  
+  * Override that value for internal buffers by setting this before calling `begin()`  
+  */
   uint32_t maxBufferSize;
 #endif
 
-
+  /**@}*/
 private:
-
   /**
    * @name Internal interface.
    *
