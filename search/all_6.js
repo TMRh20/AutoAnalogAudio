@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['library_0',['Auto Analog Audio (Automatic DAC, ADC &amp; Timer) library',['../index.html#LibInfo',1,'']]],
-  ['library_20for_20arduino_1',['Automatic Analog Audio Library for Arduino',['../index.html',1,'']]]
+  ['gain_0',['gain',['../classAutoAnalog.html#a54f25231b01aab2a33bbe5e30f63cc5e',1,'AutoAnalog']]],
+  ['getadc_1',['getADC',['../classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504',1,'AutoAnalog']]]
 ];

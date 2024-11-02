@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['feeddac_0',['feedDAC',['../classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5',1,'AutoAnalog']]],
-  ['for_20arduino_1',['Automatic Analog Audio Library for Arduino',['../index.html',1,'']]]
+  ['enableadcchannel_0',['enableAdcChannel',['../classAutoAnalog.html#ab0f3ceccd76b77c0a6e407ba92f42346',1,'AutoAnalog']]]
 ];
