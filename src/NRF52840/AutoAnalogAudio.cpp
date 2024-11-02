@@ -258,13 +258,14 @@ void AutoAnalog::getADC(uint32_t samples){
     
   if(useI2S == 2 || useI2S == 3){
     
+    
+    bool started = false;    
     if(NRF_I2S->ENABLE == 0){
       NRF_I2S->ENABLE = 1;
-      NRF_I2S->TASKS_START = 1;
+      started = true;
+    }else{
+      while(NRF_I2S->EVENTS_RXPTRUPD == 0){}
     }
-    
-    while(NRF_I2S->EVENTS_RXPTRUPD == 0){}
-    
     uint8_t divider = 2;
     if(adcBitsPerSample == 24){
       if( NRF_I2S->CONFIG.SWIDTH != I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
@@ -304,8 +305,12 @@ void AutoAnalog::getADC(uint32_t samples){
     if(useI2S == 2 || useI2S == 3){
       NRF_I2S->RXTXD.MAXCNT = samples / divider;
     }
-    NRF_I2S->EVENTS_RXPTRUPD = 0;
-  
+    
+    NRF_I2S->EVENTS_RXPTRUPD = 0; 
+    if(started){
+      NRF_I2S->TASKS_START = 1;
+    }  
+       
   }else{
     while(!adcReady){__WFE();};
     aSize = samples;  
@@ -321,12 +326,14 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
  
  if(useI2S == 1 || useI2S == 3){
      
+   bool started = false;
    if(NRF_I2S->ENABLE == 0){
      NRF_I2S->ENABLE = 1;
-     NRF_I2S->TASKS_START = 1;
+     started = true;
+   }else{   
+     while(NRF_I2S->EVENTS_TXPTRUPD == 0){}
    }
    
-   while(NRF_I2S->EVENTS_TXPTRUPD == 0){}
    if(dacBitsPerSample == 8){
      if(whichBuf){
        for(uint32_t i=0; i< samples; i++){
@@ -375,7 +382,11 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
    
    NRF_I2S->RXTXD.MAXCNT = samples / divider;
    NRF_I2S->EVENTS_TXPTRUPD = 0;
-
+   
+   if(started){
+     NRF_I2S->TASKS_START = 1;
+   }
+   
  }else{
   uint32_t timer = millis() + 1000;
   while(NRF_PWM0->EVENTS_SEQEND[0] == 0){
