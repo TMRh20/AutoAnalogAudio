@@ -268,8 +268,31 @@ void AutoAnalog::getADC(uint32_t samples){
       started = true;
     }else{
       while(NRF_I2S->EVENTS_RXPTRUPD == 0){}
+    }    
+    
+    if(adcWhichBuf == 0){
+      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf0[0];
+    }else{
+      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf1[0];
     }
     uint8_t divider = 2;
+    if(adcBitsPerSample == 24){
+        divider = 1;
+    }else
+    if(adcBitsPerSample == 8){
+        divider = 4;
+    }
+    
+    if(useI2S == 2 || useI2S == 3){
+      NRF_I2S->RXTXD.MAXCNT = samples / divider;
+    }
+    
+    NRF_I2S->EVENTS_RXPTRUPD = 0; 
+    if(started){
+      NRF_I2S->TASKS_START = 1;
+    }  
+    
+    
     if(adcBitsPerSample == 24){
       if( NRF_I2S->CONFIG.SWIDTH != I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos){
         NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
@@ -279,7 +302,6 @@ void AutoAnalog::getADC(uint32_t samples){
       }else{
         memcpy(adcBuffer16, adcBuf1, samples * 4);  
       }
-      divider = 1;
     }else
     if(adcBitsPerSample == 16){
       if(adcWhichBuf == 0){
@@ -294,25 +316,9 @@ void AutoAnalog::getADC(uint32_t samples){
       }else{
         memcpy(adcBuffer, adcBuf1, samples);
       }
-      divider = 4;
     }
-    if(adcWhichBuf == 0){
-      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf0[0];
-    }else{
-      NRF_I2S->RXD.PTR = (uint32_t)&adcBuf1[0];
-    }
+
     adcWhichBuf = !adcWhichBuf;
-
-
-      
-    if(useI2S == 2 || useI2S == 3){
-      NRF_I2S->RXTXD.MAXCNT = samples / divider;
-    }
-    
-    NRF_I2S->EVENTS_RXPTRUPD = 0; 
-    if(started){
-      NRF_I2S->TASKS_START = 1;
-    }  
        
   }else
   if(useI2S == 0){
