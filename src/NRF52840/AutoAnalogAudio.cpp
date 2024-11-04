@@ -220,6 +220,9 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
       #endif
 
     }
+    
+    NRF_SAADC->SAMPLERATE = 16000000 / sampRate / 2 | SAADC_SAMPLERATE_MODE_Timers << SAADC_SAMPLERATE_MODE_Pos;
+    
 
 }
 
@@ -311,11 +314,42 @@ void AutoAnalog::getADC(uint32_t samples){
       NRF_I2S->TASKS_START = 1;
     }  
        
-  }else{
+  }else
+  if(useI2S == 0){
     while(!adcReady){__WFE();};
     aSize = samples;  
     adcReady = false;
+  }else{
+
+
+    while(NRF_SAADC->EVENTS_END == 0){ }
+
+    if(adcBitsPerSample == 16){
+      if(!adcWhichBuf){
+        for(uint32_t i=0; i<samples; i++){
+          adcBuffer16[i] = adcBuf0[i] << 2;
+        }
+        NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf1;
+      }else{
+        for(uint32_t i=0; i<samples; i++){
+          adcBuffer16[i] = adcBuf1[i] << 2;
+        }
+        NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
+      }      
+    }else
+    if(adcBitsPerSample == 8){
+      for(uint32_t i=0; i<samples; i++){
+        adcBuffer[i] = adcBuf0[i] >> 6;
+      }
+    }
+    adcWhichBuf = !adcWhichBuf;
+    
+    NRF_SAADC->RESULT.MAXCNT = samples;
+    NRF_SAADC->EVENTS_END = 0;
+    NRF_SAADC->TASKS_START = 1;
+
   }
+  
 }
 
 /****************************************************************************/
@@ -324,7 +358,7 @@ bool whichBuf = 0;
 
 void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
  
- if(useI2S == 1 || useI2S == 3){
+ if(useI2S == 1 || useI2S == 3 || useI2S == 6){
      
    bool started = false;
    if(NRF_I2S->ENABLE == 0){
@@ -479,7 +513,8 @@ if(useI2S == 2 || useI2S == 3){
   NRF_I2S->RXD.PTR = (uint32_t)adcBuf0;
   NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);   
     
-}else{
+}else
+if(useI2S == 0){
 
 
    
@@ -581,7 +616,31 @@ if(useI2S == 2 || useI2S == 3){
   nrf_pdm_task_trigger(myPDM,NRF_PDM_TASK_START);
   
   #endif 
-} // USE_I2S
+}else
+if(useI2S >= 4 && useI2S <= 6){ 
+
+  NRF_SAADC->CH[0].PSELP = dinPin << SAADC_CH_PSELP_PSELP_Pos;
+  NRF_SAADC->CH[0].PSELN = dinPin << SAADC_CH_PSELN_PSELN_Pos;
+  NRF_SAADC->CH[0].CONFIG = (SAADC_CH_CONFIG_RESP_VDD1_2 << SAADC_CH_CONFIG_RESP_Pos ) | SAADC_CH_CONFIG_GAIN_Gain4 << SAADC_CH_CONFIG_GAIN_Pos |
+  SAADC_CH_CONFIG_REFSEL_Internal << SAADC_CH_CONFIG_REFSEL_Pos | SAADC_CH_CONFIG_TACQ_3us << SAADC_CH_CONFIG_TACQ_Pos |
+  SAADC_CH_CONFIG_MODE_Diff << SAADC_CH_CONFIG_MODE_Pos | SAADC_CH_CONFIG_BURST_Disabled << SAADC_CH_CONFIG_BURST_Pos;
+  NRF_SAADC->RESOLUTION = SAADC_RESOLUTION_VAL_14bit << SAADC_RESOLUTION_VAL_Pos;
+  NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over2x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
+  NRF_SAADC->SAMPLERATE = 16000000 / 16000 / 2 | SAADC_SAMPLERATE_MODE_Timers << SAADC_SAMPLERATE_MODE_Pos;
+  NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
+  NRF_SAADC->RESULT.MAXCNT = MAX_BUFFER_SIZE;
+  NRF_SAADC->ENABLE = true;
+
+  NRF_SAADC->TASKS_CALIBRATEOFFSET = true;
+  while(!NRF_SAADC->EVENTS_CALIBRATEDONE){}
+  
+  NRF_SAADC->EVENTS_STARTED = 0;
+  NRF_SAADC->TASKS_START = 1;
+  while(!NRF_SAADC->EVENTS_STARTED){};
+  while ( NRF_SAADC->STATUS == ( SAADC_STATUS_STATUS_Busy << SAADC_STATUS_STATUS_Pos ) );
+  NRF_SAADC->TASKS_SAMPLE = 1;
+  Serial.println("Config");
+}    // USE_I2S
 }
 
 /****************************************************************************/
@@ -594,7 +653,7 @@ void AutoAnalog::adcInterrupts(bool enabled){
   
 void AutoAnalog::dacSetup(void){
     
-  if(useI2S == 1 || useI2S == 3){
+  if(useI2S == 1 || useI2S == 3 || useI2S == 6){
       // Enable transmission
   NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
   

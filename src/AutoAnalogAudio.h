@@ -244,7 +244,7 @@ public:
   int pwrPin;
   
   /**
-  * Set the Input Pin for PDM  
+  * Set the Input Pin for PDM or SAADC. With SAADC AIN0 is 1, AIN1 is 2 etc.
   * By default this is PIN_PDM_DIN  
   * If PIN_PDM_DIN is not defined, it is set to 35 by default  
    * Configure this before calling `begin()`  
