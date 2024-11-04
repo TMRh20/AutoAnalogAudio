@@ -324,29 +324,39 @@ void AutoAnalog::getADC(uint32_t samples){
 
     while(NRF_SAADC->EVENTS_END == 0){ }
 
+    if(!adcWhichBuf){
+      NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf1;
+    }else{
+      NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
+    }
+    NRF_SAADC->RESULT.MAXCNT = samples;
+    NRF_SAADC->EVENTS_END = 0;
+    NRF_SAADC->TASKS_START = 1;
+
     if(adcBitsPerSample == 16){
       if(!adcWhichBuf){
         for(uint32_t i=0; i<samples; i++){
           adcBuffer16[i] = adcBuf0[i] << 2;
         }
-        NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf1;
       }else{
         for(uint32_t i=0; i<samples; i++){
           adcBuffer16[i] = adcBuf1[i] << 2;
         }
-        NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
       }      
     }else
     if(adcBitsPerSample == 8){
-      for(uint32_t i=0; i<samples; i++){
-        adcBuffer[i] = adcBuf0[i] >> 6;
+      if(!adcWhichBuf){
+        for(uint32_t i=0; i<samples; i++){
+          adcBuffer[i] = adcBuf0[i] >> 6;
+        }
+      }else{
+        for(uint32_t i=0; i<samples; i++){
+          adcBuffer[i] = adcBuf1[i] >> 6;
+        }
       }
     }
     adcWhichBuf = !adcWhichBuf;
-    
-    NRF_SAADC->RESULT.MAXCNT = samples;
-    NRF_SAADC->EVENTS_END = 0;
-    NRF_SAADC->TASKS_START = 1;
+
 
   }
   
@@ -622,13 +632,13 @@ if(useI2S >= 4 && useI2S <= 6){
   NRF_SAADC->CH[0].PSELP = dinPin << SAADC_CH_PSELP_PSELP_Pos;
   NRF_SAADC->CH[0].PSELN = dinPin << SAADC_CH_PSELN_PSELN_Pos;
   NRF_SAADC->CH[0].CONFIG = (SAADC_CH_CONFIG_RESP_VDD1_2 << SAADC_CH_CONFIG_RESP_Pos ) | SAADC_CH_CONFIG_GAIN_Gain4 << SAADC_CH_CONFIG_GAIN_Pos |
-  SAADC_CH_CONFIG_REFSEL_Internal << SAADC_CH_CONFIG_REFSEL_Pos | SAADC_CH_CONFIG_TACQ_3us << SAADC_CH_CONFIG_TACQ_Pos |
+  SAADC_CH_CONFIG_REFSEL_Internal << SAADC_CH_CONFIG_REFSEL_Pos | SAADC_CH_CONFIG_TACQ_5us << SAADC_CH_CONFIG_TACQ_Pos |
   SAADC_CH_CONFIG_MODE_Diff << SAADC_CH_CONFIG_MODE_Pos | SAADC_CH_CONFIG_BURST_Disabled << SAADC_CH_CONFIG_BURST_Pos;
   NRF_SAADC->RESOLUTION = SAADC_RESOLUTION_VAL_14bit << SAADC_RESOLUTION_VAL_Pos;
   NRF_SAADC->OVERSAMPLE = SAADC_OVERSAMPLE_OVERSAMPLE_Over2x << SAADC_OVERSAMPLE_OVERSAMPLE_Pos;
   NRF_SAADC->SAMPLERATE = 16000000 / 16000 / 2 | SAADC_SAMPLERATE_MODE_Timers << SAADC_SAMPLERATE_MODE_Pos;
   NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
-  NRF_SAADC->RESULT.MAXCNT = MAX_BUFFER_SIZE;
+  NRF_SAADC->RESULT.MAXCNT = 16;
   NRF_SAADC->ENABLE = true;
 
   NRF_SAADC->TASKS_CALIBRATEOFFSET = true;

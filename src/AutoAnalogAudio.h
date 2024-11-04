@@ -267,13 +267,13 @@ public:
   int8_t gain;
   
   /**
-  * Enable I2S on nRF52
+  * Enable I2S and/or SAADC on nRF52
   * By default this is disabled (analog output using PWM)
   * 
   * @code
   * aaAudio.begin(1,1,3);
   * @endcode
-  * @param Set to 1 for I2S DAC, 2 for I2S ADC, 3 for both
+  * @param Set to 1 for I2S DAC, 2 for I2S ADC, 3 for both, 4 for SAADC only, 5 for SAADC + PWM Output, 6 for SAADC + I2S Output
   */
   uint8_t useI2S;
   
