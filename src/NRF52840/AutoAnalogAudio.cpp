@@ -654,7 +654,7 @@ if(useI2S >= 4 && useI2S <= 6){
   while(!NRF_SAADC->EVENTS_STARTED){};
   while ( NRF_SAADC->STATUS == ( SAADC_STATUS_STATUS_Busy << SAADC_STATUS_STATUS_Pos ) );
   NRF_SAADC->TASKS_SAMPLE = 1;
-  Serial.println("Config");
+
 }    // USE_I2S
 }
 
