@@ -215,6 +215,10 @@ public:
   inline static uint16_t *dacBuf0;
   inline static uint16_t *dacBuf1;
   inline static uint32_t sampleCounter;
+  uint8_t enableADC;
+  uint8_t enableDAC;
+  bool whichBuf;
+  bool adcWhichBuf;
   
 #elif defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (ARDUINO_NRF52840_FEATHER) && !defined __MBED__
   uint16_t *dacBuf0;
