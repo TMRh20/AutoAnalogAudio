@@ -60,7 +60,7 @@ public:
    * Third option:
    * @param enADC 0 = Disabled, 1 = PDM input, 2 = I2S input, 3 = SAADC input
    * @param enDAC 0 = Disabled, 1 = PWM output, 2 = I2S output
-   * @param _useI2S This is deprecated, use enADC and enDAC t control inputs/outputs
+   * @param _useI2S This is deprecated, use enADC and enDAC to control inputs/outputs
   */
   void begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S = 0);
 
