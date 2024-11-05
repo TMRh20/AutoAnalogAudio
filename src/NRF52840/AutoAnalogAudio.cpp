@@ -114,10 +114,31 @@ AutoAnalog::AutoAnalog(){
   I2S_PORT_SDIN = 0;
 }
 
-void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
+void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S){
 
   maxBufferSize = maxBufferSize > 0 ? maxBufferSize : MAX_BUFFER_SIZE;
-  useI2S = _useI2S;
+  
+  // Fix for backward compatiblity with badly thought out changes
+  if(_useI2S == 1){
+    enDAC = 2;
+  }else
+  if(_useI2S == 2){
+    enADC = 2;
+  }else
+  if(_useI2S == 3){
+    enADC = 2;
+    enDAC = 2;
+  }else
+  if(_useI2S == 4 || _useI2S == 5){
+    enADC = 3;
+  }else
+  if(_useI2S == 6){
+    enADC = 3;
+    enDAC = 2;
+  }
+
+  enableADC = enADC;
+  enableDAC = enDAC;
   
   if(enADC){
     adcBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
@@ -141,14 +162,16 @@ void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
 
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
     
-    if(useI2S == 0){
+    if(enableDAC == 1){
       NRF_PWM0->TASKS_STOP = 1;
       uint32_t timer = millis();
       while(NRF_PWM0->EVENTS_STOPPED == 0){ if(millis() - timer > 1000){break;} }
     
       NRF_PWM0->COUNTERTOP = (((uint16_t)((16000000/sampRate))) << PWM_COUNTERTOP_COUNTERTOP_Pos);
       NRF_PWM0->TASKS_SEQSTART[0] = 1;
-    }else{
+    }
+    
+    if(enableDAC == 2 || enableADC == 2){
       
       if(stereo){
         NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_STEREO << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
@@ -177,7 +200,8 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
         NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_32X << I2S_CONFIG_RATIO_RATIO_Pos;
       }
     }
-        
+
+    if(enableADC == 1){    
     if(sampRate <= 16000){
        //Set default 16khz sample rate
        NRF_PDM->RATIO = ((PDM_RATIO_RATIO_Ratio80 << PDM_RATIO_RATIO_Pos) & PDM_RATIO_RATIO_Msk);
@@ -220,9 +244,11 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo){
       #endif
 
     }
+    }
     
-    NRF_SAADC->SAMPLERATE = 16000000 / sampRate / 2 | SAADC_SAMPLERATE_MODE_Timers << SAADC_SAMPLERATE_MODE_Pos;
-    
+    if(enableADC == 3){        
+      NRF_SAADC->SAMPLERATE = 16000000 / sampRate / 2 | SAADC_SAMPLERATE_MODE_Timers << SAADC_SAMPLERATE_MODE_Pos;
+    }
 
 }
 
@@ -255,11 +281,10 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx){
 }
 
 /****************************************************************************/
-bool adcWhichBuf = 0;
 
 void AutoAnalog::getADC(uint32_t samples){
     
-  if(useI2S == 2 || useI2S == 3){
+  if(enableADC == 2){
     
     
     bool started = false;    
@@ -283,7 +308,7 @@ void AutoAnalog::getADC(uint32_t samples){
         divider = 4;
     }
     
-    if(useI2S == 2 || useI2S == 3){
+    if(enableDAC != 2){ //Only update MAXCNT if I2S output is disabled
       NRF_I2S->RXTXD.MAXCNT = samples / divider;
     }
     
@@ -320,11 +345,12 @@ void AutoAnalog::getADC(uint32_t samples){
     }  
     
   }else
-  if(useI2S == 0){
+  if(enableADC == 1){
     while(!adcReady){__WFE();};
     aSize = samples;  
     adcReady = false;
-  }else{
+  }else
+  if(enableADC == 3){
 
 
     while(NRF_SAADC->EVENTS_END == 0){ }
@@ -369,11 +395,9 @@ void AutoAnalog::getADC(uint32_t samples){
 
 /****************************************************************************/
 
-bool whichBuf = 0;
-
 void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterrupts){
  
- if(useI2S == 1 || useI2S == 3 || useI2S == 6){
+ if(enableDAC == 2){
      
    bool started = false;
    if(NRF_I2S->ENABLE == 0){
@@ -436,7 +460,8 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
      NRF_I2S->TASKS_START = 1;
    }
    
- }else{
+ }else
+ if(enableDAC == 1){
   uint32_t timer = millis() + 1000;
   while(NRF_PWM0->EVENTS_SEQEND[0] == 0){
     if(millis() > timer ){ NRF_PWM0->TASKS_SEQSTART[0] = 1; return; }    
@@ -495,7 +520,7 @@ return 1;
 
 void AutoAnalog::adcSetup(void){
    
-if(useI2S == 2 || useI2S == 3){
+if(enableADC == 2){
     
   NRF_I2S->CONFIG.RXEN = (I2S_CONFIG_RXEN_RXEN_ENABLE << I2S_CONFIG_RXEN_RXEN_Pos);
   
@@ -529,7 +554,7 @@ if(useI2S == 2 || useI2S == 3){
   NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);   
     
 }else
-if(useI2S == 0){
+if(enableADC == 1){
 
 
    
@@ -632,7 +657,7 @@ if(useI2S == 0){
   
   #endif 
 }else
-if(useI2S >= 4 && useI2S <= 6){ 
+if(enableADC == 3){ 
 
   NRF_SAADC->CH[0].PSELP = dinPin << SAADC_CH_PSELP_PSELP_Pos;
   NRF_SAADC->CH[0].PSELN = dinPin << SAADC_CH_PSELN_PSELN_Pos;
@@ -668,7 +693,7 @@ void AutoAnalog::adcInterrupts(bool enabled){
   
 void AutoAnalog::dacSetup(void){
     
-  if(useI2S == 1 || useI2S == 3 || useI2S == 6){
+  if(enableDAC == 2){
       // Enable transmission
   NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
   
@@ -704,7 +729,8 @@ void AutoAnalog::dacSetup(void){
   NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
   NRF_I2S->RXTXD.MAXCNT = 16;// / sizeof(uint32_t);
   
-  }else{
+  }else
+  if(enableDAC == 1){
 
   NRF_PWM0->PSEL.OUT[0] = (DEFAULT_PWM_PIN << PWM_PSEL_OUT_PIN_Pos) | (PWM_PSEL_OUT_CONNECT_Connected << PWM_PSEL_OUT_CONNECT_Pos | DEFAULT_PWM_PORT << PWM_PSEL_OUT_PORT_Pos);
   #if defined DEFAULT_PWM_PIN2
@@ -730,13 +756,14 @@ void AutoAnalog::dacSetup(void){
 /****************************************************************************/
 
 void AutoAnalog::disableDAC(bool withinTask){
-  if(useI2S > 0){
+  if(enableDAC == 2){
     NRF_I2S->TASKS_STOP = 1;
     NRF_I2S->ENABLE = 0;      
-  }else{
+  }else
+  if(enableDAC == 1){
     NRF_PWM0->TASKS_STOP = 1;
   }
-} 
+}
 
 /****************************************************************************/
 

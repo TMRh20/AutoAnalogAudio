@@ -1,6 +1,6 @@
     /*
     AutoAnalogAudio streaming via DAC & ADC by TMRh20
-    Copyright (C) 2016-2020  TMRh20 - tmrh20@gmail.com, github.com/TMRh20
+    Copyright (C) 2016-2024  TMRh20 - tmrh20@gmail.com, github.com/TMRh20
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,13 +49,20 @@ public:
   AutoAnalog();
 
   /** Setup the timer(s)
+   *
+   *  Make sure to define your chosen pins before calling `begin();`  
    *  
-   *  NRF52 Only: Call the below code prior to begin() to limit memory usage/buffer sizes:
+   *  NRF52 Only: Call the below code prior to begin() to limit memory usage/buffer sizes:  
    *  @code
    *  aaAudio.maxBufferSize = YOUR_AUDIO_BUFFER_SIZE;
-   *  @endcode  
+   *  @endcode
+   *
+   * Third option:
+   * @param enADC 0 = Disabled, 1 = PDM input, 2 = I2S input, 3 = SAADC input
+   * @param enDAC 0 = Disabled, 1 = PWM output, 2 = I2S output
+   * @param _useI2S This is deprecated, use enADC and enDAC t control inputs/outputs
   */
-  void begin(bool enADC, bool enDAC, uint8_t _useI2S = false);
+  void begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S = 0);
 
   /**
    * @note This function is no longer required and does nothing
@@ -221,7 +228,10 @@ public:
   void set_callback(void(*function)(uint16_t *buf, uint32_t buf_len));
   static bool adcReady;
   uint32_t sampleCounter;
-  //void DACC_Handler();
+  uint8_t enableADC;
+  uint8_t enableDAC;
+  bool whichBuf;
+  bool adcWhichBuf;
 #endif
 
 #if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (DOXYGEN_FORCED)
@@ -266,18 +276,7 @@ public:
   */
   int8_t gain;
   
-  /**
-  * Enable I2S and/or SAADC on nRF52
-  * By default this is disabled (analog output using PWM)
-  * 
-  * @code
-  * aaAudio.begin(1,1,3);
-  * @endcode
-  * @param Set to 1 for I2S DAC, 2 for I2S ADC, 3 for both, 4 for SAADC only, 5 for SAADC + PWM Output, 6 for SAADC + I2S Output
-  */
-  uint8_t useI2S;
-  
-  /**
+   /**
   * Configure the pins and ports for nRF52 using GPIO numbers before calling `begin()`  
   * Defaults:  
   * I2S_PIN_MCK = 2;  

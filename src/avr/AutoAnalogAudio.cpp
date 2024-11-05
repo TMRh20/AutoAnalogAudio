@@ -59,7 +59,7 @@ AutoAnalog::AutoAnalog(){
   adcSampleCounter = 0;
 }
 
-void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
+void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S){
   
   if(enADC){
     analogRead(A0);

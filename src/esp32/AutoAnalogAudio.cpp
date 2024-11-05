@@ -110,7 +110,7 @@ void dacTask(void *args){
 
 /****************************************************************************/
 
-void AutoAnalog::begin(bool enADC, bool enDAC, uint8_t _useI2S){
+void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S){
 
   i2s_mode_t myMode = (i2s_mode_t)I2S_MODE_MASTER;
 
