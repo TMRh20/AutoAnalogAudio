@@ -22,7 +22,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Auto Analog Audio<span id="projectnumber">&#160;v1.52.0</span>
+   <div id="projectname">Auto Analog Audio<span id="projectnumber">&#160;v1.53.0</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -93,8 +93,6 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a355219bdf09e71be365c893f4b109a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54f25231b01aab2a33bbe5e30f63cc5e" id="r_a54f25231b01aab2a33bbe5e30f63cc5e"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a54f25231b01aab2a33bbe5e30f63cc5e">gain</a></td></tr>
 <tr class="separator:a54f25231b01aab2a33bbe5e30f63cc5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6750ae27adc5c22f142e24e71b9e50c" id="r_ac6750ae27adc5c22f142e24e71b9e50c"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#ac6750ae27adc5c22f142e24e71b9e50c">useI2S</a></td></tr>
-<tr class="separator:ac6750ae27adc5c22f142e24e71b9e50c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9954f23251cb3d2041c8d992f6c8884d" id="r_a9954f23251cb3d2041c8d992f6c8884d"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a9954f23251cb3d2041c8d992f6c8884d">I2S_PIN_MCK</a></td></tr>
 <tr class="separator:a9954f23251cb3d2041c8d992f6c8884d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0d501c86f7053207a35a1a3622a5877" id="r_ac0d501c86f7053207a35a1a3622a5877"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#ac0d501c86f7053207a35a1a3622a5877">I2S_PORT_MCK</a></td></tr>
@@ -139,8 +137,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a58ffe6c35c52bf503720a89546ad6d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3667d5820bc647c87517c1eaea8ff722" id="r_a3667d5820bc647c87517c1eaea8ff722"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a3667d5820bc647c87517c1eaea8ff722">AutoAnalog</a> ()</td></tr>
 <tr class="separator:a3667d5820bc647c87517c1eaea8ff722"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af69f1daa5b60c4bfde9264d8dc880215" id="r_af69f1daa5b60c4bfde9264d8dc880215"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin</a> (bool enADC, bool enDAC, uint8_t _useI2S=false)</td></tr>
-<tr class="separator:af69f1daa5b60c4bfde9264d8dc880215"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b1656a78a2c5501017ec11d8d00f286" id="r_a9b1656a78a2c5501017ec11d8d00f286"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin</a> (uint8_t enADC, uint8_t enDAC, uint8_t _useI2S=0)</td></tr>
+<tr class="separator:a9b1656a78a2c5501017ec11d8d00f286"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedd70fc9f6f130c32ccb015b670f5318" id="r_aedd70fc9f6f130c32ccb015b670f5318"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#aedd70fc9f6f130c32ccb015b670f5318">triggerADC</a> ()</td></tr>
 <tr class="separator:aedd70fc9f6f130c32ccb015b670f5318"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61f2ceee4ff61ec9323a30a6c44ab504" id="r_a61f2ceee4ff61ec9323a30a6c44ab504"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC</a> (uint32_t samples=MAX_BUFFER_SIZE)</td></tr>
@@ -190,8 +188,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af69f1daa5b60c4bfde9264d8dc880215" name="af69f1daa5b60c4bfde9264d8dc880215"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af69f1daa5b60c4bfde9264d8dc880215">&#9670;&#160;</a></span>begin()</h2>
+<a id="a9b1656a78a2c5501017ec11d8d00f286" name="a9b1656a78a2c5501017ec11d8d00f286"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b1656a78a2c5501017ec11d8d00f286">&#9670;&#160;</a></span>begin()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,20 +197,20 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void AutoAnalog::begin </td>
           <td>(</td>
-          <td class="paramtype">bool&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>enADC</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>enDAC</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>_useI2S</em> = <code>false</code>&#160;</td>
+          <td class="paramname"><em>_useI2S</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -222,8 +220,19 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Setup the timer(s)</p>
-<p>NRF52 Only: Call the below code prior to <a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a> to limit memory usage/buffer sizes: </p><div class="fragment"><div class="line">aaAudio.maxBufferSize = YOUR_AUDIO_BUFFER_SIZE;</div>
-</div><!-- fragment --> <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a2">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a1">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a1">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a3">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a2">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a1">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a1">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a1">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a2">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a2">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a2">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a2">WirelessSpeaker.ino</a>.</dd>
+<p>Make sure to define your chosen pins before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a>;</code> <br  />
+</p>
+<p>NRF52 Only: Call the below code prior to <a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a> to limit memory usage/buffer sizes: <br  />
+ </p><div class="fragment"><div class="line">aaAudio.maxBufferSize = YOUR_AUDIO_BUFFER_SIZE;</div>
+</div><!-- fragment --><p>Third option: </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enADC</td><td>0 = Disabled, 1 = PDM input, 2 = I2S input, 3 = SAADC input </td></tr>
+    <tr><td class="paramname">enDAC</td><td>0 = Disabled, 1 = PWM output, 2 = I2S output </td></tr>
+    <tr><td class="paramname">_useI2S</td><td>This is deprecated, use enADC and enDAC to control inputs/outputs </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a2">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a1">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a1">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a3">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a2">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a1">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a1">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a1">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a2">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a2">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a2">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a2">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -269,7 +278,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Changes to the number of samples will not take place until one buffer has been returned with the previous number of samples </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a7">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a6">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a6">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a5">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a6">WirelessMicrophone.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a7">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a6">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a5">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a5">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a6">WirelessMicrophone.ino</a>.</dd>
 </dl>
 
 </div>
@@ -314,7 +323,7 @@ Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a6">AudioRadioRelay.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a9">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a1">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a7">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a5">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a6">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a7">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a6">AudioRadioRelay.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a8">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a1">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a7">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a5">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a6">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a7">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -351,7 +360,7 @@ Public Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a4">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a4">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a5">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a6">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a5">SdAudioBasic.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a4">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a4">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a4">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a5">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a5">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a4">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a4">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a4">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a6">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a5">SdAudioBasic.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a4">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a4">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a4">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a5">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a5">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
 </div>
@@ -555,7 +564,7 @@ Public Attributes</h2></td></tr>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a5">AudioRadioRelay.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a8">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a6">SdAudioBasic.ino</a>, and <a class="el" href="SimpleSine_8ino-example.html#a6">SimpleSine.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00088">88</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00095">95</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -576,7 +585,7 @@ Public Attributes</h2></td></tr>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a8">AudioRadioRelay.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a7">WirelessMicrophone.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00095">95</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00102">102</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -597,7 +606,7 @@ Public Attributes</h2></td></tr>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a7">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a9">SdAudioAuto.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a7">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a6">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00102">102</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00109">109</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -615,10 +624,10 @@ Public Attributes</h2></td></tr>
 <p>ADC Data buffer for 10 or 12-bit samples</p>
 <p>10 or 12-bit samples are read directly from this buffer after calling <a class="el" href="classAutoAnalog.html#a61f2ceee4ff61ec9323a30a6c44ab504">getADC()</a> <br  />
  </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="classAutoAnalog.html#adf54b09207afbc94726a48642e3b611a">adcBitsPerSample</a> </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="MultiChannelAdcStream_8ino-example.html#a7">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a8">NRF52_PDM_PWMTest.ino</a>, and <a class="el" href="SimpleAdcStream_8ino-example.html#a6">SimpleAdcStream.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="MultiChannelAdcStream_8ino-example.html#a7">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a6">NRF52_PDM_PWMTest.ino</a>, and <a class="el" href="SimpleAdcStream_8ino-example.html#a6">SimpleAdcStream.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00110">110</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00117">117</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -635,10 +644,10 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Auto &amp; Manual sample rates. En/Disables automatic adjustment of timers</p>
 <p>Default: true </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a3">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a2">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a2">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a4">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a3">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a2">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a2">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a2">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a3">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a3">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a3">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a3">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="AudioRadioRelay_8ino-example.html#a3">AudioRadioRelay.ino</a>, <a class="el" href="MultiChannelAdcStream_8ino-example.html#a2">MultiChannelAdcStream.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a4">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a3">SdAudioBasic.ino</a>, <a class="el" href="SdAudioRecording_8ino-example.html#a2">SdAudioRecording.ino</a>, <a class="el" href="SdAudioWavPlayer_8ino-example.html#a2">SdAudioWavPlayer.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a2">SimpleAdcStream.ino</a>, <a class="el" href="SimpleSine_8ino-example.html#a3">SimpleSine.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a3">SimpleSine12Bit.ino</a>, <a class="el" href="WirelessMicrophone_8ino-example.html#a3">WirelessMicrophone.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a3">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00130">130</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00137">137</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -661,10 +670,10 @@ Public Attributes</h2></td></tr>
  adcBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br  />
  adcBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br  />
  </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="MultiChannelAdcStream_8ino-example.html#a3">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a3">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a3">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a4">WirelessMicrophone.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="MultiChannelAdcStream_8ino-example.html#a3">MultiChannelAdcStream.ino</a>, <a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a2">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SimpleAdcStream_8ino-example.html#a3">SimpleAdcStream.ino</a>, and <a class="el" href="WirelessMicrophone_8ino-example.html#a4">WirelessMicrophone.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00141">141</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00148">148</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -687,10 +696,10 @@ Public Attributes</h2></td></tr>
  dacBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br  />
  dacBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br  />
  </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a4">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a5">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a4">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a5">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a4">WirelessSpeaker.ino</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="NRF52_PDM_PWMTest_8ino-example.html#a3">NRF52_PDM_PWMTest.ino</a>, <a class="el" href="SdAudioAuto_8ino-example.html#a5">SdAudioAuto.ino</a>, <a class="el" href="SdAudioBasic_8ino-example.html#a4">SdAudioBasic.ino</a>, <a class="el" href="SimpleSine12Bit_8ino-example.html#a5">SimpleSine12Bit.ino</a>, and <a class="el" href="WirelessSpeaker_8ino-example.html#a4">WirelessSpeaker.ino</a>.</dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00152">152</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00159">159</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -706,7 +715,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00195">195</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00202">202</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -724,10 +733,10 @@ Public Attributes</h2></td></tr>
 <p>Set the Power Pin for PDM <br  />
  By default this is PIN_PDM_PWR <br  />
  If PIN_PDM_PWR is not defined, it is set to -1 by default <br  />
- Configure this before calling <code><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a></code> <br  />
+ Configure this before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a></code> <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00244">244</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00258">258</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -742,13 +751,12 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the Input Pin for PDM <br  />
- By default this is PIN_PDM_DIN <br  />
+<p>Set the Input Pin for PDM or SAADC. With SAADC AIN0 is 1, AIN1 is 2 etc. By default this is PIN_PDM_DIN <br  />
  If PIN_PDM_DIN is not defined, it is set to 35 by default <br  />
- Configure this before calling <code><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a></code> <br  />
+ Configure this before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a></code> <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00252">252</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00266">266</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -766,10 +774,10 @@ Public Attributes</h2></td></tr>
 <p>Set the Clock Pin for PDM <br  />
  By default this is PIN_PDM_CLK <br  />
  If PIN_PDM_CLK is not defined, it is set to 36 by default <br  />
- Configure this before calling <code><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a></code> <br  />
+ Configure this before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a></code> <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00260">260</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00274">274</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -786,34 +794,10 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Set the Gain for PDM <br  />
  By default this is set to 40 <br  />
- Configure this before calling <code><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a></code> <br  />
+ Configure this before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a></code> <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00267">267</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
-
-</div>
-</div>
-<a id="ac6750ae27adc5c22f142e24e71b9e50c" name="ac6750ae27adc5c22f142e24e71b9e50c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6750ae27adc5c22f142e24e71b9e50c">&#9670;&#160;</a></span>useI2S</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t AutoAnalog::useI2S</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Enable I2S on nRF52 By default this is disabled (analog output using PWM)</p>
-<div class="fragment"><div class="line">aaAudio.begin(1,1,3);</div>
-</div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">Set</td><td>to 1 for I2S DAC, 2 for I2S ADC, 3 for both </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00278">278</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00281">281</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -828,7 +812,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Configure the pins and ports for nRF52 using GPIO numbers before calling <code><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a></code> <br  />
+<p>Configure the pins and ports for nRF52 using GPIO numbers before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a></code> <br  />
  Defaults: <br  />
  I2S_PIN_MCK = 2; <br  />
  I2S_PORT_MCK = 0; <br  />
@@ -842,7 +826,7 @@ Public Attributes</h2></td></tr>
  I2S_PORT_SDIN = 0; <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00294">294</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00297">297</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -858,7 +842,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00295">295</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00298">298</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -874,7 +858,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00296">296</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00299">299</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -890,7 +874,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00297">297</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00300">300</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -906,7 +890,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00298">298</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00301">301</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -922,7 +906,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00299">299</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00302">302</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -938,7 +922,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00300">300</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00303">303</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -954,7 +938,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00301">301</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00304">304</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -970,7 +954,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00302">302</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00305">305</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -986,7 +970,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00303">303</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00306">306</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -1004,10 +988,10 @@ Public Attributes</h2></td></tr>
 <p>Set the maximum buffer size for nRF52 <br  />
  The internal buffers are all allocated dynamically. <br  />
  By default the MAX_BUFFER_SIZE is defined in AutoAnalogAudio_config.h <br  />
- Override that value for internal buffers by setting this before calling <code><a class="el" href="classAutoAnalog.html#af69f1daa5b60c4bfde9264d8dc880215">begin()</a></code> <br  />
+ Override that value for internal buffers by setting this before calling <code><a class="el" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin()</a></code> <br  />
  </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00311">311</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoAnalogAudio_8h_source.html#l00314">314</a> of file <a class="el" href="AutoAnalogAudio_8h_source.html">AutoAnalogAudio.h</a>.</p>
 
 </div>
 </div>
@@ -1017,7 +1001,7 @@ Public Attributes</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Nov 2 2024 10:39:23 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
+Generated on Wed Nov 27 2024 09:09:15 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
 </small></address>
 </body>
 </html>
