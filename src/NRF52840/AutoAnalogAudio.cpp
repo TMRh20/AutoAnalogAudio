@@ -781,7 +781,7 @@ __attribute__((__used__)) void SAADC_IRQHandler(void)
     if (NRF_SAADC->EVENTS_END)
     {
         if (!AutoAnalog::adcWhichBuf) {
-            NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::AutoAnalog::adcBuf1;
+            NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::adcBuf1;
         }
         else {
             NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::adcBuf0;
