@@ -27,7 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #if !defined __MBED__
         #define myPDM NRF_PDM0
 uint16_t AutoAnalog::adcBuffer16[MAX_BUFFER_SIZE];
+uint8_t AutoAnalog::adcBuffer[MAX_BUFFER_SIZE];
 bool AutoAnalog::adcReady;
+bool AutoAnalog::adcWhichBuf;
+uint8_t AutoAnalog::adcBitsPerSample;
 uint32_t AutoAnalog::aSize;
 uint8_t AutoAnalog::aCtr;
 uint16_t* AutoAnalog::adcBuf0;
@@ -63,8 +66,8 @@ void (*AutoAnalog::_onReceive)(uint16_t* buf, uint32_t buf_len);
     /* PWM Config */
     #define DEFAULT_PWM_PIN  5 // GPIO Pin number
     #define DEFAULT_PWM_PORT 0 // On XIAO port 0 is for pins 1-5 port 1 is for all higher pins
-//#define DEFAULT_PWM_PIN2 4  //Enable a second output pin
-//#define DEFAULT_PWM_PORT2 0
+                               //#define DEFAULT_PWM_PIN2 4  //Enable a second output pin
+                               //#define DEFAULT_PWM_PORT2 0
 
     #ifndef PIN_PDM_DIN // Arduino pin numbers
         #define PIN_PDM_DIN 35
@@ -360,45 +363,9 @@ void AutoAnalog::getADC(uint32_t samples)
         adcReady = false;
     }
     else if (enableADC == 3) {
-
-        while (NRF_SAADC->EVENTS_END == 0) {
+        while (!adcReady) {
         }
-
-        if (!adcWhichBuf) {
-            NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf1;
-        }
-        else {
-            NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
-        }
-        NRF_SAADC->RESULT.MAXCNT = samples;
-        NRF_SAADC->EVENTS_END = 0;
-        NRF_SAADC->TASKS_START = 1;
-
-        if (adcBitsPerSample == 16) {
-            if (!adcWhichBuf) {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer16[i] = adcBuf0[i] << 2;
-                }
-            }
-            else {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer16[i] = adcBuf1[i] << 2;
-                }
-            }
-        }
-        else if (adcBitsPerSample == 8) {
-            if (!adcWhichBuf) {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer[i] = adcBuf0[i] >> 6;
-                }
-            }
-            else {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer[i] = adcBuf1[i] >> 6;
-                }
-            }
-        }
-        adcWhichBuf = !adcWhichBuf;
+        aSize = samples;
     }
 }
 
@@ -690,8 +657,13 @@ void AutoAnalog::adcSetup(void)
         };
         while (NRF_SAADC->STATUS == (SAADC_STATUS_STATUS_Busy << SAADC_STATUS_STATUS_Pos))
             ;
-        NRF_SAADC->TASKS_SAMPLE = 1;
 
+        NRF_SAADC->INTENSET = SAADC_INTENSET_END_Msk | SAADC_INTENSET_STARTED_Msk;
+        NVIC_SetPriority(SAADC_IRQn, 7);
+        NVIC_ClearPendingIRQ(SAADC_IRQn);
+        NVIC_EnableIRQ(SAADC_IRQn);
+
+        NRF_SAADC->TASKS_SAMPLE = 1;
     } // USE_I2S
 }
 
@@ -797,6 +769,59 @@ void AutoAnalog::tc2Setup(uint32_t sampRate)
 extern "C" {
 __attribute__((__used__)) void I2S_IRQHandler_v(void)
 {
+}
+}
+
+extern "C" {
+__attribute__((__used__)) void SAADC_IRQHandler(void)
+{
+
+    uint32_t samples = AutoAnalog::aSize;
+
+    if (NRF_SAADC->EVENTS_END)
+    {
+        if (!AutoAnalog::adcWhichBuf) {
+            NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::AutoAnalog::adcBuf1;
+        }
+        else {
+            NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::adcBuf0;
+        }
+        NRF_SAADC->RESULT.MAXCNT = samples;
+        NRF_SAADC->EVENTS_END = 0;
+        NRF_SAADC->TASKS_START = 1;
+
+        if (AutoAnalog::adcBitsPerSample == 16) {
+            if (!AutoAnalog::adcWhichBuf) {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer16[i] = AutoAnalog::adcBuf0[i] << 2;
+                }
+            }
+            else {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer16[i] = AutoAnalog::adcBuf1[i] << 2;
+                }
+            }
+        }
+        else if (AutoAnalog::adcBitsPerSample == 8) {
+            if (!AutoAnalog::adcWhichBuf) {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf0[i] >> 6;
+                }
+            }
+            else {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf1[i] >> 6;
+                }
+            }
+        }
+        AutoAnalog::adcWhichBuf = !AutoAnalog::adcWhichBuf;
+        AutoAnalog::adcReady = true;
+    }
+
+    if (NRF_SAADC->EVENTS_STARTED)
+    {
+        NRF_SAADC->EVENTS_STARTED = 0;
+    }
 }
 }
 

@@ -99,7 +99,13 @@ public:
    *  8-bit samples are read directly from this buffer after calling getADC() <br>
    * @see adcBitsPerSample
    */
+  #if !defined (ARDUINO_ARCH_NRF52840) && !defined (ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER   
   uint8_t adcBuffer[MAX_BUFFER_SIZE];
+  #elif defined __MBED__
+  inline static uint8_t adcBuffer[MAX_BUFFER_SIZE];
+  #else
+  static uint8_t adcBuffer[MAX_BUFFER_SIZE];
+  #endif
 
   /** DAC data buffer for 10 or 12-bit samples
    *
@@ -145,7 +151,13 @@ public:
    * adcBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br>
    * adcBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br>
    **/
+  #if !defined (ARDUINO_ARCH_NRF52840) && !defined (ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER
   uint8_t adcBitsPerSample;
+  #elif defined __MBED__
+  inline static uint8_t adcBitsPerSample;
+  #else
+  static uint8_t adcBitsPerSample;
+  #endif
 
   /** DAC (Digital to Analog Converter) <br>
    * Select the bits-per-sample for incoming data <br>
@@ -218,7 +230,7 @@ public:
   uint8_t enableADC;
   uint8_t enableDAC;
   bool whichBuf;
-  bool adcWhichBuf;
+  inline static bool adcWhichBuf;
   
 #elif defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (ARDUINO_NRF52840_FEATHER) && !defined __MBED__
   uint16_t *dacBuf0;
@@ -235,7 +247,7 @@ public:
   uint8_t enableADC;
   uint8_t enableDAC;
   bool whichBuf;
-  bool adcWhichBuf;
+  static bool adcWhichBuf;
 #endif
 
 #if defined (ARDUINO_ARCH_NRF52840) || defined (ARDUINO_ARCH_NRF52) || defined (DOXYGEN_FORCED)
