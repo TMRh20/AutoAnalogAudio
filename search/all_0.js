@@ -15,7 +15,7 @@ var searchData=
   ['audio_20library_20for_20arduino_12',['Automatic Analog Audio Library for Arduino',['../index.html',1,'']]],
   ['auto_20analog_20audio_20automatic_20dac_20adc_20timer_20library_13',['Auto Analog Audio (Automatic DAC, ADC &amp; Timer) library',['../index.html#LibInfo',1,'']]],
   ['autoadjust_14',['autoAdjust',['../classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54',1,'AutoAnalog']]],
-  ['autoanalog_15',['autoanalog',['../classAutoAnalog.html',1,'AutoAnalog'],['../classAutoAnalog.html#a3667d5820bc647c87517c1eaea8ff722',1,'AutoAnalog::AutoAnalog()']]],
+  ['autoanalog_15',['AutoAnalog',['../classAutoAnalog.html',1,'AutoAnalog'],['../classAutoAnalog.html#a3667d5820bc647c87517c1eaea8ff722',1,'AutoAnalog::AutoAnalog()']]],
   ['autoanalogaudio_2ecpp_16',['AutoAnalogAudio.cpp',['../AutoAnalogAudio_8cpp.html',1,'']]],
   ['autoanalogaudio_2eh_17',['AutoAnalogAudio.h',['../AutoAnalogAudio_8h.html',1,'']]],
   ['automatic_20analog_20audio_20library_20for_20arduino_18',['Automatic Analog Audio Library for Arduino',['../index.html',1,'']]],
