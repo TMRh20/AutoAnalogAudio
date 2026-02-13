@@ -27,7 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #if !defined __MBED__
         #define myPDM NRF_PDM0
 uint16_t AutoAnalog::adcBuffer16[MAX_BUFFER_SIZE];
+uint8_t AutoAnalog::adcBuffer[MAX_BUFFER_SIZE];
 bool AutoAnalog::adcReady;
+bool AutoAnalog::adcWhichBuf;
+uint8_t AutoAnalog::adcBitsPerSample;
 uint32_t AutoAnalog::aSize;
 uint8_t AutoAnalog::aCtr;
 uint16_t* AutoAnalog::adcBuf0;
@@ -63,8 +66,8 @@ void (*AutoAnalog::_onReceive)(uint16_t* buf, uint32_t buf_len);
     /* PWM Config */
     #define DEFAULT_PWM_PIN  5 // GPIO Pin number
     #define DEFAULT_PWM_PORT 0 // On XIAO port 0 is for pins 1-5 port 1 is for all higher pins
-//#define DEFAULT_PWM_PIN2 4  //Enable a second output pin
-//#define DEFAULT_PWM_PORT2 0
+                               //#define DEFAULT_PWM_PIN2 4  //Enable a second output pin
+                               //#define DEFAULT_PWM_PORT2 0
 
     #ifndef PIN_PDM_DIN // Arduino pin numbers
         #define PIN_PDM_DIN 35
@@ -140,18 +143,24 @@ void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S)
     enableDAC = enDAC;
 
     if (enADC) {
-        adcBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
-        memset(adcBuf0, 0, maxBufferSize * 2);
-        adcBuf1 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
-        memset(adcBuf1, 0, maxBufferSize * 2);
+        if (!adcBuffersAllocated) {
+            adcBuffersAllocated = true;
+            adcBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+            memset(adcBuf0, 0, maxBufferSize * 2);
+            adcBuf1 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+            memset(adcBuf1, 0, maxBufferSize * 2);
+        }
         adcSetup();
     }
 
     if (enDAC) {
-        dacBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
-        memset(dacBuf0, 0, maxBufferSize * 2);
-        dacBuf1 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
-        memset(dacBuf1, 0, maxBufferSize * 2);
+        if (!dacBuffersAllocated) {
+            dacBuffersAllocated = true;
+            dacBuf0 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+            memset(dacBuf0, 0, maxBufferSize * 2);
+            dacBuf1 = reinterpret_cast<uint16_t*>(malloc(maxBufferSize * 2));
+            memset(dacBuf1, 0, maxBufferSize * 2);
+        }
         dacSetup();
     }
 }
@@ -182,26 +191,55 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
         else {
             NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
         }
+        if (manualI2S == false) {
+            if (sampRate <= 16000) {
+                NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+                NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+            }
+            else if (sampRate <= 22500) {
+                NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV15 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+                NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+            }
+            else if (sampRate <= 24000) {
+                NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV11 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+                NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+            }
+            else if (sampRate <= 32000) {
+                NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+                NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_64X << I2S_CONFIG_RATIO_RATIO_Pos;
+            }
+            else if (sampRate <= 45000) {
+                NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV23 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+                NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_32X << I2S_CONFIG_RATIO_RATIO_Pos;
+            }
+        }
+        else {
 
-        if (sampRate <= 16000) {
-            NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-            NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
-        }
-        else if (sampRate <= 22500) {
-            NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV15 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-            NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
-        }
-        else if (sampRate <= 24000) {
-            NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV11 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-            NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
-        }
-        else if (sampRate <= 32000) {
-            NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-            NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_64X << I2S_CONFIG_RATIO_RATIO_Pos;
-        }
-        else if (sampRate <= 45000) {
-            NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV23 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-            NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_32X << I2S_CONFIG_RATIO_RATIO_Pos;
+            if (sampRate <= 16000) {
+                NRF_PWM1->COUNTERTOP = 1024;      // 16MHz / 512 = 31.25kHz
+                static uint16_t ws_seq[] = {512}; // 50% duty cycle
+                NRF_PWM0->COUNTERTOP = 16;        // 16MHz / 8 = 2MHz
+                static uint16_t bclk_seq[] = {8}; // 50% duty cycle
+            }
+            else if (sampRate <= 24000) {
+                NRF_PWM1->COUNTERTOP = 640;       // 16MHz / 512 = 31.25kHz
+                static uint16_t ws_seq[] = {320}; // 50% duty cycle
+                NRF_PWM0->COUNTERTOP = 10;        // 16MHz / 8 = 2MHz
+                static uint16_t bclk_seq[] = {5}; // 50% duty cycle
+            }
+            else if (sampRate <= 32000) {
+                NRF_PWM1->COUNTERTOP = 512;       // 16MHz / 512 = 31.25kHz
+                static uint16_t ws_seq[] = {256}; // 50% duty cycle
+                NRF_PWM0->COUNTERTOP = 8;         // 16MHz / 8 = 2MHz
+                static uint16_t bclk_seq[] = {4}; // 50% duty cycle
+            }
+            else if (sampRate <= 45000) {
+                NRF_PWM1->COUNTERTOP = 384;       // 16MHz / 512 = 31.25kHz
+                static uint16_t ws_seq[] = {192}; // 50% duty cycle
+                NRF_PWM0->COUNTERTOP = 6;         // 16MHz / 8 = 2MHz
+                static uint16_t bclk_seq[] = {3}; // 50% duty cycle
+            }
+            NRF_PWM1->TASKS_SEQSTART[0] = 1;
         }
     }
 
@@ -295,7 +333,11 @@ void AutoAnalog::getADC(uint32_t samples)
             started = true;
         }
         else {
+            uint32_t timeout = millis() + 1000;
             while (NRF_I2S->EVENTS_RXPTRUPD == 0) {
+                if (millis() > timeout) {
+                    return;
+                }
             }
         }
 
@@ -360,45 +402,9 @@ void AutoAnalog::getADC(uint32_t samples)
         adcReady = false;
     }
     else if (enableADC == 3) {
-
-        while (NRF_SAADC->EVENTS_END == 0) {
+        while (!adcReady) {
         }
-
-        if (!adcWhichBuf) {
-            NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf1;
-        }
-        else {
-            NRF_SAADC->RESULT.PTR = (uint32_t)adcBuf0;
-        }
-        NRF_SAADC->RESULT.MAXCNT = samples;
-        NRF_SAADC->EVENTS_END = 0;
-        NRF_SAADC->TASKS_START = 1;
-
-        if (adcBitsPerSample == 16) {
-            if (!adcWhichBuf) {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer16[i] = adcBuf0[i] << 2;
-                }
-            }
-            else {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer16[i] = adcBuf1[i] << 2;
-                }
-            }
-        }
-        else if (adcBitsPerSample == 8) {
-            if (!adcWhichBuf) {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer[i] = adcBuf0[i] >> 6;
-                }
-            }
-            else {
-                for (uint32_t i = 0; i < samples; i++) {
-                    adcBuffer[i] = adcBuf1[i] >> 6;
-                }
-            }
-        }
-        adcWhichBuf = !adcWhichBuf;
+        aSize = samples;
     }
 }
 
@@ -415,7 +421,11 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
             started = true;
         }
         else {
+            uint32_t timeout = millis() + 1000;
             while (NRF_I2S->EVENTS_TXPTRUPD == 0) {
+                if (millis() > timeout) {
+                    return;
+                }
             }
         }
 
@@ -539,24 +549,56 @@ void AutoAnalog::adcSetup(void)
 {
 
     if (enableADC == 2) {
+        NRF_I2S->TASKS_STOP = 1;
+        NRF_I2S->ENABLE = 0;
 
         NRF_I2S->CONFIG.RXEN = (I2S_CONFIG_RXEN_RXEN_ENABLE << I2S_CONFIG_RXEN_RXEN_Pos);
 
-        // Enable MCK generator
-        NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_ENABLE << I2S_CONFIG_MCKEN_MCKEN_Pos);
+        if (enableDAC != 2) {
+            NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_DISABLE << I2S_CONFIG_TXEN_TXEN_Pos);
+        }
 
-        // Master mode, 16Bit, left aligned
-        NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_MASTER << I2S_CONFIG_MODE_MODE_Pos;
+        if (manualI2S) {
+            // Slave mode, 16Bit, left aligned
+            NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_SLAVE << I2S_CONFIG_MODE_MODE_Pos;
+            NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_24BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+            NRF_I2S->CONFIG.FORMAT = I2S_CONFIG_FORMAT_FORMAT_I2S << I2S_CONFIG_FORMAT_FORMAT_Pos;
+            NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_RIGHT << I2S_CONFIG_ALIGN_ALIGN_Pos;
 
-        NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
-        NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
-        NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
-        NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_LEFT << I2S_CONFIG_ALIGN_ALIGN_Pos;
+            // 1. Setup BCLK (WS * 64)
+            NRF_PWM0->PSEL.OUT[0] = I2S_PIN_SCK;
+            NRF_PWM0->ENABLE = 1;
+            NRF_PWM0->MODE = PWM_MODE_UPDOWN_Up;
+            NRF_PWM0->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_1; // 16MHz
+            NRF_PWM0->COUNTERTOP = 8;                            // 16MHz / 8 = 2MHz
+            static uint16_t bclk_seq[] = {4};                    // 50% duty cycle
+            NRF_PWM0->DECODER = PWM_DECODER_LOAD_Common;
+            NRF_PWM0->SEQ[0].PTR = (uint32_t)bclk_seq;
+            NRF_PWM0->SEQ[0].CNT = 1;
+            NRF_PWM0->TASKS_SEQSTART[0] = 1;
 
-        // Format = I2S
-        NRF_I2S->CONFIG.FORMAT = I2S_CONFIG_FORMAT_FORMAT_I2S << I2S_CONFIG_FORMAT_FORMAT_Pos;
+            // 2. Setup WS (31.25kHz)
+            NRF_PWM1->PSEL.OUT[0] = I2S_PIN_LRCK;
+            NRF_PWM1->ENABLE = 1;
+            NRF_PWM1->MODE = PWM_MODE_UPDOWN_Up;
+            NRF_PWM1->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_1;
+            NRF_PWM1->COUNTERTOP = 512;       // 16MHz / 512 = 31.25kHz
+            static uint16_t ws_seq[] = {128}; // 50% duty cycle
+            NRF_PWM1->DECODER = PWM_DECODER_LOAD_Common;
+            NRF_PWM1->SEQ[0].PTR = (uint32_t)ws_seq;
+            NRF_PWM1->SEQ[0].CNT = 1;
+            NRF_PWM1->TASKS_SEQSTART[0] = 1;
+        }
+        else {
+            NRF_I2S->CONFIG.MODE = I2S_CONFIG_MODE_MODE_MASTER << I2S_CONFIG_MODE_MODE_Pos;
+            NRF_I2S->CONFIG.SWIDTH = I2S_CONFIG_SWIDTH_SWIDTH_16BIT << I2S_CONFIG_SWIDTH_SWIDTH_Pos;
+            NRF_I2S->CONFIG.FORMAT = I2S_CONFIG_FORMAT_FORMAT_I2S << I2S_CONFIG_FORMAT_FORMAT_Pos;
+            NRF_I2S->CONFIG.ALIGN = I2S_CONFIG_ALIGN_ALIGN_LEFT << I2S_CONFIG_ALIGN_ALIGN_Pos;
+            NRF_I2S->CONFIG.MCKEN = (I2S_CONFIG_MCKEN_MCKEN_ENABLE << I2S_CONFIG_MCKEN_MCKEN_Pos);
+            NRF_I2S->CONFIG.MCKFREQ = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16 << I2S_CONFIG_MCKFREQ_MCKFREQ_Pos;
+            NRF_I2S->CONFIG.RATIO = I2S_CONFIG_RATIO_RATIO_128X << I2S_CONFIG_RATIO_RATIO_Pos;
+        }
 
-        // Use stereo
         NRF_I2S->CONFIG.CHANNELS = I2S_CONFIG_CHANNELS_CHANNELS_LEFT << I2S_CONFIG_CHANNELS_CHANNELS_Pos;
 
         // Configure pins
@@ -690,8 +732,13 @@ void AutoAnalog::adcSetup(void)
         };
         while (NRF_SAADC->STATUS == (SAADC_STATUS_STATUS_Busy << SAADC_STATUS_STATUS_Pos))
             ;
-        NRF_SAADC->TASKS_SAMPLE = 1;
 
+        NRF_SAADC->INTENSET = SAADC_INTENSET_END_Msk | SAADC_INTENSET_STARTED_Msk;
+        NVIC_SetPriority(SAADC_IRQn, 7);
+        NVIC_ClearPendingIRQ(SAADC_IRQn);
+        NVIC_EnableIRQ(SAADC_IRQn);
+
+        NRF_SAADC->TASKS_SAMPLE = 1;
     } // USE_I2S
 }
 
@@ -707,7 +754,15 @@ void AutoAnalog::dacSetup(void)
 {
 
     if (enableDAC == 2) {
+        NRF_I2S->TASKS_STOP = 1;
+        NRF_I2S->ENABLE = 0;
         // Enable transmission
+
+        if (enableADC != 2) {
+            NRF_I2S->CONFIG.RXEN = (I2S_CONFIG_RXEN_RXEN_DISABLE << I2S_CONFIG_RXEN_RXEN_Pos);
+            NRF_PWM0->TASKS_STOP = 1;
+            NRF_PWM1->TASKS_STOP = 1;
+        }
         NRF_I2S->CONFIG.TXEN = (I2S_CONFIG_TXEN_TXEN_ENABLE << I2S_CONFIG_TXEN_TXEN_Pos);
 
         // Enable MCK generator
@@ -797,6 +852,59 @@ void AutoAnalog::tc2Setup(uint32_t sampRate)
 extern "C" {
 __attribute__((__used__)) void I2S_IRQHandler_v(void)
 {
+}
+}
+
+extern "C" {
+__attribute__((__used__)) void SAADC_IRQHandler(void)
+{
+
+    uint32_t samples = AutoAnalog::aSize;
+
+    if (NRF_SAADC->EVENTS_END)
+    {
+        if (!AutoAnalog::adcWhichBuf) {
+            NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::adcBuf1;
+        }
+        else {
+            NRF_SAADC->RESULT.PTR = (uint32_t)AutoAnalog::adcBuf0;
+        }
+        NRF_SAADC->RESULT.MAXCNT = samples;
+        NRF_SAADC->EVENTS_END = 0;
+        NRF_SAADC->TASKS_START = 1;
+
+        if (AutoAnalog::adcBitsPerSample == 16) {
+            if (!AutoAnalog::adcWhichBuf) {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer16[i] = AutoAnalog::adcBuf0[i] << 2;
+                }
+            }
+            else {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer16[i] = AutoAnalog::adcBuf1[i] << 2;
+                }
+            }
+        }
+        else if (AutoAnalog::adcBitsPerSample == 8) {
+            if (!AutoAnalog::adcWhichBuf) {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf0[i] >> 6;
+                }
+            }
+            else {
+                for (uint32_t i = 0; i < samples; i++) {
+                    AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf1[i] >> 6;
+                }
+            }
+        }
+        AutoAnalog::adcWhichBuf = !AutoAnalog::adcWhichBuf;
+        AutoAnalog::adcReady = true;
+    }
+
+    if (NRF_SAADC->EVENTS_STARTED)
+    {
+        NRF_SAADC->EVENTS_STARTED = 0;
+    }
 }
 }
 
