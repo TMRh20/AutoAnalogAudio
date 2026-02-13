@@ -14,7 +14,7 @@
     "url": "https://tmrh20.github.io/AutoAnalogAudio/",
     "maintainer": true
   },
-  "version": "1.53.0",
+  "version": "1.54.0",
   "frameworks": "arduino",
   "platforms": 
   [
