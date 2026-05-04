@@ -98,7 +98,7 @@ public:
      *  8-bit samples are read directly from this buffer after calling getADC() <br>
      * @see adcBitsPerSample
      */
-    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER
+    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15
     uint8_t adcBuffer[MAX_BUFFER_SIZE];
     #elif defined __MBED__
     inline static uint8_t adcBuffer[MAX_BUFFER_SIZE];
@@ -118,7 +118,7 @@ public:
      *  10 or 12-bit samples are read directly from this buffer after calling getADC() <br>
      * @see adcBitsPerSample
      */
-    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER
+    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15
     uint16_t adcBuffer16[MAX_BUFFER_SIZE];
     #elif defined __MBED__
     inline static uint16_t adcBuffer16[MAX_BUFFER_SIZE];
@@ -149,7 +149,7 @@ public:
      * adcBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br>
      * adcBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br>
      **/
-    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER
+    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15
     uint8_t adcBitsPerSample;
     #elif defined __MBED__
     inline static uint8_t adcBitsPerSample;
@@ -229,7 +229,7 @@ public:
     bool whichBuf;
     inline static bool adcWhichBuf;
 
-    #elif defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined(ARDUINO_NRF52840_FEATHER) && !defined __MBED__
+    #elif defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF54L15 || defined(ARDUINO_NRF52840_FEATHER) && !defined __MBED__
     uint16_t* dacBuf0;
     uint16_t* dacBuf1;
     static uint8_t aCtr;
@@ -247,7 +247,7 @@ public:
     static bool adcWhichBuf;
     #endif
 
-    #if defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined(DOXYGEN_FORCED)
+    #if defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF54L15 || defined(DOXYGEN_FORCED)
     /**@}*/
     /**
      * @name Section for nRF52 Devices Only
@@ -335,7 +335,7 @@ public:
 private:
     bool adcBuffersAllocated;
     bool dacBuffersAllocated;
-
+    void startPwmI2sTimers();
     #endif
 
     /**@}*/
