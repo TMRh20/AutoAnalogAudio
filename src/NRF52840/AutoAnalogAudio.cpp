@@ -548,7 +548,7 @@ uint32_t AutoAnalog::frequencyToTimerCount(uint32_t frequency)
 void AutoAnalog::startPwmI2sTimers()
 {
             // 1. Setup BCLK (WS * 64)
-            NRF_PWM0->PSEL.OUT[0] = I2S_PIN_SCK;
+            NRF_PWM0->PSEL.OUT[0] = I2S_PIN_SCK | I2S_PORT_SCK << 5;
             NRF_PWM0->ENABLE = 1;
             NRF_PWM0->MODE = PWM_MODE_UPDOWN_Up;
             NRF_PWM0->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_1; // 16MHz
@@ -560,7 +560,7 @@ void AutoAnalog::startPwmI2sTimers()
             NRF_PWM0->TASKS_SEQSTART[0] = 1;
 
             // 2. Setup WS (31.25kHz)
-            NRF_PWM1->PSEL.OUT[0] = I2S_PIN_LRCK;
+            NRF_PWM1->PSEL.OUT[0] = I2S_PIN_LRCK | I2S_PORT_LRCK << 5;
             NRF_PWM1->ENABLE = 1;
             NRF_PWM1->MODE = PWM_MODE_UPDOWN_Up;
             NRF_PWM1->PRESCALER = PWM_PRESCALER_PRESCALER_DIV_1;
@@ -810,7 +810,7 @@ void AutoAnalog::dacSetup(void)
 
         // Configure data pointer
         NRF_I2S->TXD.PTR = (uint32_t)&dacBuf0[0];
-        NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
+        //NRF_I2S->RXD.PTR = (uint32_t)dacBuf1;
         NRF_I2S->RXTXD.MAXCNT = 16; // / sizeof(uint32_t);
     }
     else if (enableDAC == 1) {
