@@ -29,7 +29,7 @@ void setup() {
 
   Serial.begin(115200);
   aaAudio.maxBufferSize = bufferSize;
-  aaAudio.begin(1, 1, 3);           //Setup aaAudio using I2s for Mic and Output
+  aaAudio.begin(2,2);           //Setup aaAudio using I2s for Mic and Output
   aaAudio.adcBitsPerSample = 24;    // 24-bit samples input from I2S
   aaAudio.dacBitsPerSample = 24;    // 24-bit samples output to I2S
   aaAudio.setSampleRate(44000, 0);  // 44kHz Mono

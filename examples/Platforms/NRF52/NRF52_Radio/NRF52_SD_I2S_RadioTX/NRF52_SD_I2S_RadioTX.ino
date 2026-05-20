@@ -12,8 +12,7 @@ AutoAnalog aaAudio;
 nrf_to_nrf radio;
 
 uint8_t address[][6] = { "1Node", "2Node" };
-#define BUFFER_SIZE 124
-#define USE_I2S 1 // Change to 0 to enable PWM output instead of I2S
+#define BUFFER_SIZE 254
 
 /*********************************************************/
 /* Tested with MAX98357A I2S breakout on XIAO 52840 Sense
@@ -28,8 +27,9 @@ void setup() {
   Serial.begin(115200);
 
   radio.begin();
+  radio.setChannel(50);
   radio.setPayloadSize(BUFFER_SIZE);
-  radio.setAutoAck(0);
+  radio.setAutoAck(1);
   radio.setDataRate(NRF_2MBPS);
   radio.openWritingPipe(address[1]);
   radio.stopListening();
@@ -41,7 +41,8 @@ void setup() {
   }
   Serial.println("init ok");
   Serial.println("Analog Audio Begin");
-  aaAudio.begin(0, 1, USE_I2S);  //Setup aaAudio using DAC and I2S
+  aaAudio.maxBufferSize = BUFFER_SIZE;
+  aaAudio.begin(0,2);  //Setup aaAudio using DAC and I2S
 
   //Setup for audio: Use 8-bit, mono WAV files @ 16kHz
   aaAudio.dacBitsPerSample = 8;     // 8-bit
@@ -80,7 +81,7 @@ void loadBuffer() {
   if (myFile.available()) {
     myFile.read(aaAudio.dacBuffer, BUFFER_SIZE);  // Change this to dacBuffer16 for 16-bit samples
     aaAudio.feedDAC(0, BUFFER_SIZE);
-    radio.startWrite(&aaAudio.dacBuffer[0], BUFFER_SIZE, 1);
+    radio.write(&aaAudio.dacBuffer[0], BUFFER_SIZE);
   } else {
     myFile.seek(44);
   }

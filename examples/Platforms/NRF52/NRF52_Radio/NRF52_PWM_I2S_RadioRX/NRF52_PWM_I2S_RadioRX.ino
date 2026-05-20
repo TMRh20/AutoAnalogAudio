@@ -10,22 +10,24 @@ AutoAnalog aaAudio;
 nrf_to_nrf radio;
 
 uint8_t address[][6] = { "1Node", "2Node" };
-#define BUFFER_SIZE 124
-#define USE_I2S 0 // Change to 1 to enable I2S output instead of PWM
+#define BUFFER_SIZE 254
 
 void setup() {
 
   Serial.begin(115200);
 
   radio.begin();
+  radio.setChannel(50);
   radio.setPayloadSize(BUFFER_SIZE);
-  radio.setAutoAck(0);
+  radio.setAutoAck(1);
   radio.setDataRate(NRF_2MBPS);
   radio.openReadingPipe(1,address[1]);
   radio.startListening();
 
   Serial.println("Analog Audio Begin");
-  aaAudio.begin(0, 1, USE_I2S);  //Setup aaAudio using DAC and PWM. Change the third value to a 1 to enable I2S
+  //aaAudio.I2S_PIN_LRCK = 28;
+  aaAudio.maxBufferSize = BUFFER_SIZE;
+  aaAudio.begin(0, 2);  //Setup aaAudio using DAC and PWM. Change the second value to 1 to use PWM output
 
   //Setup for audio: Use 8-bit, mono WAV files @ 16kHz
   aaAudio.dacBitsPerSample = 8;    // 8-bit
