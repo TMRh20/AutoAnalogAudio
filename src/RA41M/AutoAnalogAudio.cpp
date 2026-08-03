@@ -23,13 +23,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #include "../AutoAnalogAudio.h"
     #include "FspTimer.h"
     #include "r_timer_api.h"
+    #include "r_adc.h"
     FspTimer high_speed_timer;
+    FspTimer adc_timer;
     volatile bool toggle_state = false;
-        
+    #define ADC_IRQ_NUMBER  ((IRQn_Type)15) 
+    volatile uint16_t latestAdcValue = 0;
+    volatile bool newDataAvailable = false;
+    extern "C" void my_adc_isr(timer_callback_args_t *p_args);
+    
 uint16_t AutoAnalog::adcBuffer16[MAX_BUFFER_SIZE];
 uint8_t AutoAnalog::adcBuffer[MAX_BUFFER_SIZE];
-bool AutoAnalog::adcReady;
-bool AutoAnalog::adcWhichBuf;
+volatile bool AutoAnalog::adcReady;
+volatile uint32_t AutoAnalog::sampleCounter;
+volatile bool AutoAnalog::adcWhichBuf;
 uint8_t AutoAnalog::adcBitsPerSample;
 volatile uint32_t AutoAnalog::aSize;
 volatile uint8_t AutoAnalog::aCtr;
@@ -191,7 +198,23 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
         high_speed_timer.open();
         high_speed_timer.start();
     }
-    
+    if(enableADC == 3){
+        adc_timer.stop();
+        
+        uint8_t timerType = GPT_TIMER; 
+        int8_t timerIndex = 4;//FspTimer::get_available_timer(timerType);
+        if (timerIndex < 0) {
+        FspTimer::force_use_of_pwm_reserved_timer();
+        timerType = GPT_TIMER;
+        timerIndex = FspTimer::get_available_timer(timerType);
+        }
+        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, timerIndex, sampRate * (stereo + 1), 0.0f, my_adc_isr);
+        adc_timer.setup_overflow_irq();
+        adc_timer.open();
+        adc_timer.start();
+        
+        
+    }
     
     /*if (enableDAC == 1) {
         NRF_PWM20->TASKS_STOP = 1;
@@ -281,7 +304,13 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx)
 
 void AutoAnalog::getADC(uint32_t samples)
 {
-
+    
+    //if(!enableDAC){
+        while(!adcReady){}
+    //}
+    
+    adcReady = false;
+    aSize = samples;    
     /*if (enableADC == 2) {
 
         bool started = false;
@@ -584,6 +613,46 @@ void AutoAnalog::startPwmI2sTimers()
 
 void AutoAnalog::adcSetup(void)
 {
+    
+    
+    if(enableADC == 3) {
+        
+        analogReadResolution(14); 
+        pinMode(A1, INPUT);
+        analogRead(A1);
+        //analogReference(AR_INTERNAL);
+        
+        R_MSTP->MSTPCRD &= ~(1UL << 16);   // MSTPD16 = 0 -> ADC140 enabled
+        __asm volatile ("nop");
+        __asm volatile ("nop");
+  
+        R_ADC0->ADCSR_b.ADST = 0;
+        while (R_ADC0->ADCSR_b.ADST) {}
+
+        R_ADC0->ADCSR = 0x8000;
+        R_ADC0->ADANSA[0] = 0x0001;
+        //R_ADC0->ADANSA_b[0].ANSA0 = 1;    // AN001
+
+  
+        // Optional sample time
+        R_ADC0->ADSSTR[0] = 1;
+  
+        
+        uint8_t timerType = GPT_TIMER; 
+        int8_t timerIndex = FspTimer::get_available_timer(timerType);
+        if (timerIndex < 0) {
+        FspTimer::force_use_of_pwm_reserved_timer();
+        timerType = GPT_TIMER;
+        timerIndex = FspTimer::get_available_timer(timerType);
+        }
+        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, timerIndex, 16000, 0.0f, my_adc_isr);
+        adc_timer.setup_overflow_irq();
+        adc_timer.open();
+        adc_timer.start();
+
+        
+        Serial.println("ADC Configured");
+    }
 /*
     if (enableADC == 2) {
         NRF_I2S->TASKS_STOP = 1;
@@ -1085,6 +1154,37 @@ void dac_callback(timer_callback_args_t *p_args) {
        }
    }
    AutoAnalog::sCounter++;
+}
+
+extern "C" void my_adc_isr(timer_callback_args_t *p_args) {
+  
+  (void)p_args;
+  
+
+  // Read the 14-bit data register from Channel 0 (A0)
+  // This automatically clears the hardware interrupt condition inside the ADC0 block
+  if(AutoAnalog::adcWhichBuf == 0){
+    AutoAnalog::adcBuf0[AutoAnalog::sampleCounter] = R_ADC0->ADDR[0]; //analogRead(A1);
+  }else{
+    AutoAnalog::adcBuf1[AutoAnalog::sampleCounter] = R_ADC0->ADDR[0]; 
+  }  
+  
+  
+  AutoAnalog::sampleCounter++;
+  
+  if(AutoAnalog::sampleCounter >= AutoAnalog::aSize){
+      if(AutoAnalog::adcWhichBuf == 0){
+        memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf0, AutoAnalog::aSize * 2);
+      }else{
+        memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf1, AutoAnalog::aSize *2 ); 
+      }
+      AutoAnalog::sampleCounter = 0;
+      AutoAnalog::adcReady = true;
+      AutoAnalog::adcWhichBuf = !AutoAnalog::adcWhichBuf;
+  }
+  
+  // Set a flag for the main loop
+  R_ADC0->ADCSR_b.ADST = 1;
 }
 
 

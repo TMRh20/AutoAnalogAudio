@@ -259,12 +259,12 @@ public:
     static void (*_onReceive)(uint16_t* buf, uint32_t buf_len);
     static void adcCallback(uint16_t* buf, uint32_t buf_len);
     void set_callback(void (*function)(uint16_t* buf, uint32_t buf_len));
-    static bool adcReady;
-    uint32_t sampleCounter;
+    static volatile bool adcReady;
+    static volatile uint32_t sampleCounter;
     uint8_t enableADC;
     uint8_t enableDAC;
     bool whichBuf;
-    static bool adcWhichBuf;
+    static volatile bool adcWhichBuf;
     static volatile uint32_t sCounter;
 
     #endif
