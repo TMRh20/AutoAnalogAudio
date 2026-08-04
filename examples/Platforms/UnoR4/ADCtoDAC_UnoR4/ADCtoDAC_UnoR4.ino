@@ -28,9 +28,9 @@ void loop() {
   aaAudio.getADC(bufferSize);
 
   // Copy our 14-bit ADC data to the DAC buffer which is only 12-bit
-  // The dac input expects signed 12-bit samples
+  // The dac input expects signed 16-bit samples
   for(int i=0; i<bufferSize; i++){
-    aaAudio.dacBuffer16[i] = (aaAudio.adcBuffer16[i] ^ 0x8000) >> 2;  
+    aaAudio.dacBuffer16[i] = (aaAudio.adcBuffer16[i] ^ 0x8000);  
   }
   aaAudio.feedDAC(0,bufferSize);
 }
