@@ -1175,9 +1175,21 @@ extern "C" void my_adc_isr(timer_callback_args_t *p_args) {
   
   if(AutoAnalog::sampleCounter >= AutoAnalog::aSize){
       if(AutoAnalog::adcWhichBuf == 0){
-        memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf0, AutoAnalog::aSize * 2);
+        if(AutoAnalog::adcBitsPerSample == 8){
+            for(uint32_t i=0; i<AutoAnalog::aSize; i++){
+                AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf0[i] >> 6;
+            }                
+        }else{
+            memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf0, AutoAnalog::aSize * 2);
+        }
       }else{
-        memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf1, AutoAnalog::aSize *2 ); 
+        if(AutoAnalog::adcBitsPerSample == 8){
+            for(uint32_t i=0; i<AutoAnalog::aSize; i++){
+                AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf1[i] >> 6;
+            }
+        }else{
+            memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf1, AutoAnalog::aSize *2 ); 
+        }
       }
       AutoAnalog::sampleCounter = 0;
       AutoAnalog::adcReady = true;
