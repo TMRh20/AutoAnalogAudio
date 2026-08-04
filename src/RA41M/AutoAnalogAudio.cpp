@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #include "r_adc.h"
     FspTimer high_speed_timer;
     FspTimer adc_timer;
+    uint8_t high_speed_timer_index;
+    uint8_t adc_timer_index;
     volatile bool toggle_state = false;
     #define ADC_IRQ_NUMBER  ((IRQn_Type)15) 
     volatile uint16_t latestAdcValue = 0;
@@ -183,12 +185,11 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
         high_speed_timer.stop();
         
         uint8_t timer_type = GPT_TIMER;
-        int8_t timer_channel = 3;
         
         high_speed_timer.begin(
         TIMER_MODE_PERIODIC,   // Fire continuously at the specified interval
         timer_type,            // Use the General PWM Timer peripheral block
-        timer_channel,         // Selected hardware channel channel
+        high_speed_timer_index,         // Selected hardware channel channel
         sampRate * (stereo + 1),               // Target Frequency in Hz (16 kHz)
         0.0,                   // Duty cycle (unused for generic interrupts, keep 0.0)
         dac_callback          // Name of your ISR function to execute
@@ -202,13 +203,8 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
         adc_timer.stop();
         
         uint8_t timerType = GPT_TIMER; 
-        int8_t timerIndex = 4;//FspTimer::get_available_timer(timerType);
-        if (timerIndex < 0) {
-        FspTimer::force_use_of_pwm_reserved_timer();
-        timerType = GPT_TIMER;
-        timerIndex = FspTimer::get_available_timer(timerType);
-        }
-        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, timerIndex, sampRate * (stereo + 1), 0.0f, my_adc_isr);
+
+        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, sampRate * (stereo + 1), 0.0f, my_adc_isr);
         adc_timer.setup_overflow_irq();
         adc_timer.open();
         adc_timer.start();
@@ -639,13 +635,13 @@ void AutoAnalog::adcSetup(void)
   
         
         uint8_t timerType = GPT_TIMER; 
-        int8_t timerIndex = FspTimer::get_available_timer(timerType);
-        if (timerIndex < 0) {
+        adc_timer_index = FspTimer::get_available_timer(timerType);
+        if (adc_timer_index < 0) {
         FspTimer::force_use_of_pwm_reserved_timer();
         timerType = GPT_TIMER;
-        timerIndex = FspTimer::get_available_timer(timerType);
+        adc_timer_index = FspTimer::get_available_timer(timerType);
         }
-        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, timerIndex, 16000, 0.0f, my_adc_isr);
+        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, 16000, 0.0f, my_adc_isr);
         adc_timer.setup_overflow_irq();
         adc_timer.open();
         adc_timer.start();
@@ -857,15 +853,20 @@ void AutoAnalog::dacSetup(void)
         Serial.println("DAC SETUP 2");
         
         uint8_t timer_type = GPT_TIMER;
-        int8_t timer_channel = 3;
+        high_speed_timer_index = FspTimer::get_available_timer(timer_type);
+        if (high_speed_timer_index < 0) {
+        FspTimer::force_use_of_pwm_reserved_timer();
+        timer_type = GPT_TIMER;
+        high_speed_timer_index = FspTimer::get_available_timer(timer_type);
+        }
         
         high_speed_timer.begin(
         TIMER_MODE_PERIODIC,   // Fire continuously at the specified interval
         timer_type,            // Use the General PWM Timer peripheral block
-        timer_channel,         // Selected hardware channel channel
+        high_speed_timer_index,// Selected hardware channel channel
         16000.0,               // Target Frequency in Hz (16 kHz)
         0.0,                   // Duty cycle (unused for generic interrupts, keep 0.0)
-        dac_callback          // Name of your ISR function to execute
+        dac_callback           // Name of your ISR function to execute
         );
         
         high_speed_timer.setup_overflow_irq();
