@@ -172,7 +172,6 @@ void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S)
             memset(const_cast<void*>(reinterpret_cast<volatile void*>(dacBuf1)), 0, maxBufferSize * 2);
         }
         dacSetup();
-        Serial.println("Dac is setup");
     }
 }
 
@@ -406,6 +405,12 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
 {
 
     if(enableDAC == 3){
+        
+        if(dacDisabled){
+            R_DAC->DACR = 0x5F;
+            high_speed_timer.start();
+            dacDisabled = false;
+        }
         
         //memcpy(dacBuf0,dacBuffer,samples);
         if(aCtr == 1){
@@ -647,7 +652,6 @@ void AutoAnalog::adcSetup(void)
         adc_timer.start();
 
         
-        Serial.println("ADC Configured");
     }
 /*
     if (enableADC == 2) {
@@ -839,9 +843,6 @@ void AutoAnalog::dacSetup(void)
 {
     
     if(enableDAC == 3){
-        Serial.println("En DAC");
-        //R_PORT1->PODR ^= bit(2);
-        //delay(1000);
 
         analogWriteResolution(12); 
         analogWrite(A0, 0);
@@ -850,7 +851,6 @@ void AutoAnalog::dacSetup(void)
         R_DAC->DADPR = 0; // Right justified
         R_DAC->DAADSCR = 1 << 7; // Sync ADC14 and DAC12
         //R_DAC->DAVREFCR = 1 << 3 | 1 << 2; // VREFH/VREFL
-        Serial.println("DAC SETUP 2");
         
         uint8_t timer_type = GPT_TIMER;
         high_speed_timer_index = FspTimer::get_available_timer(timer_type);
@@ -958,6 +958,10 @@ void AutoAnalog::dacSetup(void)
 
 void AutoAnalog::disableDAC(bool withinTask)
 {
+    if (enableDAC == 3){
+        high_speed_timer.stop();
+        R_DAC->DACR = 0x4F;
+    }else
     if (enableDAC == 2) {
         /*NRF_I2S->TASKS_STOP = 1;
         NRF_I2S->ENABLE = 0;*/
@@ -1160,16 +1164,12 @@ void dac_callback(timer_callback_args_t *p_args) {
 extern "C" void my_adc_isr(timer_callback_args_t *p_args) {
   
   (void)p_args;
-  
 
-  // Read the 14-bit data register from Channel 0 (A0)
-  // This automatically clears the hardware interrupt condition inside the ADC0 block
   if(AutoAnalog::adcWhichBuf == 0){
     AutoAnalog::adcBuf0[AutoAnalog::sampleCounter] = R_ADC0->ADDR[0]; //analogRead(A1);
   }else{
     AutoAnalog::adcBuf1[AutoAnalog::sampleCounter] = R_ADC0->ADDR[0]; 
   }  
-  
   
   AutoAnalog::sampleCounter++;
   
@@ -1188,7 +1188,7 @@ extern "C" void my_adc_isr(timer_callback_args_t *p_args) {
                 AutoAnalog::adcBuffer[i] = AutoAnalog::adcBuf1[i] >> 6;
             }
         }else{
-            memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf1, AutoAnalog::aSize *2 ); 
+            memcpy(AutoAnalog::adcBuffer16,AutoAnalog::adcBuf1, AutoAnalog::aSize * 2 ); 
         }
       }
       AutoAnalog::sampleCounter = 0;
@@ -1196,7 +1196,6 @@ extern "C" void my_adc_isr(timer_callback_args_t *p_args) {
       AutoAnalog::adcWhichBuf = !AutoAnalog::adcWhichBuf;
   }
   
-  // Set a flag for the main loop
   R_ADC0->ADCSR_b.ADST = 1;
 }
 
