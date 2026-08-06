@@ -961,6 +961,7 @@ void AutoAnalog::disableDAC(bool withinTask)
     if (enableDAC == 3){
         high_speed_timer.stop();
         R_DAC->DACR = 0x4F;
+        dacDisabled = true;
     }else
     if (enableDAC == 2) {
         /*NRF_I2S->TASKS_STOP = 1;
