@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     volatile uint16_t latestAdcValue = 0;
     volatile bool newDataAvailable = false;
     extern "C" void my_adc_isr(timer_callback_args_t *p_args);
+    volatile uint8_t AutoAnalog::analogChannel = 0;
     
 uint16_t AutoAnalog::adcBuffer16[MAX_BUFFER_SIZE];
 uint8_t AutoAnalog::adcBuffer[MAX_BUFFER_SIZE];
@@ -277,22 +278,33 @@ void AutoAnalog::triggerADC()
 
 void AutoAnalog::enableAdcChannel(uint8_t pinAx)
 {
-    #if defined __MBED__
-    //nrf_pdm_enable();
-    #else
-    //nrf_pdm_enable(myPDM);
-    #endif
+    adc_timer.stop();
+    
+    pinMode(pinAx + 15, INPUT);
+    analogRead(pinAx + 15);
+  
+    R_ADC0->ADCSR_b.ADST = 0;
+    while (R_ADC0->ADCSR_b.ADST) {}
+
+    R_ADC0->ADANSA[0] = 1 << pinAx;
+        
+    analogChannel = pinAx;
+        
+    adc_timer.start();
 }
 
 /****************************************************************************/
 
 void AutoAnalog::disableAdcChannel(uint8_t pinAx)
 {
-    #if defined __MBED__
-    //nrf_pdm_disable();
-    #else
-    //nrf_pdm_disable(myPDM);
-    #endif
+    
+    adc_timer.stop();
+    
+    R_ADC0->ADCSR_b.ADST = 0;
+    while (R_ADC0->ADCSR_b.ADST) {}
+    
+    R_ADC0->ADANSA[0] = 0;
+    
 }
 
 /****************************************************************************/
@@ -619,8 +631,8 @@ void AutoAnalog::adcSetup(void)
     if(enableADC == 3) {
         
         analogReadResolution(14); 
-        pinMode(A1, INPUT);
-        analogRead(A1);
+        pinMode(15 + analogChannel, INPUT);
+        analogRead(15 + analogChannel);
         //analogReference(AR_INTERNAL);
         
         R_MSTP->MSTPCRD &= ~(1UL << 16);   // MSTPD16 = 0 -> ADC140 enabled
@@ -631,8 +643,8 @@ void AutoAnalog::adcSetup(void)
         while (R_ADC0->ADCSR_b.ADST) {}
 
         R_ADC0->ADCSR = 0x8000;
-        R_ADC0->ADANSA[0] = 0x0001;
-        //R_ADC0->ADANSA_b[0].ANSA0 = 1;    // AN001
+        R_ADC0->ADANSA[0] = 1 << analogChannel;
+        //R_ADC0->ADANSA_b[1].ANSA0 = 2;    // AN001
 
   
         // Optional sample time
@@ -1139,16 +1151,16 @@ __attribute__((__used__)) void PWM0_IRQHandler(void)
 */
 
 
-volatile uint32_t intCtr = 0;
+//volatile uint32_t intCtr = 0;
 
 void dac_callback(timer_callback_args_t *p_args) {
 
-   intCtr++;
+   /*intCtr++;
 
 
    if(intCtr >= 16000){
        intCtr = 0;
-   }
+   }*/
    
    if(AutoAnalog::sCounter < AutoAnalog::aSize){
        
@@ -1167,9 +1179,9 @@ extern "C" void my_adc_isr(timer_callback_args_t *p_args) {
   (void)p_args;
 
   if(AutoAnalog::adcWhichBuf == 0){
-    AutoAnalog::adcBuf0[AutoAnalog::sampleCounter] = R_ADC0->ADDR[0]; //analogRead(A1);
+    AutoAnalog::adcBuf0[AutoAnalog::sampleCounter] = R_ADC0->ADDR[AutoAnalog::analogChannel]; //analogRead(A1);
   }else{
-    AutoAnalog::adcBuf1[AutoAnalog::sampleCounter] = R_ADC0->ADDR[0]; 
+    AutoAnalog::adcBuf1[AutoAnalog::sampleCounter] = R_ADC0->ADDR[AutoAnalog::analogChannel]; 
   }  
   
   AutoAnalog::sampleCounter++;

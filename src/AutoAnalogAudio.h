@@ -267,6 +267,7 @@ public:
     static volatile bool adcWhichBuf;
     static volatile uint32_t sCounter;
     bool dacDisabled;
+    static volatile uint8_t analogChannel;
     #endif
 
     #if defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF54L15 || defined ARDUINO_ARCH_RENESAS || defined(DOXYGEN_FORCED)
