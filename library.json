@@ -21,7 +21,8 @@
     "atmelavr",
     "atmelsam",
     "espressifesp32",
-    "nordicnrf52"
+    "nordicnrf52",
+    "renesas-ra"
   ],
   "export": {
     "exclude": "examples/*/*.wav"
