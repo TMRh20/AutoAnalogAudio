@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Auto Analog Audio<span id="projectnumber">&#160;v1.54.0</span>
+   <div id="projectname">Auto Analog Audio<span id="projectnumber">&#160;v1.55.0</span>
    </div>
    <div id="projectbrief">TMRh20 2020 - Automatic DAC, ADC &amp; Timers on Arduino Due</div>
   </td>
@@ -93,124 +93,10 @@ $(function(){ initResizable(false); });
 </p>
 <p>Basic SDAudio Example:</p>
 <p>This example demonstrates how to play *.wav files from SD Card.</p>
-<div class="fragment"><div class="line"><span class="comment">/*</span></div>
-<div class="line"><span class="comment">    AutoAnalogAudio streaming via DAC &amp; ADC by TMRh20</span></div>
-<div class="line"><span class="comment">    Copyright (C) 2016  TMRh20 - tmrh20@gmail.com, github.com/TMRh20</span></div>
-<div class="line"><span class="comment"></span> </div>
-<div class="line"><span class="comment">    This program is free software: you can redistribute it and/or modify</span></div>
-<div class="line"><span class="comment">    it under the terms of the GNU General Public License as published by</span></div>
-<div class="line"><span class="comment">    the Free Software Foundation, either version 3 of the License, or</span></div>
-<div class="line"><span class="comment">    (at your option) any later version.</span></div>
-<div class="line"><span class="comment"></span> </div>
-<div class="line"><span class="comment">    This program is distributed in the hope that it will be useful,</span></div>
-<div class="line"><span class="comment">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
-<div class="line"><span class="comment">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><span class="comment">    GNU General Public License for more details.</span></div>
-<div class="line"><span class="comment"></span> </div>
-<div class="line"><span class="comment">    You should have received a copy of the GNU General Public License</span></div>
-<div class="line"><span class="comment">    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
-<div class="line"><span class="comment"></span> </div>
-<div class="line"><span class="comment">  Auto Analog Audio (Automatic DAC, ADC &amp; Timer) library</span></div>
-<div class="line"><span class="comment"></span> </div>
-<div class="line"><span class="comment">  Auto Analog Audio Library Information:</span></div>
-<div class="line"><span class="comment">  http://github.com/TMRh20</span></div>
-<div class="line"><span class="comment">  http://tmrh20.blogspot.com</span></div>
-<div class="line"><span class="comment"></span> </div>
-<div class="line"><span class="comment">*/</span></div>
-<div class="line"> </div>
-<div class="line"><span class="preprocessor">#include &lt;SPI.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;SD.h&gt;</span></div>
-<div class="line"><span class="preprocessor">#include &lt;<a class="code" href="AutoAnalogAudio_8h.html">AutoAnalogAudio.h</a>&gt;</span></div>
-<div class="line"> </div>
-<div class="line"><a id="_a0" name="_a0"></a><a class="code hl_class" href="classAutoAnalog.html">AutoAnalog</a> aaAudio;</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">/*********************************************************/</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> DACC_Handler(<span class="keywordtype">void</span>) {</div>
-<div class="line">  aaAudio.<a id="a1" name="a1"></a><a class="code hl_function" href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">dacHandler</a>();   <span class="comment">//Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data</span></div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">/*********************************************************/</span></div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> setup() {</div>
-<div class="line">  Serial.begin(115200);</div>
-<div class="line"> </div>
-<div class="line">  Serial.print(<span class="stringliteral">&quot;Init SD card...&quot;</span>);</div>
-<div class="line">  <span class="keywordflow">if</span> (!SD.begin(10)) {</div>
-<div class="line">    Serial.println(<span class="stringliteral">&quot;init failed!&quot;</span>);</div>
-<div class="line">    <span class="keywordflow">return</span>;</div>
-<div class="line">  }</div>
-<div class="line">  Serial.println(<span class="stringliteral">&quot;init ok&quot;</span>);</div>
-<div class="line"> </div>
-<div class="line">  Serial.println(<span class="stringliteral">&quot;Analog Audio Begin&quot;</span>);</div>
-<div class="line">  aaAudio.<a id="a2" name="a2"></a><a class="code hl_function" href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">begin</a>(0, 1);  <span class="comment">//Setup aaAudio using DAC</span></div>
-<div class="line">  aaAudio.<a id="a3" name="a3"></a><a class="code hl_variable" href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">autoAdjust</a> = 0;</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">//Setup for audio at 8-bit, 16khz, mono</span></div>
-<div class="line">  aaAudio.<a id="a4" name="a4"></a><a class="code hl_variable" href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">dacBitsPerSample</a> = 8;</div>
-<div class="line">  aaAudio.<a id="a5" name="a5"></a><a class="code hl_function" href="classAutoAnalog.html#a1c595377f0593c783d04828bb5fbaaa7">setSampleRate</a>(16000);</div>
-<div class="line"> </div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> loop() {</div>
-<div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (Serial.available()) {</div>
-<div class="line">    <span class="keywordtype">char</span> input = Serial.read();</div>
-<div class="line">    <span class="keywordflow">switch</span> (input) {</div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;1&#39;</span>: playAudio(<span class="stringliteral">&quot;M8b24kM.wav&quot;</span>); <span class="keywordflow">break</span>;  <span class="comment">//Play a *.wav file by name - 8bit, 24khz, Mono</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;2&#39;</span>: playAudio(<span class="stringliteral">&quot;M8b24kS.wav&quot;</span>); <span class="keywordflow">break</span>;  <span class="comment">//Play  8bit, 24khz, Stereo</span></div>
-<div class="line">      <span class="keywordflow">case</span> <span class="charliteral">&#39;3&#39;</span>: playAudio(<span class="stringliteral">&quot;audio.wav&quot;</span>);   <span class="keywordflow">break</span>;  <span class="comment">//Play a random file called audio.wav</span></div>
-<div class="line">    }</div>
-<div class="line">  }</div>
-<div class="line"> </div>
-<div class="line">  loadBuffer();</div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="line"><span class="comment">/*********************************************************/</span></div>
-<div class="line"><span class="comment">/* A simple function to handle playing audio files</span></div>
-<div class="line"><span class="comment"></span><span class="comment">/*********************************************************/</span></div>
-<div class="line"> </div>
-<div class="line">File myFile;</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> playAudio(<span class="keywordtype">char</span> *audioFile) {</div>
-<div class="line"> </div>
-<div class="line">  <span class="keywordflow">if</span> (myFile) {</div>
-<div class="line">    myFile.close();</div>
-<div class="line">  }</div>
-<div class="line">  <span class="comment">//Open the designated file</span></div>
-<div class="line">  myFile = SD.open(audioFile);</div>
-<div class="line"> </div>
-<div class="line">  <span class="comment">//Skip past the WAV header</span></div>
-<div class="line">  myFile.seek(44);</div>
-<div class="line">  loadBuffer();</div>
-<div class="line"> </div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordtype">void</span> loadBuffer() {</div>
-<div class="line">  <span class="comment">//Load 32 samples into the 8-bit dacBuffer</span></div>
-<div class="line">  <span class="keywordflow">if</span> (myFile.available()) {</div>
-<div class="line">    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 32; i++) {</div>
-<div class="line">      aaAudio.<a id="a6" name="a6"></a><a class="code hl_variable" href="classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf">dacBuffer</a>[i] = myFile.read();</div>
-<div class="line">    }</div>
-<div class="line">    <span class="comment">//Feed the dac with the buffer of data</span></div>
-<div class="line">    aaAudio.<a id="a7" name="a7"></a><a class="code hl_function" href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">feedDAC</a>(0, 32);</div>
-<div class="line">  }</div>
-<div class="line"> </div>
-<div class="line">}</div>
-<div class="line"> </div>
-<div class="ttc" id="aAutoAnalogAudio_8h_html"><div class="ttname"><a href="AutoAnalogAudio_8h.html">AutoAnalogAudio.h</a></div></div>
-<div class="ttc" id="aclassAutoAnalog_html"><div class="ttname"><a href="classAutoAnalog.html">AutoAnalog</a></div><div class="ttdef"><b>Definition</b> <a href="AutoAnalogAudio_8h_source.html#l00036">AutoAnalogAudio.h:37</a></div></div>
-<div class="ttc" id="aclassAutoAnalog_html_a0bf0cb2ddbf79748887551f09a7932ec"><div class="ttname"><a href="classAutoAnalog.html#a0bf0cb2ddbf79748887551f09a7932ec">AutoAnalog::dacHandler</a></div><div class="ttdeci">void dacHandler(void)</div></div>
-<div class="ttc" id="aclassAutoAnalog_html_a122737d7a251d9da00ecf02be72c2e18"><div class="ttname"><a href="classAutoAnalog.html#a122737d7a251d9da00ecf02be72c2e18">AutoAnalog::dacBitsPerSample</a></div><div class="ttdeci">uint8_t dacBitsPerSample</div><div class="ttdef"><b>Definition</b> <a href="AutoAnalogAudio_8h_source.html#l00169">AutoAnalogAudio.h:169</a></div></div>
-<div class="ttc" id="aclassAutoAnalog_html_a1c595377f0593c783d04828bb5fbaaa7"><div class="ttname"><a href="classAutoAnalog.html#a1c595377f0593c783d04828bb5fbaaa7">AutoAnalog::setSampleRate</a></div><div class="ttdeci">void setSampleRate(uint32_t sampRate=0, bool stereo=false)</div></div>
-<div class="ttc" id="aclassAutoAnalog_html_a34814ebff21d9b602f1f33503c070a54"><div class="ttname"><a href="classAutoAnalog.html#a34814ebff21d9b602f1f33503c070a54">AutoAnalog::autoAdjust</a></div><div class="ttdeci">bool autoAdjust</div><div class="ttdef"><b>Definition</b> <a href="AutoAnalogAudio_8h_source.html#l00142">AutoAnalogAudio.h:142</a></div></div>
-<div class="ttc" id="aclassAutoAnalog_html_a4b5f46afb8f50e9bc28431cd467ee8bf"><div class="ttname"><a href="classAutoAnalog.html#a4b5f46afb8f50e9bc28431cd467ee8bf">AutoAnalog::dacBuffer</a></div><div class="ttdeci">uint8_t dacBuffer[MAX_BUFFER_SIZE]</div><div class="ttdef"><b>Definition</b> <a href="AutoAnalogAudio_8h_source.html#l00094">AutoAnalogAudio.h:94</a></div></div>
-<div class="ttc" id="aclassAutoAnalog_html_a9b1656a78a2c5501017ec11d8d00f286"><div class="ttname"><a href="classAutoAnalog.html#a9b1656a78a2c5501017ec11d8d00f286">AutoAnalog::begin</a></div><div class="ttdeci">void begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S=0)</div></div>
-<div class="ttc" id="aclassAutoAnalog_html_ad6728b5d90528b5817c1b8aa661de5e5"><div class="ttname"><a href="classAutoAnalog.html#ad6728b5d90528b5817c1b8aa661de5e5">AutoAnalog::feedDAC</a></div><div class="ttdeci">void feedDAC(uint8_t dacChannel=0, uint32_t samples=MAX_BUFFER_SIZE, bool startInterrupts=false)</div></div>
-</div><!-- fragment --> </div><!-- contents -->
+<div class="fragment"></div><!-- fragment --> </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Feb 13 2026 15:56:15 for Auto Analog Audio by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0
 </small></address>
 </div><!-- doc-content -->
 </body>
