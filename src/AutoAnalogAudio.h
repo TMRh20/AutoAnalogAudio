@@ -91,14 +91,17 @@ public:
      *  8-bit user samples are loaded directly into this buffer before calling feedDAC() <br>
      *  @see dacBitsPerSample
      */
+    #if !defined ARDUINO_ARCH_RENESAS
     uint8_t dacBuffer[MAX_BUFFER_SIZE];
-
+    #else
+    static uint8_t dacBuffer[MAX_BUFFER_SIZE]; 
+    #endif
     /** ADC Data buffer for 8-bit samples
      *
      *  8-bit samples are read directly from this buffer after calling getADC() <br>
      * @see adcBitsPerSample
      */
-    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15
+    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15 && !defined ARDUINO_ARCH_RENESAS
     uint8_t adcBuffer[MAX_BUFFER_SIZE];
     #elif defined __MBED__
     inline static uint8_t adcBuffer[MAX_BUFFER_SIZE];
@@ -118,7 +121,7 @@ public:
      *  10 or 12-bit samples are read directly from this buffer after calling getADC() <br>
      * @see adcBitsPerSample
      */
-    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15
+    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15 && !defined ARDUINO_ARCH_RENESAS
     uint16_t adcBuffer16[MAX_BUFFER_SIZE];
     #elif defined __MBED__
     inline static uint16_t adcBuffer16[MAX_BUFFER_SIZE];
@@ -149,7 +152,7 @@ public:
      * adcBuffer[] is an 8-bit buffer used solely for your 8-bit samples <br>
      * adcBuffer16[] is a 16-bit buffer used solely for placing your 10 and 12-bit samples <br>
      **/
-    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15
+    #if !defined(ARDUINO_ARCH_NRF52840) && !defined(ARDUINO_ARCH_NRF52) && !defined ARDUINO_NRF52840_FEATHER && !defined ARDUINO_NRF54L15 && !defined ARDUINO_ARCH_RENESAS
     uint8_t adcBitsPerSample;
     #elif defined __MBED__
     inline static uint8_t adcBitsPerSample;
@@ -245,9 +248,29 @@ public:
     uint8_t enableDAC;
     bool whichBuf;
     static bool adcWhichBuf;
+    
+    #elif defined ARDUINO_ARCH_RENESAS
+    static volatile uint16_t* dacBuf0;
+    static volatile uint16_t* dacBuf1;
+    volatile static uint8_t aCtr;
+    static volatile uint32_t aSize;
+    static uint16_t* adcBuf0;
+    static uint16_t* adcBuf1;
+    static void (*_onReceive)(uint16_t* buf, uint32_t buf_len);
+    static void adcCallback(uint16_t* buf, uint32_t buf_len);
+    void set_callback(void (*function)(uint16_t* buf, uint32_t buf_len));
+    static volatile bool adcReady;
+    static volatile uint32_t sampleCounter;
+    uint8_t enableADC;
+    uint8_t enableDAC;
+    bool whichBuf;
+    static volatile bool adcWhichBuf;
+    static volatile uint32_t sCounter;
+    bool dacDisabled;
+    static volatile uint8_t analogChannel;
     #endif
 
-    #if defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF54L15 || defined(DOXYGEN_FORCED)
+    #if defined(ARDUINO_ARCH_NRF52840) || defined(ARDUINO_ARCH_NRF52) || defined ARDUINO_NRF54L15 || defined ARDUINO_ARCH_RENESAS || defined(DOXYGEN_FORCED)
     /**@}*/
     /**
      * @name Section for nRF52 Devices Only
