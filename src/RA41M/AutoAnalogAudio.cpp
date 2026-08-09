@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #include "FspTimer.h"
     #include "r_timer_api.h"
     #include "r_adc.h"
-
+    #if defined ARDUINO_UNOR4_WIFI
+        #include "WiFiS3.h"
+    #endif
 FspTimer high_speed_timer;
 FspTimer adc_timer;
 uint8_t high_speed_timer_index;
@@ -57,7 +59,7 @@ void dac_callback(timer_callback_args_t* p_args);
 AutoAnalog::AutoAnalog()
 {
 
-    adcReady = true;
+    adcReady = false;
     adcBitsPerSample = 8;
     dacBitsPerSample = 8;
     autoAdjust = true;
@@ -203,7 +205,13 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx)
 void AutoAnalog::getADC(uint32_t samples)
 {
 
-    while (!adcReady) {
+    while (!adcReady) { 
+        #if defined ARDUINO_UNOR4_WIFI
+            WiFi.status();
+            delayMicroseconds(100);
+        #else
+            yield();
+        #endif
     }
 
     adcReady = false;
@@ -438,7 +446,7 @@ extern "C" void my_adc_isr(timer_callback_args_t* p_args)
 
     AutoAnalog::sampleCounter++;
 
-    if (AutoAnalog::sampleCounter >= AutoAnalog::aSize) {
+    if (AutoAnalog::sampleCounter >= AutoAnalog::aSize && AutoAnalog::adcReady == false) {
         if (AutoAnalog::adcWhichBuf == 0) {
             if (AutoAnalog::adcBitsPerSample == 8) {
                 for (uint32_t i = 0; i < AutoAnalog::aSize; i++) {
@@ -465,11 +473,16 @@ extern "C" void my_adc_isr(timer_callback_args_t* p_args)
                 }
             }
         }
-        AutoAnalog::sampleCounter = 0;
         AutoAnalog::adcReady = true;
+        AutoAnalog::sampleCounter = 0;
+        AutoAnalog::adcWhichBuf = !AutoAnalog::adcWhichBuf;
+    }else
+    if (AutoAnalog::sampleCounter >= AutoAnalog::aSize){
+        AutoAnalog::sampleCounter = 0;
         AutoAnalog::adcWhichBuf = !AutoAnalog::adcWhichBuf;
     }
-
+    
+    
     R_ADC0->ADCSR_b.ADST = 1;
 }
 
