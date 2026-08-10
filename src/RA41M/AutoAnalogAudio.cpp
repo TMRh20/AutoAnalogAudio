@@ -31,6 +31,9 @@ FspTimer high_speed_timer;
 FspTimer adc_timer;
 uint8_t high_speed_timer_index;
 uint8_t adc_timer_index;
+uint32_t sampleRateADC;
+uint32_t sampleRateDAC;
+bool stereoVar;
 
 extern "C" void my_adc_isr(timer_callback_args_t* p_args);
 volatile uint8_t AutoAnalog::analogChannel = 0;
@@ -70,7 +73,10 @@ AutoAnalog::AutoAnalog()
     aSize = MAX_BUFFER_SIZE;
     aCtr = 0;
     sampleCounter = 0;
-    maxBufferSize = 0;
+    sampleRateADC = 16000;
+    sampleRateDAC = 16000;
+    stereoVar = 0;
+    maxBufferSize = MAX_BUFFER_SIZE;
     dacBuffersAllocated = false;
     manualI2S = false;
 }
@@ -130,9 +136,13 @@ void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S)
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
 {
 
+    stereoVar = stereo;
+    
     if (enableDAC == 3) {
         high_speed_timer.stop();
-
+        high_speed_timer.end();
+        high_speed_timer.close();
+        
         uint8_t timer_type = GPT_TIMER;
 
         high_speed_timer.begin(
@@ -150,7 +160,9 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
     }
     if (enableADC == 3) {
         adc_timer.stop();
-
+        adc_timer.end();
+        adc_timer.close();
+        
         uint8_t timerType = GPT_TIMER;
 
         adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, sampRate * (stereo + 1), 0.0f, my_adc_isr);
@@ -204,14 +216,11 @@ void AutoAnalog::disableAdcChannel(uint8_t pinAx)
 
 void AutoAnalog::getADC(uint32_t samples)
 {
-
+    uint32_t timeout = millis();
     while (!adcReady) { 
-        #if defined ARDUINO_UNOR4_WIFI
-            WiFi.status();
-            delayMicroseconds(100);
-        #else
-            yield();
-        #endif
+      if(millis() - 1000 > timeout){
+        break;
+      }
     }
 
     adcReady = false;
@@ -227,7 +236,7 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
 
         if (dacDisabled) {
             R_DAC->DACR = 0x5F;
-            high_speed_timer.start();
+            setSampleRate(sampleRateDAC, stereoVar);
             dacDisabled = false;
         }
 
@@ -255,7 +264,12 @@ void AutoAnalog::feedDAC(uint8_t dacChannel, uint32_t samples, bool startInterru
                 }
             }
         }
+
+        uint32_t timeout = millis();
         while (sCounter < samples) {
+            if(millis() - 1000 > timeout){
+                break;
+            }
         }
         aCtr = (aCtr + 1) % 2;
         aSize = samples;
@@ -317,7 +331,7 @@ void AutoAnalog::adcSetup(void)
             timerType = GPT_TIMER;
             adc_timer_index = FspTimer::get_available_timer(timerType);
         }
-        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, 16000, 0.0f, my_adc_isr);
+        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, sampleRateADC, 0.0f, my_adc_isr);
         adc_timer.setup_overflow_irq();
         adc_timer.open();
         adc_timer.start();
@@ -357,7 +371,7 @@ void AutoAnalog::dacSetup(void)
             TIMER_MODE_PERIODIC,    // Fire continuously at the specified interval
             timer_type,             // Use the General PWM Timer peripheral block
             high_speed_timer_index, // Selected hardware channel channel
-            16000.0,                // Target Frequency in Hz (16 kHz)
+            sampleRateDAC,                // Target Frequency in Hz (16 kHz)
             0.0,                    // Duty cycle (unused for generic interrupts, keep 0.0)
             dac_callback            // Name of your ISR function to execute
         );
@@ -374,6 +388,8 @@ void AutoAnalog::disableDAC(bool withinTask)
 {
     if (enableDAC == 3) {
         high_speed_timer.stop();
+        high_speed_timer.end();
+        high_speed_timer.close();
         R_DAC->DACR = 0x4F;
         dacDisabled = true;
     }
@@ -419,9 +435,10 @@ __attribute__((__used__)) void SAADC_IRQHandler(void)
 
 void dac_callback(timer_callback_args_t* p_args)
 {
-
-    if (AutoAnalog::sCounter < AutoAnalog::aSize) {
-
+    if (AutoAnalog::sCounter >= AutoAnalog::aSize) {
+        AutoAnalog::sCounter++;
+        return;
+    }else{
         if (AutoAnalog::aCtr == 0) {
             R_DAC->DADR[0] = AutoAnalog::dacBuf0[AutoAnalog::sCounter];
         }
@@ -429,7 +446,7 @@ void dac_callback(timer_callback_args_t* p_args)
             R_DAC->DADR[0] = AutoAnalog::dacBuf1[AutoAnalog::sCounter];
         }
     }
-    AutoAnalog::sCounter++;
+    AutoAnalog::sCounter++;    
 }
 
 extern "C" void my_adc_isr(timer_callback_args_t* p_args)
