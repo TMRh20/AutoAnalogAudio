@@ -33,7 +33,7 @@ uint8_t high_speed_timer_index;
 uint8_t adc_timer_index;
 uint32_t sampleRateADC;
 uint32_t sampleRateDAC;
-bool stereoVar;
+uint8_t stereoVar;
 
 extern "C" void my_adc_isr(timer_callback_args_t* p_args);
 volatile uint8_t AutoAnalog::analogChannel = 0;
@@ -135,7 +135,7 @@ void AutoAnalog::begin(uint8_t enADC, uint8_t enDAC, uint8_t _useI2S)
 
 void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
 {
-
+    
     stereoVar = stereo;
     
     if (enableDAC == 3) {
@@ -144,16 +144,17 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
         high_speed_timer.close();
         
         uint8_t timer_type = GPT_TIMER;
-
+        
         high_speed_timer.begin(
             TIMER_MODE_PERIODIC,     // Fire continuously at the specified interval
             timer_type,              // Use the General PWM Timer peripheral block
             high_speed_timer_index,  // Selected hardware channel channel
-            sampRate * (stereo + 1), // Target Frequency in Hz (16 kHz)
+            sampRate * (stereoVar + 1), // Target Frequency in Hz (16 kHz)
             0.0,                     // Duty cycle (unused for generic interrupts, keep 0.0)
             dac_callback             // Name of your ISR function to execute
         );
 
+        sampleRateDAC = sampRate;
         high_speed_timer.setup_overflow_irq();
         high_speed_timer.open();
         high_speed_timer.start();
@@ -165,7 +166,8 @@ void AutoAnalog::setSampleRate(uint32_t sampRate, bool stereo)
         
         uint8_t timerType = GPT_TIMER;
 
-        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, sampRate * (stereo + 1), 0.0f, my_adc_isr);
+        adc_timer.begin(TIMER_MODE_PERIODIC, timerType, adc_timer_index, sampRate * (stereoVar + 1), 0.0f, my_adc_isr);
+        sampleRateADC = sampRate;
         adc_timer.setup_overflow_irq();
         adc_timer.open();
         adc_timer.start();
@@ -446,7 +448,7 @@ void dac_callback(timer_callback_args_t* p_args)
             R_DAC->DADR[0] = AutoAnalog::dacBuf1[AutoAnalog::sCounter];
         }
     }
-    AutoAnalog::sCounter++;    
+    AutoAnalog::sCounter++; 
 }
 
 extern "C" void my_adc_isr(timer_callback_args_t* p_args)
