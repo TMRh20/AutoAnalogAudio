@@ -85,7 +85,7 @@ void loop() {
   if(millis() - timer > 5000){
     timer = millis();
     Serial.print("Packets/sec: ");
-    Serial.print(packetCount / 5);
+    Serial.print(packetCount / 5.0, 2);
     Serial.print(" | Seq: ");
     Serial.print(rtp_sequence);
     Serial.print(" | TS: ");
