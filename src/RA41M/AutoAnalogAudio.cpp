@@ -456,16 +456,19 @@ extern "C" void my_adc_isr(timer_callback_args_t* p_args)
 
     (void)p_args;
 
-    if (AutoAnalog::adcWhichBuf == 0) {
-        AutoAnalog::adcBuf0[AutoAnalog::sampleCounter] = R_ADC0->ADDR[AutoAnalog::analogChannel];
-    }
-    else {
-        AutoAnalog::adcBuf1[AutoAnalog::sampleCounter] = R_ADC0->ADDR[AutoAnalog::analogChannel];
+    
+    if (AutoAnalog::sampleCounter < AutoAnalog::aSize) { 
+        if (AutoAnalog::adcWhichBuf == 0) {
+            AutoAnalog::adcBuf0[AutoAnalog::sampleCounter] = R_ADC0->ADDR[AutoAnalog::analogChannel];
+        }
+        else {
+            AutoAnalog::adcBuf1[AutoAnalog::sampleCounter] = R_ADC0->ADDR[AutoAnalog::analogChannel];
+        }
     }
 
     AutoAnalog::sampleCounter++;
 
-    if (AutoAnalog::sampleCounter >= AutoAnalog::aSize && AutoAnalog::adcReady == false) {
+    if (AutoAnalog::sampleCounter == AutoAnalog::aSize && AutoAnalog::adcReady == false) {
         if (AutoAnalog::adcWhichBuf == 0) {
             if (AutoAnalog::adcBitsPerSample == 8) {
                 for (uint32_t i = 0; i < AutoAnalog::aSize; i++) {

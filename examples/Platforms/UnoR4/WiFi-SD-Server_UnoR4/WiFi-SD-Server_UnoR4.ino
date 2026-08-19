@@ -119,6 +119,7 @@ void loop() {
               entry = root.openNextFile();
 
               if (!entry) {
+                entry.close();
                 break;
               }
               if (!entry.isDirectory()) {
